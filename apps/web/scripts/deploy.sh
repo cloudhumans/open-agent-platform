@@ -6,8 +6,11 @@ ECR_REPOSITORY="585814034319.dkr.ecr.us-east-1.amazonaws.com/open-agent-platform
 AWS_REGION="us-east-1"
 AWS_PROFILE="production"
 IMAGE_TAG="latest"
-KUBECONFIG_PATH="/home/fabio/.config/Lens/kubeconfigs/13cc2a88-4adf-4ec0-b237-d63fdf1aa379-pasted-kubeconfig.yaml"
+KUBECONFIG_PATH="/home/$(whoami)/.config/Lens/kubeconfigs/13cc2a88-4adf-4ec0-b237-d63fdf1aa379-pasted-kubeconfig.yaml"
 KUBECTL_PATH="/opt/Lens/resources/x64/kubectl"
+
+# Change to repository root directory
+cd "$(dirname "$0")/../../.."
 
 echo "🔨 Building Docker image..."
 docker build -f apps/web/Dockerfile -t open-agent-platform:${IMAGE_TAG} \

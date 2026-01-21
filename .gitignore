@@ -47,3 +47,7 @@ credentials.json
 .langgraph_api
 
 **/.claude/settings.local.json
+
+# Kubernetes secrets - NEVER commit these
+apps/web/k8s/secret.yaml
+**/k8s/secret.yaml

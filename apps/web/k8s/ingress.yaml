@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: open-agent-platform-ingress
+  namespace: open-agent-platform
+  annotations:
+    kubernetes.io/ingress.class: kong
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  rules:
+    - host: oap.us-east-1.prd.cloudhumans.io
+      http:
+        paths:
+          - backend:
+              service:
+                name: open-agent-platform
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - oap.us-east-1.prd.cloudhumans.io
+      secretName: open-agent-platform-tls

@@ -6,12 +6,15 @@ ECR_REPOSITORY="585814034319.dkr.ecr.us-east-1.amazonaws.com/open-agent-platform
 AWS_REGION="us-east-1"
 AWS_PROFILE="production"
 IMAGE_TAG="latest"
-KUBECONFIG_PATH="/home/fabio/.config/Lens/kubeconfigs/13cc2a88-4adf-4ec0-b237-d63fdf1aa379-pasted-kubeconfig.yaml"
+KUBECONFIG_PATH="/home/$(whoami)/.config/Lens/kubeconfigs/13cc2a88-4adf-4ec0-b237-d63fdf1aa379-pasted-kubeconfig.yaml"
 KUBECTL_PATH="/opt/Lens/resources/x64/kubectl"
+
+# Change to repository root directory
+cd "$(dirname "$0")/../../.."
 
 echo "🔨 Building Docker image..."
 docker build -f apps/web/Dockerfile -t open-agent-platform:${IMAGE_TAG} \
-  --build-arg NEXT_PUBLIC_DEPLOYMENTS='[{"name":"claudia-agentic","id":"88dc20c9-ff10-4f97-9299-592f0e0410d3","tenantId":"1ea4e982-ab14-4c2d-af31-45c71fcc6b9f","deploymentUrl":"https://claudia-agentic-002708c0e2f95fdd9e3bad91557fec4b.us.langgraph.app","isDefault":true,"defaultGraphId":"agent"}]' \
+  --build-arg NEXT_PUBLIC_DEPLOYMENTS='[{"name":"claudia-agentic","id":"88dc20c9-ff10-4f97-9299-592f0e0410d3","tenantId":"1ea4e982-ab14-4c2d-af31-45c71fcc6b9f","deploymentUrl":"https://claudia-agentic-002708c0e2f95fdd9e3bad91557fec4b.us.langgraph.app","isDefault":true,"defaultGraphId":"agent"},{"name": "node-agent","id": "f332c848-ca55-416f-bab6-6a1566bed085","tenantId": "1ea4e982-ab14-4c2d-af31-45c71fcc6b9f","deploymentUrl": "https://node-agent-c6a50130cf7b5359a17e4784b7f0eeea.us.langgraph.app","isDefault": false,"defaultGraphId": "agent"}]' \
   --build-arg NEXT_PUBLIC_COGNITO_CLIENT_ID="8lmhq04h0q3pnu6p60r91bd2h" \
   --build-arg NEXT_PUBLIC_COGNITO_USER_POOL_ID="us-east-1_oze29iTu0" \
   --build-arg NEXT_PUBLIC_BASE_API_URL="https://oap.us-east-1.prd.cloudhumans.io/api" \

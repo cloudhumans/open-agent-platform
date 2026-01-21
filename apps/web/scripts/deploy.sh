@@ -11,7 +11,7 @@ KUBECTL_PATH="/opt/Lens/resources/x64/kubectl"
 
 echo "🔨 Building Docker image..."
 docker build -f apps/web/Dockerfile -t open-agent-platform:${IMAGE_TAG} \
-  --build-arg NEXT_PUBLIC_DEPLOYMENTS='[{"name":"claudia-agentic","id":"88dc20c9-ff10-4f97-9299-592f0e0410d3","tenantId":"1ea4e982-ab14-4c2d-af31-45c71fcc6b9f","deploymentUrl":"https://claudia-agentic-002708c0e2f95fdd9e3bad91557fec4b.us.langgraph.app","isDefault":true,"defaultGraphId":"agent"}]' \
+  --build-arg NEXT_PUBLIC_DEPLOYMENTS='[{"name":"claudia-agentic","id":"88dc20c9-ff10-4f97-9299-592f0e0410d3","tenantId":"1ea4e982-ab14-4c2d-af31-45c71fcc6b9f","deploymentUrl":"https://claudia-agentic-002708c0e2f95fdd9e3bad91557fec4b.us.langgraph.app","isDefault":true,"defaultGraphId":"agent"},{"name":"tools-agent","id":"05c8db20-ce6e-47f8-a09c-8bf0b7310937","tenantId":"1ea4e982-ab14-4c2d-af31-45c71fcc6b9f","deploymentUrl":"https://tools-agent-dc60ff1bf1a559f98591bf18b26ce071.us.langgraph.app","isDefault":false,"defaultGraphId":"agent"}]' \
   --build-arg NEXT_PUBLIC_COGNITO_CLIENT_ID="8lmhq04h0q3pnu6p60r91bd2h" \
   --build-arg NEXT_PUBLIC_COGNITO_USER_POOL_ID="us-east-1_oze29iTu0" \
   --build-arg NEXT_PUBLIC_BASE_API_URL="https://oap.us-east-1.prd.cloudhumans.io/api" \

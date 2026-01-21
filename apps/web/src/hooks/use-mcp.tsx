@@ -85,7 +85,6 @@ export default function useMCP({
     const mcp = await createAndConnectMCPClient();
     const response = await mcp.callTool({
       name,
-      version,
       arguments: args,
     });
     return response;

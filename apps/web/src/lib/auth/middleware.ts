@@ -15,6 +15,10 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
+  if (process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID) {
+    return NextResponse.next();
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -27,7 +31,7 @@ export async function updateSession(request: NextRequest) {
       getAll() {
         return request.cookies.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet: any[]) {
         cookiesToSet.forEach(({ name, value }) =>
           request.cookies.set(name, value),
         );

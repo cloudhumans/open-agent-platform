@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { SupabaseAuthProvider } from "@/lib/auth/supabase";
+import { CognitoAuthProvider } from "@/lib/auth/cognito";
 import {
   AuthProvider as CustomAuthProvider,
   Session,
@@ -39,11 +40,20 @@ interface AuthContextProps {
   }>;
 }
 
-// Create default authentication provider (Supabase in this case)
-const authProvider = new SupabaseAuthProvider({
-  redirectUrl:
-    typeof window !== "undefined" ? window.location.origin : undefined,
-});
+// Create default authentication provider
+let authProvider: CustomAuthProvider;
+
+if (process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID) {
+    authProvider = new CognitoAuthProvider({
+        redirectUrl:
+          typeof window !== "undefined" ? window.location.origin : undefined,
+    });
+} else {
+    authProvider = new SupabaseAuthProvider({
+        redirectUrl:
+          typeof window !== "undefined" ? window.location.origin : undefined,
+    });
+}
 
 // Create auth context
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);

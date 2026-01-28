@@ -122,16 +122,6 @@ export const StreamProvider: React.FC<{ children: ReactNode }> = ({
   const warningShownRef = useRef<string>("");
 
   useEffect(() => {
-    if (value || !agents.length) {
-      return;
-    }
-    const defaultAgent = agents.find(isUserSpecifiedDefaultAgent);
-    if (defaultAgent) {
-      setValue(`${defaultAgent.assistant_id}:${defaultAgent.deploymentId}`);
-    }
-  }, [agents]);
-
-  useEffect(() => {
     if (agentId && deploymentId) {
       const currentKey = `${agentId}:${deploymentId}`;
       if (warningShownRef.current !== currentKey) {

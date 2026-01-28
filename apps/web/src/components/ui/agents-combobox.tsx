@@ -224,7 +224,9 @@ export function AgentsCombobox({
             {deployments.map((deployment) => {
               // Filter agents for the current deployment (excluding default agents)
               const deploymentAgents = agents.filter(
-                (agent) => agent.deploymentId === deployment.id,
+                (agent) =>
+                  agent.deploymentId === deployment.id &&
+                  !isUserCreatedDefaultAssistant(agent),
               );
               // Group filtered agents by graph (still needed for sorting/grouping logic)
               const agentsGroupedByGraphs =

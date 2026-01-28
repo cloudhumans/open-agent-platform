@@ -142,18 +142,6 @@ function NewThreadButton(props: { hasMessages: boolean }) {
   const agentValue =
     agentId && deploymentId ? `${agentId}:${deploymentId}` : undefined;
 
-  useEffect(() => {
-    if (agentValue || !agents.length) {
-      return;
-    }
-    const defaultAgent = agents.find(isUserSpecifiedDefaultAgent);
-    if (defaultAgent) {
-      onAgentChange(
-        `${defaultAgent.assistant_id}:${defaultAgent.deploymentId}`,
-      );
-    }
-  }, [agents, agentValue, onAgentChange]);
-
   if (!props.hasMessages) {
     return (
       <AgentsCombobox

@@ -587,6 +587,8 @@ export function ConfigFieldAgents({
         agent_id,
         deployment_url,
         name: agents.find((a) => a.assistant_id === agent_id)?.name,
+        description: agents.find((a) => a.assistant_id === agent_id)?.metadata
+          ?.description as string | undefined,
       };
     });
 

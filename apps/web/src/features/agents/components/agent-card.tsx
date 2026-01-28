@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { isUserCreatedDefaultAssistant } from "@/lib/agent-utils";
+import { cn } from "@/lib/utils";
 
 function SupportedConfigBadge({
   type,
@@ -74,22 +75,47 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
 
   const isDefaultAgent = isUserCreatedDefaultAssistant(agent);
 
+  let displayName = agent.name;
+  let displayDescription = agent.metadata?.description;
+  let isTemplate = false;
+
+  let templateType: "supervisor" | "tools" | null = null;
+
+  if (isDefaultAgent) {
+    if (agent.supportedConfigs?.includes("supervisor")) {
+      displayName = "Claudia";
+      displayDescription = "The brain behind the Cloud Humans AI";
+      isTemplate = true;
+      templateType = "supervisor";
+    } else if (agent.supportedConfigs?.includes("tools")) {
+      displayName = "Tools Agent";
+      displayDescription = "The specialist capable of executing tasks";
+      isTemplate = true;
+      templateType = "tools";
+    }
+  }
+
   return (
     <>
       <Card
         key={agent.assistant_id}
-        className="overflow-hidden"
+        className={cn("overflow-hidden relative bg-slate-50 dark:bg-black flex flex-col h-full min-h-[220px]", isTemplate && "border-slate-300 border-dashed")}
+        style={isTemplate ? {
+          backgroundImage: `url(${templateType === "supervisor" ? "/images/claudia-bg-light.png" : "/images/tools-bg-light.png"})`,
+          backgroundSize: "cover",
+          backgroundPosition: "right center",
+        } : undefined}
       >
-        <CardHeader className="space-y-2 pb-2">
+        <CardHeader className="space-y-2 pb-2 relative z-10">
           <div className="flex items-start justify-between">
             <CardTitle className="flex w-full flex-wrap items-center gap-2">
-              <p>{agent.name}</p>
+              <p className={cn(isTemplate && "font-light")}>{displayName}</p>
               {showDeployment && selectedDeployment && (
                 <div className="flex flex-wrap items-center gap-1">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="outline">
+                        <Badge variant="outline" className={cn(isTemplate && "bg-white/50 backdrop-blur-sm font-light")}>
                           <Cloud />
                           {selectedDeployment.name}
                         </Badge>
@@ -101,7 +127,7 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
 
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="outline">
+                        <Badge variant="outline" className={cn(isTemplate && "bg-white/50 backdrop-blur-sm font-light")}>
                           <Bot />
                           {agent.graph_id}
                         </Badge>
@@ -115,22 +141,24 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
               )}
             </CardTitle>
           </div>
-          <div className="flex flex-0 flex-wrap items-center justify-start gap-2">
-            {agent.metadata?.description &&
-            typeof agent.metadata.description === "string" ? (
-              <p className="text-muted-foreground mt-1 text-sm">
-                {agent.metadata.description}
+          <div className="flex flex-col items-start justify-start gap-2 mt-2">
+            {displayDescription &&
+            typeof displayDescription === "string" ? (
+              <p className={cn("text-muted-foreground text-sm", isTemplate && "font-light")}>
+                {displayDescription}
               </p>
             ) : null}
-            {agent.supportedConfigs?.map((config) => (
-              <SupportedConfigBadge
-                key={`${agent.assistant_id}-${config}`}
-                type={config}
-              />
-            ))}
+            <div className="flex flex-wrap items-center gap-2">
+              {agent.supportedConfigs?.map((config) => (
+                <SupportedConfigBadge
+                  key={`${agent.assistant_id}-${config}`}
+                  type={config}
+                />
+              ))}
+            </div>
           </div>
         </CardHeader>
-        <CardFooter className="mt-auto flex w-full justify-between pt-2">
+        <CardFooter className="mt-auto flex w-full justify-between pt-2 relative z-10">
           {!isDefaultAgent && (
             <Button
               variant="outline"
@@ -143,7 +171,7 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
           )}
           <NextLink
             href={`/?agentId=${agent.assistant_id}&deploymentId=${agent.deploymentId}`}
-            className="ml-auto"
+            className={cn("ml-auto", isTemplate && "hidden")}
           >
             <Button size="sm">
               <MessageSquare className="mr-2 h-3.5 w-3.5" />

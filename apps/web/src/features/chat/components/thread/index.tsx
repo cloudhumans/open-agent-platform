@@ -38,7 +38,6 @@ import { useAuthContext } from "@/providers/Auth";
 import { AgentsCombobox } from "@/components/ui/agents-combobox";
 import { useAgentsContext } from "@/providers/Agents";
 import {
-  isUserSpecifiedDefaultAgent,
   requiresApiKeysButNotSet,
 } from "@/lib/agent-utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

@@ -54,7 +54,7 @@ function EditAgentDialogContent({
       const values = await getSchemaAndUpdateConfig(agent);
       return {
         ...values,
-        isPublic: agent.metadata?.public ?? false,
+        isPublic: (agent.metadata?.public as boolean) ?? false,
       };
     },
   });

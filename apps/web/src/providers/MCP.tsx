@@ -7,12 +7,14 @@ import React, {
   useState,
 } from "react";
 import useMCP from "../hooks/use-mcp";
+import { useAuthContext } from "./Auth";
 
 type MCPContextType = ReturnType<typeof useMCP> & { loading: boolean };
 
 const MCPContext = createContext<MCPContextType | null>(null);
 
 export const MCPProvider: React.FC<PropsWithChildren> = ({ children }) => {
+  const { session } = useAuthContext();
   const mcpState = useMCP({
     name: "Tools Interface",
     version: "1.0.0",
@@ -21,6 +23,7 @@ export const MCPProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!session?.accessToken) return;
     if (mcpState.tools.length || firstRequestMade.current) return;
 
     firstRequestMade.current = true;
@@ -29,7 +32,7 @@ export const MCPProvider: React.FC<PropsWithChildren> = ({ children }) => {
       .getTools()
       .then((tools) => mcpState.setTools(tools))
       .finally(() => setLoading(false));
-  }, []);
+  }, [session?.accessToken]);
 
   return (
     <MCPContext.Provider value={{ ...mcpState, loading }}>

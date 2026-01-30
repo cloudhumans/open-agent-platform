@@ -2,6 +2,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { Tool } from "@/types/tool";
 import { useState } from "react";
+import { useAuthContext } from "@/providers/Auth";
 
 function getMCPUrlOrThrow() {
   if (!process.env.NEXT_PUBLIC_BASE_API_URL) {
@@ -26,6 +27,7 @@ export default function useMCP({
 }) {
   const [tools, setTools] = useState<Tool[]>([]);
   const [cursor, setCursor] = useState("");
+  const { session } = useAuthContext();
 
   /**
    * Creates an MCP client and connects it to the specified server URL.
@@ -56,6 +58,9 @@ export default function useMCP({
    * @returns A promise that resolves to an array of available tools.
    */
   const getTools = async (nextCursor?: string): Promise<Tool[]> => {
+    if (!session?.accessToken) {
+      return [];
+    }
     const mcp = await createAndConnectMCPClient();
     const tools = await mcp.listTools({ cursor: nextCursor });
     if (tools.nextCursor) {
@@ -82,6 +87,9 @@ export default function useMCP({
     args: Record<string, any>;
     version?: string;
   }) => {
+    if (!session?.accessToken) {
+      throw new Error("No access token found");
+    }
     const mcp = await createAndConnectMCPClient();
     const response = await mcp.callTool({
       name,

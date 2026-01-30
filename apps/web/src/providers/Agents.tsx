@@ -22,6 +22,7 @@ import { createClient } from "@/lib/client";
 import { useAuthContext } from "./Auth";
 import { toast } from "sonner";
 import { Assistant } from "@langchain/langgraph-sdk";
+import { User } from "@/lib/auth/types";
 
 async function getOrCreateDefaultAssistants(
   deployment: Deployment,
@@ -67,6 +68,7 @@ async function getOrCreateDefaultAssistants(
 async function getAgents(
   deployments: Deployment[],
   accessToken: string,
+  user: User,
   getAgentConfigSchema: (
     agentId: string,
     deploymentId: string,
@@ -75,23 +77,50 @@ async function getAgents(
   const agentsPromise: Promise<Agent[]>[] = deployments.map(
     async (deployment) => {
       const client = createClient(deployment.id, accessToken);
+      const tenantId = user.metadata?.["custom:tenant_id"];
 
-      const [defaultAssistants, allUserAssistants] = await Promise.all([
+      const queryPromises = [
         getOrCreateDefaultAssistants(deployment, accessToken),
         client.assistants.search({
-          limit: 100,
+          limit: 1000,
         }),
-      ]);
+      ];
+
+      const results = await Promise.all(queryPromises);
+      const defaultAssistants = results[0];
+      const allAssistantsResponse = results[1] || [];
+
       const assistantMap = new Map<string, Assistant>();
 
-      // Add default assistants to the map
+      // Add default assistants
       defaultAssistants.forEach((assistant) => {
         assistantMap.set(assistant.assistant_id, assistant);
       });
 
-      // Add user assistants to the map, potentially overriding defaults
-      allUserAssistants.forEach((assistant) => {
-        assistantMap.set(assistant.assistant_id, assistant);
+      // Filter and add user assistants
+      allAssistantsResponse.forEach((assistant) => {
+        const isPublic = assistant.metadata?.public;
+        const agentTenantId = assistant.metadata?.tenant;
+
+        // 1. Agent is explicitly public
+        if (isPublic) {
+          assistantMap.set(assistant.assistant_id, assistant);
+          return;
+        }
+
+        // 2. Agent belongs to the user's tenant
+        if (agentTenantId && agentTenantId === tenantId) {
+          assistantMap.set(assistant.assistant_id, assistant);
+          return;
+        }
+
+        // 3. Legacy: Agent has NO public flag AND NO tenant (effectively public legacy)
+        if (!isPublic && !agentTenantId) {
+          assistantMap.set(assistant.assistant_id, assistant);
+          return;
+        }
+
+        // Otherwise, it's a private agent from another tenant, so we skip it.
       });
 
       // Convert map values back to array
@@ -170,7 +199,7 @@ const AgentsContext = createContext<AgentsContextType | undefined>(undefined);
 export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { session } = useAuthContext();
+  const { session, user } = useAuthContext();
   const agentsState = useAgents();
   const deployments = getDeployments();
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -179,7 +208,12 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
   const [refreshAgentsLoading, setRefreshAgentsLoading] = useState(false);
 
   useEffect(() => {
-    if (agents.length > 0 || firstRequestMade.current || !session?.accessToken)
+    if (
+      agents.length > 0 ||
+      firstRequestMade.current ||
+      !session?.accessToken ||
+      !user
+    )
       return;
 
     firstRequestMade.current = true;
@@ -187,6 +221,7 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
     getAgents(
       deployments,
       session.accessToken,
+      user,
       agentsState.getAgentConfigSchema,
     )
       // Never expose the system created default assistants to the user
@@ -194,11 +229,11 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
         setAgents(a.filter((a) => !isSystemCreatedDefaultAssistant(a))),
       )
       .finally(() => setLoading(false));
-  }, [session?.accessToken]);
+  }, [session?.accessToken, user]);
 
   async function refreshAgents() {
-    if (!session?.accessToken) {
-      toast.error("No access token found", {
+    if (!session?.accessToken || !user) {
+      toast.error("No access token or user found", {
         richColors: true,
       });
       return;
@@ -208,6 +243,7 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
       const newAgents = await getAgents(
         deployments,
         session.accessToken,
+        user,
         agentsState.getAgentConfigSchema,
       );
       setAgents(newAgents.filter((a) => !isSystemCreatedDefaultAssistant(a)));

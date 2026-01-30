@@ -86,7 +86,7 @@ export function AgentFieldsForm({
           <Input
             id="oap_name"
             {...form.register("name")}
-            placeholder="Emails Agent"
+            placeholder="Agent Name"
           />
         </div>
         <div className="flex w-full flex-col items-start justify-start gap-2">
@@ -96,7 +96,7 @@ export function AgentFieldsForm({
           <Textarea
             id="oap_description"
             {...form.register("description")}
-            placeholder="Agent that handles emails"
+            placeholder="A description that will be used by the supervisor agent to decide when to use this agent"
           />
         </div>
       </div>

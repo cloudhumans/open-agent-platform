@@ -11,7 +11,7 @@ KUBECTL_PATH="/opt/Lens/resources/x64/kubectl"
 
 echo "🔨 Building Docker image..."
 docker build -f apps/web/Dockerfile -t open-agent-platform:${IMAGE_TAG} \
-  --build-arg NEXT_PUBLIC_DEPLOYMENTS='[{"name":"claudia","id":"510549fc-e2bf-4593-be52-53c555ba28b8","tenantId":"8d78c364-6803-47b7-957c-a7e976e4d558","deploymentUrl":"https://claudia-e86fe2e91a435c59a69e1a70599e2914.us.langgraph.app","isDefault":true,"defaultGraphId":"agent"},{"name":"react-agent","id":"45c60f4d-4ae6-4668-8411-52829b1126f0","tenantId":"8d78c364-6803-47b7-957c-a7e976e4d558","deploymentUrl":"https://react-agent-5f25448a5b87539d8ff907a17bd089b0.us.langgraph.app","isDefault":false,"defaultGraphId":"agent"}]' \
+  --build-arg NEXT_PUBLIC_DEPLOYMENTS='[{"name":"claudia","id":"271044b4-73e4-4ef8-ab6d-328a3d06a2ac","tenantId":"8d78c364-6803-47b7-957c-a7e976e4d558","deploymentUrl":"https://claudia-e86fe2e91a435c59a69e1a70599e2914.us.langgraph.app","isDefault":true,"defaultGraphId":"agent"},{"name":"react-agent","id":"6bbc6e7e-229a-4ccc-8369-049cb6f82a4f","tenantId":"8d78c364-6803-47b7-957c-a7e976e4d558","deploymentUrl":"https://react-agent-5f25448a5b87539d8ff907a17bd089b0.us.langgraph.app","isDefault":false,"defaultGraphId":"agent"}]' \
   --build-arg NEXT_PUBLIC_COGNITO_CLIENT_ID="8lmhq04h0q3pnu6p60r91bd2h" \
   --build-arg NEXT_PUBLIC_COGNITO_USER_POOL_ID="us-east-1_oze29iTu0" \
   --build-arg NEXT_PUBLIC_BASE_API_URL="https://oap.us-east-1.prd.cloudhumans.io/api" \

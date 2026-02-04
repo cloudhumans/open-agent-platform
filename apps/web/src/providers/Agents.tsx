@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { Assistant } from "@langchain/langgraph-sdk";
 import { User } from "@/lib/auth/types";
 import { useTenantContext } from "@/providers/Tenant";
+import { Tenant } from "@/types/tenant";
 
 async function getOrCreateDefaultAssistants(
   deployment: Deployment,
@@ -69,7 +70,7 @@ async function getAgents(
   deployments: Deployment[],
   accessToken: string,
   user: User,
-  tenantIdOverride: string | undefined,
+  selectedTenant: Tenant | null,
   getAgentConfigSchema: (
     agentId: string,
     deploymentId: string,
@@ -78,7 +79,8 @@ async function getAgents(
   const agentsPromise: Promise<Agent[]>[] = deployments.map(
     async (deployment) => {
       const client = createClient(deployment.id, accessToken);
-      const tenantId = tenantIdOverride ?? user.metadata?.["custom:tenant_id"];
+      const tenantId = selectedTenant?.id ?? user.metadata?.["custom:tenant_id"];
+      const tenantName = selectedTenant?.tenantName;
 
       const queryPromises = [
         getOrCreateDefaultAssistants(deployment, accessToken),
@@ -102,15 +104,19 @@ async function getAgents(
       allAssistantsResponse.forEach((assistant) => {
         const isPublic = assistant.metadata?.public;
         const agentTenantId = assistant.metadata?.tenant;
+        const agentConfigTenant = assistant.config?.configurable?.tenant;
 
-        // 1. Agent belongs to the user's tenant
-        if (agentTenantId && agentTenantId === tenantId) {
+        // 1. Agent belongs to the user's tenant (Legacy ID check OR Name check)
+        if (
+          (agentTenantId && agentTenantId === tenantId) ||
+          (agentConfigTenant && agentConfigTenant === tenantName)
+        ) {
           assistantMap.set(assistant.assistant_id, assistant);
           return;
         }
 
         // 2. Legacy: Agent has NO public flag AND NO tenant (effectively public legacy)
-        if (!isPublic && !agentTenantId) {
+        if (!isPublic && !agentTenantId && !agentConfigTenant) {
           assistantMap.set(assistant.assistant_id, assistant);
           return;
         }
@@ -195,13 +201,12 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { session, user } = useAuthContext();
-  const { selectedTenantId } = useTenantContext();
+  const { selectedTenant } = useTenantContext();
   const agentsState = useAgents();
   const deployments = getDeployments();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshAgentsLoading, setRefreshAgentsLoading] = useState(false);
-  const effectiveTenantId = selectedTenantId || undefined;
 
   useEffect(() => {
     if (!session?.accessToken || !user) return;
@@ -210,7 +215,7 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
       deployments,
       session.accessToken,
       user,
-      effectiveTenantId,
+      selectedTenant,
       agentsState.getAgentConfigSchema,
     )
       // Never expose the system created default assistants to the user
@@ -218,7 +223,7 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
         setAgents(a.filter((a) => !isSystemCreatedDefaultAssistant(a))),
       )
       .finally(() => setLoading(false));
-  }, [session?.accessToken, user, effectiveTenantId]);
+  }, [session?.accessToken, user, selectedTenant]);
 
   async function refreshAgents() {
     if (!session?.accessToken || !user) {
@@ -233,7 +238,7 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
         deployments,
         session.accessToken,
         user,
-        effectiveTenantId,
+        selectedTenant,
         agentsState.getAgentConfigSchema,
       );
       setAgents(newAgents.filter((a) => !isSystemCreatedDefaultAssistant(a)));

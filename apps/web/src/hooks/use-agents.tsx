@@ -5,11 +5,11 @@ import { toast } from "sonner";
 import { useAuthContext } from "@/providers/Auth";
 import { useCallback } from "react";
 import { isSystemCreatedDefaultAssistant } from "@/lib/agent-utils";
-import { useTenantContext } from "@/providers/Tenant";
+
 
 export function useAgents() {
-  const { session, user } = useAuthContext();
-  const { selectedTenantId } = useTenantContext();
+  const { session } = useAuthContext();
+
 
   const getAgent = useCallback(
     async (
@@ -91,15 +91,12 @@ export function useAgents() {
         return;
       }
 
-      const tenantId = selectedTenantId || user?.metadata?.["custom:tenant_id"];
-
       try {
         const client = createClient(deploymentId, session.accessToken);
         const agent = await client.assistants.create({
           graphId,
           metadata: {
             description: args.description,
-            ...(tenantId && { tenant: tenantId }),
             public: false,
           },
           name: args.name,
@@ -116,7 +113,7 @@ export function useAgents() {
         return undefined;
       }
     },
-    [session?.accessToken, user?.metadata, selectedTenantId],
+    [session?.accessToken],
   );
 
   const updateAgent = useCallback(

@@ -14,6 +14,7 @@ import { Bot, LoaderCircle, Trash, X } from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAgentsContext } from "@/providers/Agents";
+import { useTenantContext } from "@/providers/Tenant";
 import { AgentFieldsForm, AgentFieldsFormLoading } from "./agent-form";
 import { Agent } from "@/types/agent";
 import { FormProvider, useForm } from "react-hook-form";
@@ -42,6 +43,7 @@ function EditAgentDialogContent({
     ragConfigurations,
     agentsConfigurations,
   } = useAgentConfig();
+  const { selectedTenant } = useTenantContext();
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
 
   const form = useForm<{
@@ -72,6 +74,10 @@ function EditAgentDialogContent({
       agent.deploymentId,
       {
         ...data,
+        config: {
+          ...data.config,
+          tenant: selectedTenant?.tenantName,
+        },
       },
     );
 

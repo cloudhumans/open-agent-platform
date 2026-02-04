@@ -13,6 +13,7 @@ import { Bot, LoaderCircle, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAgentsContext } from "@/providers/Agents";
+import { useTenantContext } from "@/providers/Tenant";
 import { AgentFieldsForm, AgentFieldsFormLoading } from "./agent-form";
 import { Deployment } from "@/types/deployment";
 import { Agent } from "@/types/agent";
@@ -59,6 +60,7 @@ function CreateAgentFormContent(props: {
     ragConfigurations,
     agentsConfigurations,
   } = useAgentConfig();
+  const { selectedTenant } = useTenantContext();
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (data: {
@@ -81,7 +83,10 @@ function CreateAgentFormContent(props: {
       {
         name,
         description,
-        config,
+        config: {
+          ...config,
+          tenant: selectedTenant?.tenantName,
+        },
       },
     );
     setSubmitting(false);

@@ -106,7 +106,9 @@ export async function proxyRequest(req: NextRequest): Promise<Response> {
 
   // Construct the target URL
   const targetUrlObj = new URL(MCP_SERVER_URL);
-  targetUrlObj.pathname = `${targetUrlObj.pathname}${targetUrlObj.pathname.endsWith("/") ? "" : "/"}mcp${path}${url.search}`;
+  const basePath = targetUrlObj.pathname.replace(/\/$/, "");
+  targetUrlObj.pathname = `${basePath}/mcp${path}`;
+  targetUrlObj.search = url.search;
   const targetUrl = targetUrlObj.toString();
 
   // Prepare headers, forwarding original headers except Host

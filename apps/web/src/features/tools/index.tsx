@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Wrench, ChevronRightIcon } from "lucide-react";
+import { Wrench, ChevronRightIcon, Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ToolCard, ToolCardLoading } from "./components/tool-card";
 import { useMCPContext } from "@/providers/MCP";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import _ from "lodash";
 import { Search } from "@/components/ui/tool-search";
 import { useSearchTools } from "@/hooks/use-search-tools";
+import { useTenantContext } from "@/providers/Tenant";
 
 function TotalToolsBadge({
   toolsCount,
@@ -41,6 +42,7 @@ export default function ToolsInterface(): React.ReactNode {
   const { tools, loading, getTools, cursor, setTools } = useMCPContext();
   const { toolSearchTerm, debouncedSetSearchTerm, filteredTools } =
     useSearchTools(tools);
+  const { selectedTenant } = useTenantContext();
   const [loadingMore, setLoadingMore] = React.useState(false);
 
   const handleLoadMore = async () => {
@@ -71,11 +73,31 @@ export default function ToolsInterface(): React.ReactNode {
             />
           </p>
         </div>
-        <Search
-          onSearchChange={debouncedSetSearchTerm}
-          placeholder="Search tools..."
-          className="w-full"
-        />
+        <div className="flex w-full items-center gap-3">
+          <Search
+            onSearchChange={debouncedSetSearchTerm}
+            placeholder="Search tools..."
+            className="w-full"
+          />
+          <Button
+            variant="outline"
+            className="whitespace-nowrap border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+            disabled={!selectedTenant?.tenantName}
+            onClick={() => {
+              if (!selectedTenant?.tenantName) return;
+              const typebotBaseUrl =
+                process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL ||
+                "http://localhost:3002";
+              const url = `${typebotBaseUrl}/pt-BR/typebots/create?type=ai_workflow&tenant_name=${encodeURIComponent(
+                selectedTenant.tenantName,
+              )}`;
+              window.open(url, "_blank", "noopener,noreferrer");
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            Create tool in Typebot
+          </Button>
+        </div>
       </div>
 
       <Separator />

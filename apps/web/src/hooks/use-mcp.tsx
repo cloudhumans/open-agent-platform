@@ -3,6 +3,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { Tool } from "@/types/tool";
 import { useState } from "react";
 import { useAuthContext } from "@/providers/Auth";
+import { Tenant } from "@/types/tenant";
 
 function getMCPUrlOrThrow() {
   if (!process.env.NEXT_PUBLIC_BASE_API_URL) {
@@ -21,9 +22,11 @@ function getMCPUrlOrThrow() {
 export default function useMCP({
   name,
   version,
+  tenant,
 }: {
   name: string;
   version: string;
+  tenant?: Tenant | null;
 }) {
   const [tools, setTools] = useState<Tool[]>([]);
   const [cursor, setCursor] = useState("");
@@ -39,7 +42,19 @@ export default function useMCP({
    */
   const createAndConnectMCPClient = async () => {
     const url = getMCPUrlOrThrow();
-    const connectionClient = new StreamableHTTPClientTransport(new URL(url));
+    const tenantHeaders: HeadersInit = {};
+    if (tenant) {
+      tenantHeaders["x-tenant"] = tenant.tenantName;
+    }
+
+    const connectionClient = new StreamableHTTPClientTransport(new URL(url), {
+      requestInit:
+        Object.keys(tenantHeaders).length > 0
+          ? {
+              headers: tenantHeaders,
+            }
+          : undefined,
+    });
     const mcp = new Client({
       name,
       version,
@@ -62,7 +77,12 @@ export default function useMCP({
       return [];
     }
     const mcp = await createAndConnectMCPClient();
-    const tools = await mcp.listTools({ cursor: nextCursor });
+    const params = {
+      cursor: nextCursor,
+      ...(tenant?.tenantName ? { tenant: tenant.tenantName } : {}),
+    };
+
+    const tools = await mcp.listTools(params);
     if (tools.nextCursor) {
       setCursor(tools.nextCursor);
     } else {
@@ -91,6 +111,7 @@ export default function useMCP({
       throw new Error("No access token found");
     }
     const mcp = await createAndConnectMCPClient();
+
     const response = await mcp.callTool({
       name,
       arguments: args,

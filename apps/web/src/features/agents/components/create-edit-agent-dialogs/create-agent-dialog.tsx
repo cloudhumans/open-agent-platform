@@ -37,7 +37,6 @@ function CreateAgentFormContent(props: {
   const form = useForm<{
     name: string;
     description: string;
-    isPublic: boolean;
     config: Record<string, any>;
   }>({
     defaultValues: async () => {
@@ -45,7 +44,6 @@ function CreateAgentFormContent(props: {
       return {
         name: "",
         description: "",
-        isPublic: false,
         config: values.config,
       };
     },
@@ -66,10 +64,9 @@ function CreateAgentFormContent(props: {
   const handleSubmit = async (data: {
     name: string;
     description: string;
-    isPublic: boolean;
     config: Record<string, any>;
   }) => {
-    const { name, description, config, isPublic } = data;
+    const { name, description, config } = data;
     if (!name || !description) {
       toast.warning("Name and description are required", {
         richColors: true,
@@ -84,7 +81,6 @@ function CreateAgentFormContent(props: {
       {
         name,
         description,
-        isPublic,
         config,
       },
     );

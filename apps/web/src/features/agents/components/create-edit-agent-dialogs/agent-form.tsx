@@ -5,7 +5,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Search } from "@/components/ui/tool-search";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import {
   ConfigField,
   ConfigFieldAgents,
@@ -59,7 +58,6 @@ export function AgentFieldsForm({
   const form = useFormContext<{
     name: string;
     description: string;
-    isPublic: boolean;
     config: Record<string, any>;
   }>();
 
@@ -101,35 +99,6 @@ export function AgentFieldsForm({
             id="oap_description"
             {...form.register("description")}
             placeholder="A description that will be used by the supervisor agent to decide when to use this agent"
-          />
-        </div>
-        <div className="flex w-full items-center justify-between gap-2">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="oap_public">Public Agent</Label>
-            <p className="text-xs text-muted-foreground">
-              If enabled, this agent will be visible to all users in the system.
-              When disabled, only users on the same tenant as the creator will
-              see it.
-            </p>
-            {user?.metadata?.["custom:tenant_id"] && (
-              <p className="text-xs text-muted-foreground">
-                Your Tenant:{" "}
-                <span className="font-mono font-medium text-foreground">
-                  {user.metadata["custom:tenant_id"]}
-                </span>
-              </p>
-            )}
-          </div>
-          <Controller
-            control={form.control}
-            name="isPublic"
-            render={({ field: { value, onChange } }) => (
-              <Switch
-                id="oap_public"
-                checked={value}
-                onCheckedChange={onChange}
-              />
-            )}
           />
         </div>
       </div>

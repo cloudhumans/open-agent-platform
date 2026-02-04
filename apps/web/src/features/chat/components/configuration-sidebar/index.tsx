@@ -204,7 +204,6 @@ export const ConfigurationSidebar = forwardRef<
         name: newName,
         description: newDescription,
         config: configsByAgentId[agentId],
-        isPublic: false,
       });
       if (!newAgent) {
         toast.error("Failed to create agent", { richColors: true });

@@ -103,19 +103,13 @@ async function getAgents(
         const isPublic = assistant.metadata?.public;
         const agentTenantId = assistant.metadata?.tenant;
 
-        // 1. Agent is explicitly public
-        if (isPublic) {
-          assistantMap.set(assistant.assistant_id, assistant);
-          return;
-        }
-
-        // 2. Agent belongs to the user's tenant
+        // 1. Agent belongs to the user's tenant
         if (agentTenantId && agentTenantId === tenantId) {
           assistantMap.set(assistant.assistant_id, assistant);
           return;
         }
 
-        // 3. Legacy: Agent has NO public flag AND NO tenant (effectively public legacy)
+        // 2. Legacy: Agent has NO public flag AND NO tenant (effectively public legacy)
         if (!isPublic && !agentTenantId) {
           assistantMap.set(assistant.assistant_id, assistant);
           return;

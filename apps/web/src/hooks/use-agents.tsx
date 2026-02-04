@@ -81,7 +81,6 @@ export function useAgents() {
       args: {
         name: string;
         description: string;
-        isPublic: boolean;
         config: Record<string, any>;
       },
     ): Promise<Assistant | undefined> => {
@@ -101,7 +100,7 @@ export function useAgents() {
           metadata: {
             description: args.description,
             ...(tenantId && { tenant: tenantId }),
-            public: args.isPublic,
+            public: false,
           },
           name: args.name,
           config: {
@@ -127,7 +126,6 @@ export function useAgents() {
       args: {
         name?: string;
         description?: string;
-        isPublic?: boolean;
         config?: Record<string, any>;
       },
     ): Promise<Assistant | undefined> => {
@@ -142,7 +140,7 @@ export function useAgents() {
         const agent = await client.assistants.update(agentId, {
           metadata: {
             ...(args.description && { description: args.description }),
-            ...(args.isPublic !== undefined && { public: args.isPublic }),
+            public: false,
           },
           ...(args.name && { name: args.name }),
           ...(args.config && { config: { configurable: args.config } }),

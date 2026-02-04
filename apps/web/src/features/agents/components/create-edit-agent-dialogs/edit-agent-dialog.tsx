@@ -47,14 +47,12 @@ function EditAgentDialogContent({
   const form = useForm<{
     name: string;
     description: string;
-    isPublic: boolean;
     config: Record<string, any>;
   }>({
     defaultValues: async () => {
       const values = await getSchemaAndUpdateConfig(agent);
       return {
         ...values,
-        isPublic: (agent.metadata?.public as boolean) ?? false,
       };
     },
   });
@@ -62,7 +60,6 @@ function EditAgentDialogContent({
   const handleSubmit = async (data: {
     name: string;
     description: string;
-    isPublic: boolean;
     config: Record<string, any>;
   }) => {
     if (!data.name || !data.description) {
@@ -75,7 +72,6 @@ function EditAgentDialogContent({
       agent.deploymentId,
       {
         ...data,
-        isPublic: data.isPublic,
       },
     );
 

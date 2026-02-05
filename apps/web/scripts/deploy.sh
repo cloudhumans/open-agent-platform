@@ -17,7 +17,7 @@ docker build -f apps/web/Dockerfile -t open-agent-platform:${IMAGE_TAG} \
   --build-arg NEXT_PUBLIC_BASE_API_URL="https://oap.us-east-1.prd.cloudhumans.io/api" \
   --build-arg NEXT_PUBLIC_USE_LANGSMITH_AUTH="true" \
   --build-arg NEXT_PUBLIC_GOOGLE_AUTH_DISABLED="true" \
-  --build-arg NEXT_PUBLIC_MCP_SERVER_URL="https://mcp.cloudhumans.com/cloudhumans" \
+  --build-arg NEXT_PUBLIC_MCP_SERVER_URL="https://mcp.cloudhumans.com/typebot" \
   --build-arg NEXT_PUBLIC_MCP_AUTH_REQUIRED="true" \
   .
 

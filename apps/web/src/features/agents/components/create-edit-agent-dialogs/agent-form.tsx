@@ -13,7 +13,7 @@ import {
 } from "@/features/chat/components/configuration-sidebar/config-field";
 import { useSearchTools } from "@/hooks/use-search-tools";
 import { useMCPContext } from "@/providers/MCP";
-import { useAuthContext } from "@/providers/Auth";
+
 import {
   ConfigurableFieldAgentsMetadata,
   ConfigurableFieldMCPMetadata,
@@ -62,7 +62,7 @@ export function AgentFieldsForm({
   }>();
 
   const { tools, setTools, getTools, cursor, loading } = useMCPContext();
-  const { user } = useAuthContext();
+
   const { toolSearchTerm, debouncedSetSearchTerm, displayTools } =
     useSearchTools(tools, {
       preSelectedTools: toolConfigurations[0]?.default?.tools,

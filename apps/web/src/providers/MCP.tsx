@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import useMCP from "../hooks/use-mcp";
 import { useAuthContext } from "./Auth";
+import { useTenantContext } from "@/providers/Tenant";
 
 type MCPContextType = ReturnType<typeof useMCP> & { loading: boolean };
 
@@ -15,24 +16,33 @@ const MCPContext = createContext<MCPContextType | null>(null);
 
 export const MCPProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const { session } = useAuthContext();
+  const { selectedTenant } = useTenantContext();
   const mcpState = useMCP({
     name: "Tools Interface",
     version: "1.0.0",
+    tenant: selectedTenant,
   });
-  const firstRequestMade = useRef(false);
   const [loading, setLoading] = useState(false);
+  const requestIdRef = useRef(0);
+
+  const tenantKey = selectedTenant?.key ?? "";
 
   useEffect(() => {
     if (!session?.accessToken) return;
-    if (mcpState.tools.length || firstRequestMade.current) return;
-
-    firstRequestMade.current = true;
+    const requestId = ++requestIdRef.current;
     setLoading(true);
+    mcpState.setTools([]);
     mcpState
       .getTools()
-      .then((tools) => mcpState.setTools(tools))
-      .finally(() => setLoading(false));
-  }, [session?.accessToken]);
+      .then((tools) => {
+        if (requestId !== requestIdRef.current) return;
+        mcpState.setTools(tools);
+      })
+      .finally(() => {
+        if (requestId !== requestIdRef.current) return;
+        setLoading(false);
+      });
+  }, [session?.accessToken, tenantKey]);
 
   return (
     <MCPContext.Provider value={{ ...mcpState, loading }}>

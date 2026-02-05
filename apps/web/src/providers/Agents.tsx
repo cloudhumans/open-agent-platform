@@ -6,7 +6,6 @@ import React, {
   ReactNode,
   useState,
   useEffect,
-  useRef,
 } from "react";
 import { getDeployments } from "@/lib/environment/deployments";
 import { Agent } from "@/types/agent";
@@ -23,6 +22,8 @@ import { useAuthContext } from "./Auth";
 import { toast } from "sonner";
 import { Assistant } from "@langchain/langgraph-sdk";
 import { User } from "@/lib/auth/types";
+import { useTenantContext } from "@/providers/Tenant";
+import { Tenant } from "@/types/tenant";
 
 async function getOrCreateDefaultAssistants(
   deployment: Deployment,
@@ -69,6 +70,7 @@ async function getAgents(
   deployments: Deployment[],
   accessToken: string,
   user: User,
+  selectedTenant: Tenant | null,
   getAgentConfigSchema: (
     agentId: string,
     deploymentId: string,
@@ -77,7 +79,8 @@ async function getAgents(
   const agentsPromise: Promise<Agent[]>[] = deployments.map(
     async (deployment) => {
       const client = createClient(deployment.id, accessToken);
-      const tenantId = user.metadata?.["custom:tenant_id"];
+      const tenantId = selectedTenant?.id ?? user.metadata?.["custom:tenant_id"];
+      const tenantName = selectedTenant?.tenantName;
 
       const queryPromises = [
         getOrCreateDefaultAssistants(deployment, accessToken),
@@ -101,21 +104,19 @@ async function getAgents(
       allAssistantsResponse.forEach((assistant) => {
         const isPublic = assistant.metadata?.public;
         const agentTenantId = assistant.metadata?.tenant;
+        const agentConfigTenant = assistant.config?.configurable?.tenant;
 
-        // 1. Agent is explicitly public
-        if (isPublic) {
+        // 1. Agent belongs to the user's tenant (Legacy ID check OR Name check)
+        if (
+          (agentTenantId && agentTenantId === tenantId) ||
+          (agentConfigTenant && agentConfigTenant === tenantName)
+        ) {
           assistantMap.set(assistant.assistant_id, assistant);
           return;
         }
 
-        // 2. Agent belongs to the user's tenant
-        if (agentTenantId && agentTenantId === tenantId) {
-          assistantMap.set(assistant.assistant_id, assistant);
-          return;
-        }
-
-        // 3. Legacy: Agent has NO public flag AND NO tenant (effectively public legacy)
-        if (!isPublic && !agentTenantId) {
+        // 2. Legacy: Agent has NO public flag AND NO tenant (effectively public legacy)
+        if (!isPublic && !agentTenantId && !agentConfigTenant) {
           assistantMap.set(assistant.assistant_id, assistant);
           return;
         }
@@ -200,28 +201,21 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { session, user } = useAuthContext();
+  const { selectedTenant } = useTenantContext();
   const agentsState = useAgents();
   const deployments = getDeployments();
   const [agents, setAgents] = useState<Agent[]>([]);
-  const firstRequestMade = useRef(false);
   const [loading, setLoading] = useState(false);
   const [refreshAgentsLoading, setRefreshAgentsLoading] = useState(false);
 
   useEffect(() => {
-    if (
-      agents.length > 0 ||
-      firstRequestMade.current ||
-      !session?.accessToken ||
-      !user
-    )
-      return;
-
-    firstRequestMade.current = true;
+    if (!session?.accessToken || !user) return;
     setLoading(true);
     getAgents(
       deployments,
       session.accessToken,
       user,
+      selectedTenant,
       agentsState.getAgentConfigSchema,
     )
       // Never expose the system created default assistants to the user
@@ -229,7 +223,7 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
         setAgents(a.filter((a) => !isSystemCreatedDefaultAssistant(a))),
       )
       .finally(() => setLoading(false));
-  }, [session?.accessToken, user]);
+  }, [session?.accessToken, user, selectedTenant]);
 
   async function refreshAgents() {
     if (!session?.accessToken || !user) {
@@ -244,6 +238,7 @@ export const AgentsProvider: React.FC<{ children: ReactNode }> = ({
         deployments,
         session.accessToken,
         user,
+        selectedTenant,
         agentsState.getAgentConfigSchema,
       );
       setAgents(newAgents.filter((a) => !isSystemCreatedDefaultAssistant(a)));

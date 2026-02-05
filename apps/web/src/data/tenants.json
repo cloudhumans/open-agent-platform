@@ -1,0 +1,2788 @@
+[
+
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a0"
+        },
+        "tenantName": "contraktor",
+        "cloudchatInstances": [
+            {
+                "accountId": 24,
+                "accountName": "Contraktor",
+                "instance": "cloudchat"
+            }
+        ],
+        "connectorProjectIds": [
+            "contraktor",
+            "contraktorclm1",
+            "contraktorclm2"
+        ],
+        "claudiaProjectIds": [
+            "contraktor",
+            "contraktorclm1",
+            "contraktorclm2",
+            "contraktorvendas"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6aefe1a0"
+        },
+        "tenantName": "my-tenant",
+        "cloudchatInstances": [
+            {
+                "accountId": 24,
+                "accountName": "my-tenant",
+                "instance": "cloudchat"
+            }
+        ],
+        "connectorProjectIds": [
+            "my-tenant",
+            "my-tenantclm1",
+            "my-tenantclm2"
+        ],
+        "claudiaProjectIds": [
+            "my-tenant",
+            "my-tenantclm1",
+            "my-tenantclm2",
+            "my-tenantvendas"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a8"
+        },
+        "tenantName": "piwi",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat2",
+                "accountId": 78,
+                "accountName": "Piwi"
+            }
+        ],
+        "connectorProjectIds": [
+            "piwi"
+        ],
+        "claudiaProjectIds": [
+            "piwi"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a9"
+        },
+        "tenantName": "conectafuturo",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat2",
+                "accountId": 82,
+                "accountName": "Conecta Futuro"
+            }
+        ],
+        "connectorProjectIds": [
+            "conectafuturo"
+        ],
+        "claudiaProjectIds": [
+            "conectafuturo"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b0"
+        },
+        "tenantName": "agilize",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "agilize"
+        ],
+        "claudiaProjectIds": [
+            "agilize"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b5"
+        },
+        "tenantName": "reservaink",
+        "cloudchatInstances": [
+            {
+                "accountId": 73,
+                "accountName": "Reserva INK",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "reservainkbot",
+            "reservaink_colegios"
+        ],
+        "claudiaProjectIds": [
+            "reservaink",
+            "reservaink_colegios",
+            "reservaink_colegios_email",
+            "reserva_experts"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b6"
+        },
+        "tenantName": "iclinic",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "iclinic"
+        ],
+        "claudiaProjectIds": [
+            "iclinic"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1bc"
+        },
+        "tenantName": "goomer",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "goomer"
+        ],
+        "claudiaProjectIds": [
+            "goomer"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1bd"
+        },
+        "tenantName": "draiver",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "draiverusa",
+            "draiverbrasil",
+            "draivermexico",
+            "draiverusaemail"
+        ],
+        "claudiaProjectIds": [
+            "draiverusa",
+            "draiverbrasil",
+            "draivermexico",
+            "draiverusaemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c0"
+        },
+        "tenantName": "liber",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "liber"
+        ],
+        "claudiaProjectIds": [
+            "liber"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c8"
+        },
+        "tenantName": "fretadao",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "fretadaov2",
+            "fretadao_ops"
+        ],
+        "claudiaProjectIds": [
+            "fretadaov2",
+            "fretadao_ops"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1cd"
+        },
+        "tenantName": "darwin",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "darwinteste",
+            "darwin"
+        ],
+        "claudiaProjectIds": [
+            "darwinteste",
+            "darwin"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1d1"
+        },
+        "tenantName": "treinta",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "treinta"
+        ],
+        "claudiaProjectIds": [
+            "treinta"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1d3"
+        },
+        "tenantName": "classapp",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "classapp",
+            "classappemail"
+        ],
+        "claudiaProjectIds": [
+            "classapp",
+            "classappemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1d8"
+        },
+        "tenantName": "whitebook",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "whitebook"
+        ],
+        "claudiaProjectIds": [
+            "whitebook"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1dd"
+        },
+        "tenantName": "asksuite",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "asksuite"
+        ],
+        "claudiaProjectIds": [
+            "asksuite",
+            "asksuite_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e2"
+        },
+        "tenantName": "even3",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "even3"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e5"
+        },
+        "tenantName": "doc9-whom-email",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "doc9_whom_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e9"
+        },
+        "tenantName": "faster-scrapper",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "faster_scrapper"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1eb"
+        },
+        "tenantName": "mobly",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "mobly"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe19a"
+        },
+        "tenantName": "kolek",
+        "cloudchatInstances": [
+            {
+                "accountId": 11,
+                "accountName": "Kolek",
+                "instance": "cloudchat"
+            }
+        ],
+        "connectorProjectIds": [
+            "kolek"
+        ],
+        "claudiaProjectIds": [
+            "kolek",
+            "kolekv2"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe19b"
+        },
+        "tenantName": "zoppy",
+        "cloudchatInstances": [
+            {
+                "accountId": 12,
+                "accountName": "Zoppy",
+                "instance": "cloudchat"
+            }
+        ],
+        "connectorProjectIds": [
+            "zoppy"
+        ],
+        "claudiaProjectIds": [
+            "zoppy",
+            "zoppy_prevenda",
+            "zoppy_coexistencia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe19d"
+        },
+        "tenantName": "wehandle",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat",
+                "accountId": 16,
+                "accountName": "wehandle"
+            }
+        ],
+        "connectorProjectIds": [
+            "wehandle",
+            "wehandleemail",
+            "wehandle_v2"
+        ],
+        "claudiaProjectIds": [
+            "wehandle",
+            "wehandleemail",
+            "wehandle_v2"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe19f"
+        },
+        "tenantName": "lexter",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat",
+                "accountId": 21,
+                "accountName": "Lexter"
+            }
+        ],
+        "connectorProjectIds": [
+            "lexter"
+        ],
+        "claudiaProjectIds": [
+            "lexter"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a3"
+        },
+        "tenantName": "bow-e",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat2",
+                "accountId": 10,
+                "accountName": "Bow-e"
+            }
+        ],
+        "connectorProjectIds": [
+            "bowe"
+        ],
+        "claudiaProjectIds": [
+            "bowe"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a6"
+        },
+        "tenantName": "convenia",
+        "cloudchatInstances": [
+            {
+                "accountId": 29,
+                "accountName": "Convenia",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "convenia"
+        ],
+        "claudiaProjectIds": [
+            "convenia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a7"
+        },
+        "tenantName": "w1-s1nc",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat2",
+                "accountId": 52,
+                "accountName": "W1 Technology"
+            }
+        ],
+        "connectorProjectIds": [
+            "w1_s1nc"
+        ],
+        "claudiaProjectIds": [
+            "w1_s1nc"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1ad"
+        },
+        "tenantName": "zippi",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "zippichat"
+        ],
+        "claudiaProjectIds": [
+            "zippi"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b2"
+        },
+        "tenantName": "nuvemshop",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "nuvemshop",
+            "nuvemshopemail",
+            "nuvemshopar",
+            "nuvemshoparemail"
+        ],
+        "claudiaProjectIds": [
+            "nuvemshop",
+            "nuvemshopemail",
+            "nuvemshopar",
+            "nuvemshoparemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c2"
+        },
+        "tenantName": "contasimples",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "contasimpleschat",
+            "contasimplesemail"
+        ],
+        "claudiaProjectIds": [
+            "contasimples",
+            "contasimplesemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c3"
+        },
+        "tenantName": "hotmart",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "hotmart",
+            "hotmart1",
+            "hotmart2"
+        ],
+        "claudiaProjectIds": [
+            "hotmartconsumers",
+            "hotmart"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c7"
+        },
+        "tenantName": "companyhero",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "companyhero",
+            "companyheroemail"
+        ],
+        "claudiaProjectIds": [
+            "companyhero",
+            "companyheroemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c9"
+        },
+        "tenantName": "trainingym",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "trainingym"
+        ],
+        "claudiaProjectIds": [
+            "trainingym",
+            "trainingym_n1"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1cb"
+        },
+        "tenantName": "iwannasleep",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "iwannasleep"
+        ],
+        "claudiaProjectIds": [
+            "iwannasleep"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1ce"
+        },
+        "tenantName": "adapta",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "adapta"
+        ],
+        "claudiaProjectIds": [
+            "adapta",
+            "adaptaemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1cf"
+        },
+        "tenantName": "evino",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "evino",
+            "grandcru"
+        ],
+        "claudiaProjectIds": [
+            "evinoemail",
+            "grandcru"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1d4"
+        },
+        "tenantName": "lia",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "lia",
+            "liaemail"
+        ],
+        "claudiaProjectIds": [
+            "lia",
+            "liaemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1da"
+        },
+        "tenantName": "tributi",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "ftributi",
+            "ftributicontadia2",
+            "ftributipro"
+        ],
+        "claudiaProjectIds": [
+            "tributifresh",
+            "tributicontadiafresh",
+            "tributiprofresh"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1dc"
+        },
+        "tenantName": "olaclick",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "olaclick"
+        ],
+        "claudiaProjectIds": [
+            "olaclick"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e0"
+        },
+        "tenantName": "claudia-account-m",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "claudia_account_m"
+        ],
+        "claudiaProjectIds": [
+            "claudia_account_m"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e4"
+        },
+        "tenantName": "3dgym",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "3dgym"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe198"
+        },
+        "tenantName": "cloudhumans",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat",
+                "accountId": 1,
+                "accountName": "Cloud Humans"
+            }
+        ],
+        "connectorProjectIds": [
+            "chatclaudia",
+            "internal_cloudchat"
+        ],
+        "claudiaProjectIds": [
+            "claudia",
+            "internal_cloudchat_claudia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a1"
+        },
+        "tenantName": "loft",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat",
+                "accountId": 26,
+                "accountName": "Loft"
+            }
+        ],
+        "connectorProjectIds": [
+            "loft"
+        ],
+        "claudiaProjectIds": [
+            "loft"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a2"
+        },
+        "tenantName": "h2",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat2",
+                "accountId": 2,
+                "accountName": "H2"
+            }
+        ],
+        "connectorProjectIds": [
+            "h2pokeronline"
+        ],
+        "claudiaProjectIds": [
+            "h2_pokeronline"
+        ]
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a4"
+        },
+        "tenantName": "bocarosa",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat2",
+                "accountId": 11,
+                "accountName": "Boca Rosa Company"
+            }
+        ],
+        "connectorProjectIds": [
+            "ccbocarosa",
+            "ccbocarosachat"
+        ],
+        "claudiaProjectIds": [
+            "bocarosaemail",
+            "bocarosa"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1a5"
+        },
+        "tenantName": "multipedidos",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat2",
+                "accountId": 12,
+                "accountName": "Multipedidos"
+            }
+        ],
+        "connectorProjectIds": [
+            "multipedidos"
+        ],
+        "claudiaProjectIds": [
+            "multipedidos"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1ab"
+        },
+        "tenantName": "chipax",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "chipax"
+        ],
+        "claudiaProjectIds": [
+            "chipax"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1af"
+        },
+        "tenantName": "crmbonus",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "crmbonus",
+            "crmbonusads"
+        ],
+        "claudiaProjectIds": [
+            "crmbonus",
+            "crmads",
+            "crmbonusgiftback",
+            "crmbonuspresenteia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b1"
+        },
+        "tenantName": "pier",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "pierautobot",
+            "piersmbot",
+            "pier_vendas"
+        ],
+        "claudiaProjectIds": [
+            "pierautobot",
+            "piersmbot",
+            "pier_vendas"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b3"
+        },
+        "tenantName": "vendah",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "vendahbot"
+        ],
+        "claudiaProjectIds": [
+            "vendah"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b4"
+        },
+        "tenantName": "insider",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [],
+        "eddieInstance": ""
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b7"
+        },
+        "tenantName": "alura",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "aluraemail",
+            "alurachatnovasmatriculas",
+            "alurachatretencao",
+            "alurachatjornada",
+            "alurajornadaemail",
+            "aluraretencaoemail",
+            "alurachatimersoes",
+            "aluraimersoesemail"
+        ],
+        "claudiaProjectIds": [
+            "aluraemail",
+            "alura",
+            "aluraretencao",
+            "alurajornada",
+            "alurajornadaemail",
+            "aluraretencaoemail",
+            "alurachatimersoes",
+            "aluraimersoesemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b8"
+        },
+        "tenantName": "vitau",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "vitau"
+        ],
+        "claudiaProjectIds": [
+            "vitau"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1be"
+        },
+        "tenantName": "picnic",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "picnic",
+            "picnicemail"
+        ],
+        "claudiaProjectIds": [
+            "picnic",
+            "picnicemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c5"
+        },
+        "tenantName": "praso",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "praso",
+            "prasoemail"
+        ],
+        "claudiaProjectIds": [
+            "praso",
+            "prasoemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1cc"
+        },
+        "tenantName": "serena",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "serena"
+        ],
+        "claudiaProjectIds": [
+            "serena"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1d2"
+        },
+        "tenantName": "getrak",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "getrak"
+        ],
+        "claudiaProjectIds": [
+            "getrak",
+            "getrakteste"
+        ],
+        "eddieInstance": "INSTANCE2"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e6"
+        },
+        "tenantName": "amicci",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "amicci"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e7"
+        },
+        "tenantName": "linus",
+        "cloudchatInstances": [
+            {
+                "accountId": 61,
+                "accountName": "Linus",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "linus"
+        ],
+        "claudiaProjectIds": [
+            "linus",
+            "linus_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1ea"
+        },
+        "tenantName": "westwing",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "westwing"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe199"
+        },
+        "tenantName": "dr-cash",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat",
+                "accountId": 3,
+                "accountName": "Dr.Cash"
+            }
+        ],
+        "connectorProjectIds": [
+            "drcashchat"
+        ],
+        "claudiaProjectIds": [
+            "drcash"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe19c"
+        },
+        "tenantName": "c2s",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat",
+                "accountId": 13,
+                "accountName": "c2s"
+            }
+        ],
+        "connectorProjectIds": [
+            "c2scloudchat"
+        ],
+        "claudiaProjectIds": [
+            "c2s"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe19e"
+        },
+        "tenantName": "shopee",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat",
+                "accountId": 18,
+                "accountName": "Shopee"
+            }
+        ],
+        "connectorProjectIds": [
+            "shopee"
+        ],
+        "claudiaProjectIds": [
+            "shopee"
+        ],
+        "eddieInstance": "INSTANCE2"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1aa"
+        },
+        "tenantName": "expedy",
+        "cloudchatInstances": [
+            {
+                "accountId": 88,
+                "accountName": "Expedy",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "expedy"
+        ],
+        "claudiaProjectIds": [
+            "expedy",
+            "expedy_snap"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1ae"
+        },
+        "tenantName": "arquivei",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "arquiveismb",
+            "arquiveismbemail",
+            "arquiveiqivemid",
+            "arquiveiqivemidemail"
+        ],
+        "claudiaProjectIds": [
+            "arquivei",
+            "arquiveiemail",
+            "qivemidchat",
+            "qivemidemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1b9"
+        },
+        "tenantName": "yampi",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "yampi",
+            "yampiemail"
+        ],
+        "claudiaProjectIds": [
+            "yampi",
+            "yampiemail"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1ba"
+        },
+        "tenantName": "capim",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "capim"
+        ],
+        "claudiaProjectIds": [
+            "capim"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1bb"
+        },
+        "tenantName": "agendapro",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "agendapro"
+        ],
+        "claudiaProjectIds": [
+            "agendapro"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1bf"
+        },
+        "tenantName": "minimalclub",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "minimalclub",
+            "minimalclubemail",
+            "hoomy"
+        ],
+        "claudiaProjectIds": [
+            "minimalclub",
+            "minimalclubemail",
+            "hoomy"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c1"
+        },
+        "tenantName": "printi",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "printi",
+            "printicomercial",
+            "printisuporte"
+        ],
+        "claudiaProjectIds": [
+            "printi",
+            "printicomercial",
+            "printisuporte",
+            "evento_scrapper_printi_produtos",
+            "printicomercialdemo"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c4"
+        },
+        "tenantName": "vivastays",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "vivastays"
+        ],
+        "claudiaProjectIds": [
+            "vivastays"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1c6"
+        },
+        "tenantName": "isaac",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "isaac",
+            "isaactestes"
+        ],
+        "claudiaProjectIds": [
+            "isaac",
+            "isaactestes"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1ca"
+        },
+        "tenantName": "kenlo",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "fkenlo",
+            "fkenlolocacao"
+        ],
+        "claudiaProjectIds": [
+            "kenlo",
+            "kenlolocacao",
+            "novolocacao"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1d0"
+        },
+        "tenantName": "zigfun",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "zigfunchatb2b",
+            "zigfunchat"
+        ],
+        "claudiaProjectIds": [
+            "zigfun",
+            "zigfunb2b",
+            "zigfuneventos"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1d6"
+        },
+        "tenantName": "espresso",
+        "cloudchatInstances": [
+            {
+                "accountId": 72,
+                "accountName": "Espresso",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "espresso"
+        ],
+        "claudiaProjectIds": [
+            "espresso"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1d7"
+        },
+        "tenantName": "saipos",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "saipos",
+            "saipos_outrosassuntos"
+        ],
+        "claudiaProjectIds": [
+            "saipos",
+            "saipos_outrosassuntos"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1db"
+        },
+        "tenantName": "activesoft",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "activesoft"
+        ],
+        "claudiaProjectIds": [
+            "activesoft"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1de"
+        },
+        "tenantName": "caffeinearmy",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "caffeinearmy",
+            "caffeinearmy_prime"
+        ],
+        "claudiaProjectIds": [
+            "caffeinearmy",
+            "caffeinearmy_prime",
+            "caffeinearmy_email",
+            "caffeinearmy_prime_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1df"
+        },
+        "tenantName": "solides",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "solidesemail",
+            "solides_rh_email",
+            "solidesrh",
+            "solides_base"
+        ],
+        "claudiaProjectIds": [
+            "solides",
+            "solidesemail",
+            "solides_rh",
+            "solides_rh_email",
+            "solides_financeiro",
+            "solides_financeiro_email",
+            "solides_beneficios",
+            "solides_beneficios_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e1"
+        },
+        "tenantName": "musa",
+        "cloudchatInstances": [
+            {
+                "accountId": 63,
+                "accountName": "MUSA",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "musa"
+        ],
+        "claudiaProjectIds": [
+            "musa"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e3"
+        },
+        "tenantName": "eddie-tests",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "eddie_tests"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1e8"
+        },
+        "tenantName": "menlo",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "menlo"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68cdc3fe6a2b9400c3ce5f47"
+        },
+        "tenantName": "test-insertion",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat",
+                "accountId": 999,
+                "accountName": "Test Insertion Tenant"
+            }
+        ]
+    },
+    {
+        "_id": {
+            "$oid": "68d054ccd750c4e4642e58d2"
+        },
+        "tenantName": "cdn",
+        "cloudchatInstances": [
+            {
+                "accountId": 1,
+                "accountName": "cdn",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "claudia"
+        ],
+        "claudiaProjectIds": [
+            "claudia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68d5b47ba876f0fa0dd91ae0"
+        },
+        "tenantName": "coalize",
+        "cloudchatInstances": [
+            {
+                "instance": "cloudchat3",
+                "accountId": 36,
+                "accountName": "Coalize"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": []
+    },
+    {
+        "_id": {
+            "$oid": "68db12195131a522d1e4aa5d"
+        },
+        "tenantName": "teste-fabio-tenants",
+        "cloudchatInstances": [
+            {
+                "accountId": 1,
+                "accountName": "Cloud Humans",
+                "instance": "cloudchat"
+            },
+            {
+                "accountId": 1,
+                "accountName": "Cloud Humans",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "claudia",
+            "cloudhumans",
+            "internal_cloudchat"
+        ],
+        "claudiaProjectIds": [
+            "claudia",
+            "internal_cloudchat_claudia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68dc7c6e5131a522d1e4aa5e"
+        },
+        "tenantName": "teste-vazio",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [],
+        "eddieInstance": ""
+    },
+    {
+        "_id": {
+            "$oid": "68dd1f2e5131a522d1e4aa5f"
+        },
+        "tenantName": "memed",
+        "cloudchatInstances": [
+            {
+                "accountId": 60,
+                "accountName": "Memed",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "memed",
+            "memed_medicos",
+            "memed_pacientes",
+            "memed_drogarias"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68dd6c085131a522d1e4aa60"
+        },
+        "tenantName": "companyheroemail",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "companyheroemail"
+        ],
+        "claudiaProjectIds": [
+            "companyheroemail"
+        ],
+        "eddieInstance": ""
+    },
+    {
+        "_id": {
+            "$oid": "68dec1c35131a522d1e4aa63"
+        },
+        "tenantName": "loft-ef",
+        "cloudchatInstances": [
+            {
+                "accountId": 44,
+                "accountName": "Loft EF",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "loft_ef"
+        ],
+        "claudiaProjectIds": [
+            "loft_ef"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68ded7665131a522d1e4aa64"
+        },
+        "tenantName": "denavita",
+        "cloudchatInstances": [
+            {
+                "accountId": 37,
+                "accountName": "Denavita",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "denavita"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68dff66d5131a522d1e4aa66"
+        },
+        "tenantName": "paketa",
+        "cloudchatInstances": [
+            {
+                "accountId": 54,
+                "accountName": "Paketá",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "paketa"
+        ],
+        "claudiaProjectIds": [
+            "paketa"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68e513b3bc30459cbcb66c8f"
+        },
+        "tenantName": "spotmetrics",
+        "cloudchatInstances": [
+            {
+                "accountId": 41,
+                "accountName": "Spot Metrics",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "spotmetrics_lojas"
+        ],
+        "claudiaProjectIds": [
+            "spotmetrics_lojas"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68e558733d1c59951be2957a"
+        },
+        "tenantName": "clicksign",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "clicksign"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68e7ad373d1c59951be2957c"
+        },
+        "tenantName": "driva",
+        "cloudchatInstances": [
+            {
+                "accountId": 53,
+                "accountName": "Driva",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "driva"
+        ],
+        "claudiaProjectIds": [
+            "driva"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68e7c31c3d1c59951be2957e"
+        },
+        "tenantName": "unicoskill",
+        "cloudchatInstances": [
+            {
+                "accountId": 74,
+                "accountName": "Unico Skill",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "unicoskill"
+        ],
+        "claudiaProjectIds": [
+            "unicoskill"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68e80b373d1c59951be29580"
+        },
+        "tenantName": "eatopia",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "eatopia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68e91bc33d1c59951be29581"
+        },
+        "tenantName": "recrutai",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "recrutai"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68ee9c003d1c59951be29586"
+        },
+        "tenantName": "gerando-falcoes",
+        "cloudchatInstances": [
+            {
+                "accountId": 65,
+                "accountName": "Gerando Falcões",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "gerandofalcoes_asmara",
+            "gerandofalcoes_decolagem"
+        ],
+        "claudiaProjectIds": [
+            "gerandofalcoes_asmara",
+            "gerandofalcoes_decolagem"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68eea4c73d1c59951be29587"
+        },
+        "tenantName": "junsoft",
+        "cloudchatInstances": [
+            {
+                "accountId": 64,
+                "accountName": "Junsoft",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "junsoft"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68c4900259b34a93f6efe1ac"
+        },
+        "tenantName": "zerezes",
+        "cloudchatInstances": [
+            {
+                "accountId": 67,
+                "accountName": "Zerezes",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "zerezeschat",
+            "zerezes"
+        ],
+        "claudiaProjectIds": [
+            "zerezes",
+            "zerezesv2"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68f1397e3d1c59951be2958b"
+        },
+        "tenantName": "hubees",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "hubees",
+            "hubees_netpark"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68f14ca73d1c59951be2958c"
+        },
+        "tenantName": "tecnospeed",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "tecnospeed"
+        ],
+        "claudiaProjectIds": [
+            "tecnospeed_nfse",
+            "tecnospeed_dfe_suite",
+            "tecnospeed_plugbank",
+            "tecnospeed_novos_produtos",
+            "tecnospeed_plugnotas",
+            "tecnospeed"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68f156133d1c59951be2958d"
+        },
+        "tenantName": "pacco",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "pacco"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68f2be5f3d1c59951be2958f"
+        },
+        "tenantName": "teste-novo-componente",
+        "cloudchatInstances": [
+            {
+                "accountId": 1,
+                "accountName": "Cloud Humans",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "cloudhumans",
+            "cloudhumansn2"
+        ],
+        "claudiaProjectIds": [
+            "cloudhumans",
+            "claudia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68f935b5d79777ba04698d9a"
+        },
+        "tenantName": "dealerspace",
+        "cloudchatInstances": [
+            {
+                "accountId": 52,
+                "accountName": "Dealerspace",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "dealerspace"
+        ],
+        "claudiaProjectIds": [
+            "dealerspace"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68f93b09d79777ba04698d9b"
+        },
+        "tenantName": "solides-rh",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "solides_rh",
+            "solides_rh_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68fa3023d79777ba04698d9d"
+        },
+        "tenantName": "loadtest-cloudhumans",
+        "cloudchatInstances": [
+            {
+                "accountId": 1,
+                "accountName": "CloudHumans Load Test",
+                "instance": "cloudchat4"
+            }
+        ],
+        "connectorProjectIds": [
+            "cloudhumans_loadtest"
+        ],
+        "claudiaProjectIds": [
+            "cloudhumans_loadtest"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68fa3b58d79777ba04698d9e"
+        },
+        "tenantName": "loft-cgi",
+        "cloudchatInstances": [
+            {
+                "accountId": 45,
+                "accountName": "Loft CGI",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "loft_cgi"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "68ffda82d79777ba04698da1"
+        },
+        "tenantName": "sunne",
+        "cloudchatInstances": [
+            {
+                "accountId": 74,
+                "accountName": "Sunne",
+                "instance": "cloudchat3"
+            },
+            {
+                "accountId": 80,
+                "accountName": "Sunne - Alugsol ",
+                "instance": "cloudchat3"
+            },
+            {
+                "accountId": 78,
+                "accountName": "Sunne - Coesa ",
+                "instance": "cloudchat3"
+            },
+            {
+                "accountId": 79,
+                "accountName": "Sunne - Juntos",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "sunne",
+            "sunne_email",
+            "sunne_alugsol",
+            "sunne_alugsol_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "690361e648f4d09e764a6740"
+        },
+        "tenantName": "hoomy",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "hoomy"
+        ],
+        "claudiaProjectIds": [
+            "hoomy"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69039bde48f4d09e764a6744"
+        },
+        "tenantName": "maismu",
+        "cloudchatInstances": [
+            {
+                "accountId": 75,
+                "accountName": "Mais Mu",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "maismu",
+            "maismu_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69089c3348f4d09e764a6746"
+        },
+        "tenantName": "anthor",
+        "cloudchatInstances": [
+            {
+                "accountId": 57,
+                "accountName": "Anthor",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "anthor",
+            "anthor_estabelecimentos"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "690a1f4c83347838416b93b6"
+        },
+        "tenantName": "infleet",
+        "cloudchatInstances": [
+            {
+                "accountId": 87,
+                "accountName": "infleet",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "infleet"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "690ca00283347838416b93bb"
+        },
+        "tenantName": "cargo-sapiens",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "cargo_sapiens"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "690cfc1083347838416b93bc"
+        },
+        "tenantName": "tecnospeed-dfe-suite",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "tecnospeed_dfe_suite",
+            "tecnospeed",
+            "tecnospeed_plugnotas"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "690cfc8783347838416b93bd"
+        },
+        "tenantName": "tecnospeed-nfse",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "tecnospeed_nfse",
+            "tecnospeed"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "690cfcf583347838416b93be"
+        },
+        "tenantName": "tecnospeed-novos-produtos",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "tecnospeed_novos_produtos",
+            "tecnospeed"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "690cfd3d83347838416b93bf"
+        },
+        "tenantName": "tecnospeed-plugbank",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "tecnospeed_plugbank",
+            "tecnospeed"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "690deb4d83347838416b93c0"
+        },
+        "tenantName": "tecnospeed-plugnotas",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "tecnospeed_plugnotas",
+            "tecnospeed"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6911ed3483347838416b93c5"
+        },
+        "tenantName": "doc9",
+        "cloudchatInstances": [
+            {
+                "accountId": 43,
+                "accountName": "doc9",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "doc9_whom_email"
+        ],
+        "claudiaProjectIds": [
+            "doc9_whom_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6911fed983347838416b93c6"
+        },
+        "tenantName": "guday",
+        "cloudchatInstances": [
+            {
+                "accountId": 59,
+                "accountName": "Guday",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "guday"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "691228da98439bd1bb40dee6"
+        },
+        "tenantName": "zapsign",
+        "cloudchatInstances": [
+            {
+                "accountId": 90,
+                "accountName": "ZapSign",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "zapsign"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69132dc898439bd1bb40dee9"
+        },
+        "tenantName": "caveo",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "caveo"
+        ],
+        "claudiaProjectIds": [
+            "caveo"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69175a5b98439bd1bb40def9"
+        },
+        "tenantName": "oya-care",
+        "cloudchatInstances": [
+            {
+                "accountId": 70,
+                "accountName": "Oya Care",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "oya_care"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "691b90302f48cf7f724ac5a4"
+        },
+        "tenantName": "8cx",
+        "cloudchatInstances": [
+            {
+                "accountId": 72,
+                "accountName": " Greenn",
+                "instance": "cloudchat2"
+            },
+            {
+                "accountId": 56,
+                "accountName": " Viva Stays",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [
+            "piersmbot"
+        ],
+        "claudiaProjectIds": [
+            "zerezes",
+            "cloudhumans"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6924b46d2f48cf7f724ac5ad"
+        },
+        "tenantName": "pipeimob",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "pipeimob",
+            "pipeimob_crm"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "692711942f48cf7f724ac5af"
+        },
+        "tenantName": "spotmetrics_lojas",
+        "cloudchatInstances": [
+            {
+                "accountId": 41,
+                "accountName": "Spot Metrics",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "spotmetrics_lojas"
+        ],
+        "claudiaProjectIds": [
+            "spotmetrics_lojas"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69288f812f48cf7f724ac5b1"
+        },
+        "tenantName": "activesoft-classapp",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "activesoft",
+            "classapp",
+            "classappemail"
+        ],
+        "claudiaProjectIds": [
+            "classapp",
+            "classappemail",
+            "activesoft"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "692996422f48cf7f724ac5b3"
+        },
+        "tenantName": "click-planos",
+        "cloudchatInstances": [
+            {
+                "accountId": 63,
+                "accountName": "Click Planos",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [
+            "click_planos"
+        ],
+        "claudiaProjectIds": [
+            "click_planos",
+            "click_planos_vendas"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6929fd092f48cf7f724ac5bb"
+        },
+        "tenantName": "bowe-teste",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "boweteste"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6932fb1c2f48cf7f724ac5c7"
+        },
+        "tenantName": "arvore",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "arvore"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6936bb482f48cf7f724ac5c9"
+        },
+        "tenantName": "xp-educacao",
+        "cloudchatInstances": [
+            {
+                "accountId": 11,
+                "accountName": "XP Educação",
+                "instance": "cloudchat5"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "xp_educacao"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6936bf732f48cf7f724ac5ca"
+        },
+        "tenantName": "azosa",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "azos"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6936bf972f48cf7f724ac5cb"
+        },
+        "tenantName": "azos",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "azos"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6938143e2f48cf7f724ac5cf"
+        },
+        "tenantName": "ploomes",
+        "cloudchatInstances": [
+            {
+                "accountId": 67,
+                "accountName": "Ploomes",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "ploomes"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "693817632f48cf7f724ac5d0"
+        },
+        "tenantName": "pipa-studios",
+        "cloudchatInstances": [
+            {
+                "accountId": 6,
+                "accountName": "Pipa Studios",
+                "instance": "cloudchat5"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "pipa_studios"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6939a6ac2f48cf7f724ac5d5"
+        },
+        "tenantName": "darwinteste",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "darwinteste"
+        ],
+        "claudiaProjectIds": [
+            "darwinteste"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6939c3c22f48cf7f724ac5d7"
+        },
+        "tenantName": "grao-direto",
+        "cloudchatInstances": [
+            {
+                "accountId": 35,
+                "accountName": "Grão Direto",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [],
+        "eddieInstance": ""
+    },
+    {
+        "_id": {
+            "$oid": "6939ca312f48cf7f724ac5d8"
+        },
+        "tenantName": "solides-financeiro",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "solides_financeiro",
+            "solides_financeiro_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6939e7c72f48cf7f724ac5d9"
+        },
+        "tenantName": "caju",
+        "cloudchatInstances": [
+            {
+                "accountId": 95,
+                "accountName": "Caju",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "caju"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "693c8ac92f48cf7f724ac5de"
+        },
+        "tenantName": "kentricos",
+        "cloudchatInstances": [
+            {
+                "accountId": 18,
+                "accountName": "Kentricos",
+                "instance": "cloudchat5"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "kentricos"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69415d0c6d91aedb69b0b983"
+        },
+        "tenantName": "paytime",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "paytime"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69416c3c6d91aedb69b0b984"
+        },
+        "tenantName": "auvo",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "auvo"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6941b5eb6d91aedb69b0b985"
+        },
+        "tenantName": "gogood",
+        "cloudchatInstances": [
+            {
+                "accountId": 9,
+                "accountName": "GoGood",
+                "instance": "cloudchat5"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "gogood",
+            "gogood_rh",
+            "gogood_academia",
+            "gogood_fitsesi"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6942c0726d91aedb69b0b987"
+        },
+        "tenantName": "insider-base",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "insider",
+            "insiderchat"
+        ],
+        "claudiaProjectIds": [
+            "insider"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6942c0e26d91aedb69b0b988"
+        },
+        "tenantName": "insider-admin",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [
+            "insider",
+            "insiderchat",
+            "insiderep",
+            "insider_personalshopper"
+        ],
+        "claudiaProjectIds": [
+            "insider",
+            "insider_personalshopper",
+            "insiderep"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69445f0b46195039864008bd"
+        },
+        "tenantName": "appblis",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "appblis"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69452d6c46195039864008bf"
+        },
+        "tenantName": "clinicadracarol",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "clinicadracarol"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "694e90a046195039864008c6"
+        },
+        "tenantName": "cayena",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "cayena"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6952d1eb46195039864008c8"
+        },
+        "tenantName": "sunne-alugsol",
+        "cloudchatInstances": [
+            {
+                "accountId": 80,
+                "accountName": "Sunne - Alugsol ",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "sunne_alugsol",
+            "sunne_alugsol_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6954224846195039864008ca"
+        },
+        "tenantName": "gringa",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "gringa"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6957ff4b46195039864008cb"
+        },
+        "tenantName": "lucas-8cx",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "paytime",
+            "gringa",
+            "flowbiz",
+            "enliv",
+            "cayena",
+            "click_planos",
+            "zigfun",
+            "zigfunb2b",
+            "zigfuneventos",
+            "rocketseat",
+            "pacco"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "695d1b1c46195039864008cc"
+        },
+        "tenantName": "flowbiz",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "flowbiz"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "695ea75446195039864008ce"
+        },
+        "tenantName": "floraenergia",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "floraenergia"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "695fa4c846195039864008d0"
+        },
+        "tenantName": "guapeco",
+        "cloudchatInstances": [
+            {
+                "accountId": 93,
+                "accountName": "Guapeco",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "guapeco"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6964fd3446195039864008d3"
+        },
+        "tenantName": "grana-capital",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "grana_capital"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6965041446195039864008d4"
+        },
+        "tenantName": "stays-net",
+        "cloudchatInstances": [
+            {
+                "accountId": 9,
+                "accountName": "Stay",
+                "instance": "cloudchat2"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "staysnet"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69668c1902cc6083732b49c4"
+        },
+        "tenantName": "reserva-experts",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [],
+        "eddieInstance": ""
+    },
+    {
+        "_id": {
+            "$oid": "696690e802cc6083732b49c6"
+        },
+        "tenantName": "reserva-colegios",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "reservaink_colegios",
+            "reservaink_colegios_email"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "696e4f747a0eb411938de001"
+        },
+        "tenantName": "rocketseat",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "rocketseat"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6970dbd17a0eb411938de003"
+        },
+        "tenantName": "d4sign",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "d4sign"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69721be2050bb166eb774aad"
+        },
+        "tenantName": "enliv",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "enliv"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "69725ae2050bb166eb774ab0"
+        },
+        "tenantName": "digioffice",
+        "cloudchatInstances": [
+            {
+                "accountId": 31,
+                "accountName": "Digioffice",
+                "instance": "cloudchat5"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "digioffice"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "697271bc050bb166eb774ab2"
+        },
+        "tenantName": "hube-energy",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "hube_energy"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "6973cd3a050bb166eb774ab8"
+        },
+        "tenantName": "clubedeautores",
+        "cloudchatInstances": [
+            {
+                "accountId": 61,
+                "accountName": "Clube de Autores",
+                "instance": "cloudchat3"
+            }
+        ],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "clubedeautores"
+        ],
+        "eddieInstance": "INSTANCE1"
+    },
+    {
+        "_id": {
+            "$oid": "697b4897a69a4e1fcc3dc24e"
+        },
+        "tenantName": "remessaonline",
+        "cloudchatInstances": [],
+        "connectorProjectIds": [],
+        "claudiaProjectIds": [
+            "remessaonline"
+        ],
+        "eddieInstance": "INSTANCE1"
+    }
+]

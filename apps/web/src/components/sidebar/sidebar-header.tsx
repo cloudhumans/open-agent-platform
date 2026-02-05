@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sidebar";
 import { LangGraphLogoSVG } from "../icons/langgraph";
 import NextLink from "next/link";
+import { TenantSelector } from "@/components/tenant/tenant-selector";
 
 export function SiteHeader() {
   return (
@@ -30,6 +31,7 @@ export function SiteHeader() {
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
+      <TenantSelector className="mt-2" />
     </SidebarHeader>
   );
 }

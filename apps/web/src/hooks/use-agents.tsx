@@ -6,8 +6,10 @@ import { useAuthContext } from "@/providers/Auth";
 import { useCallback } from "react";
 import { isSystemCreatedDefaultAssistant } from "@/lib/agent-utils";
 
+
 export function useAgents() {
-  const { session, user } = useAuthContext();
+  const { session } = useAuthContext();
+
 
   const getAgent = useCallback(
     async (
@@ -79,7 +81,6 @@ export function useAgents() {
       args: {
         name: string;
         description: string;
-        isPublic: boolean;
         config: Record<string, any>;
       },
     ): Promise<Assistant | undefined> => {
@@ -90,16 +91,13 @@ export function useAgents() {
         return;
       }
 
-      const tenantId = user?.metadata?.["custom:tenant_id"];
-
       try {
         const client = createClient(deploymentId, session.accessToken);
         const agent = await client.assistants.create({
           graphId,
           metadata: {
             description: args.description,
-            ...(tenantId && { tenant: tenantId }),
-            public: args.isPublic,
+            public: false,
           },
           name: args.name,
           config: {
@@ -115,7 +113,7 @@ export function useAgents() {
         return undefined;
       }
     },
-    [session?.accessToken, user?.metadata],
+    [session?.accessToken],
   );
 
   const updateAgent = useCallback(
@@ -125,7 +123,6 @@ export function useAgents() {
       args: {
         name?: string;
         description?: string;
-        isPublic?: boolean;
         config?: Record<string, any>;
       },
     ): Promise<Assistant | undefined> => {
@@ -140,7 +137,7 @@ export function useAgents() {
         const agent = await client.assistants.update(agentId, {
           metadata: {
             ...(args.description && { description: args.description }),
-            ...(args.isPublic !== undefined && { public: args.isPublic }),
+            public: false,
           },
           ...(args.name && { name: args.name }),
           ...(args.config && { config: { configurable: args.config } }),

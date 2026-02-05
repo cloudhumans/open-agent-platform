@@ -21,6 +21,14 @@ export default function Layout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {process.env.NODE_ENV !== "production" && (
+          <script
+            crossOrigin="anonymous"
+            src="//unpkg.com/react-scan/dist/auto.global.js"
+          />
+        )}
+      </head>
       <body className={inter.className}>
         <main>{children}</main>
       </body>

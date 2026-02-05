@@ -13,6 +13,7 @@ import { Bot, LoaderCircle, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAgentsContext } from "@/providers/Agents";
+import { useTenantContext } from "@/providers/Tenant";
 import { AgentFieldsForm, AgentFieldsFormLoading } from "./agent-form";
 import { Deployment } from "@/types/deployment";
 import { Agent } from "@/types/agent";
@@ -37,7 +38,6 @@ function CreateAgentFormContent(props: {
   const form = useForm<{
     name: string;
     description: string;
-    isPublic: boolean;
     config: Record<string, any>;
   }>({
     defaultValues: async () => {
@@ -45,7 +45,6 @@ function CreateAgentFormContent(props: {
       return {
         name: "",
         description: "",
-        isPublic: false,
         config: values.config,
       };
     },
@@ -61,15 +60,15 @@ function CreateAgentFormContent(props: {
     ragConfigurations,
     agentsConfigurations,
   } = useAgentConfig();
+  const { selectedTenant } = useTenantContext();
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (data: {
     name: string;
     description: string;
-    isPublic: boolean;
     config: Record<string, any>;
   }) => {
-    const { name, description, config, isPublic } = data;
+    const { name, description, config } = data;
     if (!name || !description) {
       toast.warning("Name and description are required", {
         richColors: true,
@@ -84,8 +83,10 @@ function CreateAgentFormContent(props: {
       {
         name,
         description,
-        isPublic,
-        config,
+        config: {
+          ...config,
+          tenant: selectedTenant?.tenantName,
+        },
       },
     );
     setSubmitting(false);

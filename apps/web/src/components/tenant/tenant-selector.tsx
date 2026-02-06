@@ -16,16 +16,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useTenantContext } from "@/providers/Tenant";
+import { useAuthContext } from "@/providers/Auth";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 export function TenantSelector({ className }: { className?: string }) {
-  const {
-    tenants,
-    selectedTenantKey,
-    setSelectedTenantKey,
-    selectedTenant,
-  } = useTenantContext();
+  const { isAuthenticated } = useAuthContext();
+  const { tenants, selectedTenantKey, setSelectedTenantKey, selectedTenant } =
+    useTenantContext();
   const [open, setOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -45,15 +43,19 @@ export function TenantSelector({ className }: { className?: string }) {
     setIsMounted(true);
   }, []);
 
+  if (!isAuthenticated) {
+    return null;
+  }
+
   if (!tenants.length) {
     return (
       <div
         className={cn(
-          "flex flex-col gap-1 px-2 pb-2 pt-1 text-xs text-muted-foreground",
+          "text-muted-foreground flex flex-col gap-1 px-2 pt-1 pb-2 text-xs",
           className,
         )}
       >
-        <span className="font-medium text-foreground">Tenant</span>
+        <span className="text-foreground font-medium">Tenant</span>
         <span className="text-xs">No tenants configured</span>
       </div>
     );
@@ -61,7 +63,7 @@ export function TenantSelector({ className }: { className?: string }) {
 
   return (
     <div className={cn("flex flex-col gap-1 px-2 pb-2", className)}>
-      <Label className="text-xs font-medium text-foreground">Tenant</Label>
+      <Label className="text-foreground text-xs font-medium">Tenant</Label>
       <Popover
         open={open}
         onOpenChange={setOpen}
@@ -83,7 +85,7 @@ export function TenantSelector({ className }: { className?: string }) {
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="w-[240px] p-0"
+          className="w-60 p-0"
         >
           <Command>
             <CommandInput placeholder="Search tenants..." />
@@ -109,7 +111,7 @@ export function TenantSelector({ className }: { className?: string }) {
                   <div className="flex flex-col">
                     <span>{tenant.tenantName}</span>
                     {tenant.cloudchatInstances?.[0]?.accountName && (
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-muted-foreground text-xs">
                         {tenant.cloudchatInstances[0].accountName}
                       </span>
                     )}

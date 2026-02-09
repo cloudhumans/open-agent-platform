@@ -4,6 +4,7 @@ import React, { createContext, useContext, useMemo, useEffect } from "react";
 import { Tenant } from "@/types/tenant";
 import { loadTenantsFromEnv } from "@/lib/tenants";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useAuthContext } from "./Auth";
 
 type TenantContextValue = {
   tenants: Tenant[];
@@ -16,7 +17,22 @@ type TenantContextValue = {
 const TenantContext = createContext<TenantContextValue | undefined>(undefined);
 
 export function TenantProvider({ children }: { children: React.ReactNode }) {
-  const tenants = useMemo(() => loadTenantsFromEnv(), []);
+  const { user } = useAuthContext();
+  const allTenants = useMemo(() => loadTenantsFromEnv(), []);
+
+  const tenants = useMemo(() => {
+    if (!user) return [];
+
+    if (user.metadata?.["custom:hub_role"] === "ADMIN") {
+      return allTenants;
+    }
+
+    const userTenantId = user.metadata?.["custom:tenant_id"];
+    if (!userTenantId) return [];
+
+    return allTenants.filter((tenant) => tenant.tenantName === userTenantId);
+  }, [user, allTenants]);
+
   const [selectedTenantKey, setSelectedTenantKey] = useLocalStorage<string>(
     "oap-selected-tenant-key",
     tenants[0]?.key ?? "",

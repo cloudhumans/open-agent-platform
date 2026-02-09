@@ -9,6 +9,8 @@ import {
   MessageSquare,
   User,
   Wrench,
+  Copy,
+  CopyCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +28,58 @@ import {
 } from "@/components/ui/tooltip";
 import { isUserCreatedDefaultAssistant } from "@/lib/agent-utils";
 import { cn } from "@/lib/utils";
+import { TooltipIconButton } from "@/components/ui/tooltip-icon-button";
+import { AnimatePresence, motion } from "framer-motion";
+
+function CopyAssistantId({ assistantId }: { assistantId: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(assistantId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <TooltipIconButton
+        onClick={handleCopy}
+        variant="ghost"
+        tooltip="Copy Assistant ID"
+        className="flex w-fit max-w-fit flex-grow-0 cursor-pointer items-center gap-1 rounded-md border-[1px] border-gray-200 p-1 hover:bg-gray-50/90 h-6"
+      >
+        <p className="font-mono text-[10px] text-muted-foreground">
+          Assistant ID
+        </p>
+        <AnimatePresence mode="wait" initial={false}>
+          {copied ? (
+            <motion.div
+              key="check"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.15 }}
+            >
+              <CopyCheck className="h-3 max-h-3 w-3 max-w-3 text-green-500" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="copy"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Copy className="h-3 max-h-3 w-3 max-w-3 text-gray-500" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </TooltipIconButton>
+    </div>
+  );
+}
 
 function SupportedConfigBadge({
   type,
@@ -99,23 +153,39 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
     <>
       <Card
         key={agent.assistant_id}
-        className={cn("overflow-hidden relative bg-slate-50 dark:bg-black flex flex-col h-full min-h-[220px]", isTemplate && "border-slate-300 border-dashed")}
-        style={isTemplate ? {
-          backgroundImage: `url(${templateType === "supervisor" ? "/images/claudia-bg-light.png" : "/images/tools-bg-light.png"})`,
-          backgroundSize: "cover",
-          backgroundPosition: "right center",
-        } : undefined}
+        className={cn(
+          "overflow-hidden relative bg-slate-50 dark:bg-black flex flex-col h-full min-h-[220px]",
+          isTemplate && "border-slate-300 border-dashed",
+        )}
+        style={
+          isTemplate
+            ? {
+                backgroundImage: `url(${templateType === "supervisor" ? "/images/claudia-bg-light.png" : "/images/tools-bg-light.png"})`,
+                backgroundSize: "cover",
+                backgroundPosition: "right center",
+              }
+            : undefined
+        }
       >
         <CardHeader className="space-y-2 pb-2 relative z-10">
           <div className="flex items-start justify-between">
             <CardTitle className="flex w-full flex-wrap items-center gap-2">
               <p className={cn(isTemplate && "font-light")}>{displayName}</p>
+              {agent.supportedConfigs?.includes("supervisor") && (
+                <CopyAssistantId assistantId={agent.assistant_id} />
+              )}
               {showDeployment && selectedDeployment && (
                 <div className="flex flex-wrap items-center gap-1">
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="outline" className={cn(isTemplate && "bg-white/50 backdrop-blur-sm font-light")}>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            isTemplate &&
+                              "bg-white/50 backdrop-blur-sm font-light",
+                          )}
+                        >
                           <Cloud />
                           {selectedDeployment.name}
                         </Badge>
@@ -127,7 +197,13 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
 
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="outline" className={cn(isTemplate && "bg-white/50 backdrop-blur-sm font-light")}>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            isTemplate &&
+                              "bg-white/50 backdrop-blur-sm font-light",
+                          )}
+                        >
                           <Bot />
                           {agent.graph_id}
                         </Badge>
@@ -142,9 +218,13 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
             </CardTitle>
           </div>
           <div className="flex flex-col items-start justify-start gap-2 mt-2">
-            {displayDescription &&
-            typeof displayDescription === "string" ? (
-              <p className={cn("text-muted-foreground text-sm", isTemplate && "font-light")}>
+            {displayDescription && typeof displayDescription === "string" ? (
+              <p
+                className={cn(
+                  "text-muted-foreground text-sm",
+                  isTemplate && "font-light",
+                )}
+              >
                 {displayDescription}
               </p>
             ) : null}

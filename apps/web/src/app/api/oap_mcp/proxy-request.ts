@@ -177,6 +177,7 @@ export async function proxyRequest(req: NextRequest): Promise<Response> {
     body = req.body;
   }
 
+  try {
     // Make the proxied request
     const response = await fetch(targetUrl, {
       method: req.method,

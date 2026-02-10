@@ -177,34 +177,20 @@ export async function proxyRequest(req: NextRequest): Promise<Response> {
     body = req.body;
   }
 
-  try {
     // Make the proxied request
     const response = await fetch(targetUrl, {
       method: req.method,
       headers,
       body,
+      signal: req.signal, // Propagate the abort signal from the incoming request
     });
-    // Clone the response to create a new one we can modify
-    const responseClone = response.clone();
 
     // Create a new response with the same status, headers, and body
-    let newResponse: NextResponse;
-
-    try {
-      // Try to parse as JSON first
-      const responseData = await responseClone.json();
-      newResponse = NextResponse.json(responseData, {
-        status: response.status,
-        statusText: response.statusText,
-      });
-    } catch (_) {
-      // If not JSON, use the raw response body
-      const responseBody = await response.text();
-      newResponse = new NextResponse(responseBody, {
-        status: response.status,
-        statusText: response.statusText,
-      });
-    }
+    // We pass the body directly to support streaming (SSE, etc.)
+    const newResponse = new NextResponse(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+    });
 
     // Copy all headers from the original response
     response.headers.forEach((value, key) => {
@@ -229,6 +215,12 @@ export async function proxyRequest(req: NextRequest): Promise<Response> {
 
     return newResponse;
   } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      // Internal Note: This usually happens when the client disconnects.
+      // We don't want to log this as an error to avoid noise.
+      return new Response(null, { status: 499 }); // Client Closed Request
+    }
+
     console.error("MCP Proxy Error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";

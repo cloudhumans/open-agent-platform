@@ -81,13 +81,13 @@ export default function ToolsInterface(): React.ReactNode {
           />
           <Button
             variant="outline"
-            className="whitespace-nowrap border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+            className="border-orange-500 whitespace-nowrap text-orange-600 hover:bg-orange-50 hover:text-orange-700"
             disabled={!selectedTenant?.tenantName}
             onClick={() => {
               if (!selectedTenant?.tenantName) return;
               const typebotBaseUrl =
                 process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL ||
-                "http://eddie2.us-east-1.prd.cloudhumans.io";
+                "http://eddie.us-east-1.prd.cloudhumans.io";
               const url = `${typebotBaseUrl}/pt-BR/typebots/create?type=ai_workflow&tenant_name=${encodeURIComponent(
                 selectedTenant.tenantName,
               )}`;

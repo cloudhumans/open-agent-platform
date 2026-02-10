@@ -1,9 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import { Tenant } from "@/types/tenant";
 import { loadTenantsFromEnv } from "@/lib/tenants";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useAuthContext } from "./Auth";
 
 type TenantContextValue = {
@@ -33,24 +39,65 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     return allTenants.filter((tenant) => tenant.tenantName === userTenantId);
   }, [user, allTenants]);
 
-  const [selectedTenantKey, setSelectedTenantKey] = useLocalStorage<string>(
-    "oap-selected-tenant-key",
-    tenants[0]?.key ?? "",
+  // Helper: read a storage value, handling legacy JSON-encoded strings
+  const readStorageKey = useCallback(
+    (storage: Storage, key: string): string | null => {
+      const raw = storage.getItem(key);
+      if (!raw) return null;
+      // Old useLocalStorage stored values via JSON.stringify, so a string "abc"
+      // was stored as '"abc"'. Try to parse it; if the result is a string, use it.
+      // Otherwise fall back to the raw value.
+      try {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed === "string") return parsed;
+      } catch {
+        // not JSON, use raw
+      }
+      return raw;
+    },
+    [],
   );
 
-  useEffect(() => {
-    if (!tenants.length) {
-      if (selectedTenantKey !== "") {
-        setSelectedTenantKey("");
-      }
-      return;
-    }
+  const getStoredKey = useCallback((): string | null => {
+    if (typeof window === "undefined") return null;
+    return (
+      readStorageKey(window.sessionStorage, "oap-selected-tenant-key") ??
+      readStorageKey(window.localStorage, "oap-selected-tenant-key")
+    );
+  }, [readStorageKey]);
 
-    const exists = tenants.some((tenant) => tenant.key === selectedTenantKey);
-    if (!exists) {
+  const [selectedTenantKey, setSelectedTenantKeyState] = useState<string>(
+    () => {
+      return getStoredKey() ?? "";
+    },
+  );
+
+  const setSelectedTenantKey = useCallback((key: string) => {
+    setSelectedTenantKeyState(key);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("oap-selected-tenant-key", key);
+      window.localStorage.setItem("oap-selected-tenant-key", key);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!tenants.length) return;
+
+    const currentKey = selectedTenantKey || getStoredKey();
+
+    if (currentKey) {
+      const exists = tenants.some((t) => t.key === currentKey);
+      if (exists) {
+        if (currentKey !== selectedTenantKey) {
+          setSelectedTenantKey(currentKey);
+        }
+      } else {
+        setSelectedTenantKey(tenants[0].key);
+      }
+    } else {
       setSelectedTenantKey(tenants[0].key);
     }
-  }, [tenants, selectedTenantKey, setSelectedTenantKey]);
+  }, [tenants, selectedTenantKey, setSelectedTenantKey, getStoredKey]);
 
   const selectedTenant =
     tenants.find((tenant) => tenant.key === selectedTenantKey) ?? null;

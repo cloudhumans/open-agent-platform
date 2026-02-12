@@ -4,6 +4,10 @@ export type InputSchema = {
   required?: string[];
 };
 
+export type AnnotationsSchema = {
+  workflowId?: string;
+}
+
 export interface Tool {
   /**
    * The name of the tool
@@ -17,4 +21,5 @@ export interface Tool {
    * The tool's input schema
    */
   inputSchema: InputSchema;
+  annotations?: AnnotationsSchema;
 }

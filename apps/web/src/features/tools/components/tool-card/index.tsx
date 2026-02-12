@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Tool } from "@/types/tool";
 import { ToolDetailsDialog } from "../tool-details-dialog";
-import { Eye, FlaskConical } from "lucide-react";
+import { Eye, FlaskConical, Workflow } from "lucide-react";
 import { TooltipIconButton } from "@/components/ui/tooltip-icon-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ interface ToolCardProps {
 }
 
 export function ToolCard({ tool }: ToolCardProps) {
+  const typebotBaseUrl = process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL || "http://eddie.us-east-1.prd.cloudhumans.io";
   return (
     <Card className="border border-gray-200 shadow-xs">
       <CardHeader>
@@ -39,15 +40,26 @@ export function ToolCard({ tool }: ToolCardProps) {
             <p>Playground</p>
           </Button>
         </NextLink>
-        <ToolDetailsDialog tool={tool}>
-          <TooltipIconButton
-            tooltip="View tool details"
-            variant="outline"
-            className="size-9"
-          >
-            <Eye className="size-5" />
-          </TooltipIconButton>
-        </ToolDetailsDialog>
+        <div className="flex items-center gap-2">
+          <NextLink href={`${typebotBaseUrl}/typebots/${tool.annotations?.workflowId}/edit`}>
+            <TooltipIconButton 
+              variant="outline"
+              tooltip="View workflow"
+              className="size-9"
+            >
+              <Workflow className="size-4" />
+            </TooltipIconButton>
+          </NextLink>
+          <ToolDetailsDialog tool={tool}>
+            <TooltipIconButton
+              tooltip="View tool details"
+              variant="outline"
+              className="size-9"
+            >
+              <Eye className="size-5" />
+            </TooltipIconButton>
+          </ToolDetailsDialog>
+        </div>
       </CardFooter>
     </Card>
   );

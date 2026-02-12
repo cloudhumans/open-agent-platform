@@ -13,6 +13,8 @@ import { Tool } from "@/types/tool";
 import { ReactNode } from "react";
 import { SchemaRenderer } from "./schema-renderer";
 import _ from "lodash";
+import { Workflow } from "lucide-react";
+import NextLink from "next/link";
 
 interface ToolDetailsDialogProps {
   tool: Tool;
@@ -20,6 +22,7 @@ interface ToolDetailsDialogProps {
 }
 
 export function ToolDetailsDialog({ tool, children }: ToolDetailsDialogProps) {
+  const typebotBaseUrl = process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL || "http://eddie.us-east-1.prd.cloudhumans.io";
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -39,6 +42,12 @@ export function ToolDetailsDialog({ tool, children }: ToolDetailsDialogProps) {
           <SchemaRenderer schema={tool.inputSchema} />
         </div>
         <DialogFooter>
+          <NextLink href={`${typebotBaseUrl}/typebots/${tool.annotations?.workflowId}/edit`}>
+            <Button variant="outline">
+              <Workflow className="size-4" />
+              View workflow
+            </Button>
+          </NextLink>
           <DialogClose asChild>
             <Button type="submit">Close</Button>
           </DialogClose>

@@ -44,15 +44,15 @@ interface AuthContextProps {
 let authProvider: CustomAuthProvider;
 
 if (process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID) {
-    authProvider = new CognitoAuthProvider({
-        redirectUrl:
-          typeof window !== "undefined" ? window.location.origin : undefined,
-    });
+  authProvider = new CognitoAuthProvider({
+    redirectUrl:
+      typeof window !== "undefined" ? window.location.origin : undefined,
+  });
 } else {
-    authProvider = new SupabaseAuthProvider({
-        redirectUrl:
-          typeof window !== "undefined" ? window.location.origin : undefined,
-    });
+  authProvider = new SupabaseAuthProvider({
+    redirectUrl:
+      typeof window !== "undefined" ? window.location.origin : undefined,
+  });
 }
 
 // Create auth context

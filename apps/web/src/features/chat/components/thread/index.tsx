@@ -37,9 +37,7 @@ import { useConfigStore } from "../../hooks/use-config-store";
 import { useAuthContext } from "@/providers/Auth";
 import { AgentsCombobox } from "@/components/ui/agents-combobox";
 import { useAgentsContext } from "@/providers/Agents";
-import {
-  requiresApiKeysButNotSet,
-} from "@/lib/agent-utils";
+import { requiresApiKeysButNotSet } from "@/lib/agent-utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { ContentBlocksPreview } from "./messages/ContentBlocksPreview";
@@ -300,9 +298,9 @@ export function Thread() {
             newHumanMessage,
           ],
         }),
+        context: getAgentConfig(agentId),
         config: {
           configurable: {
-            ...getAgentConfig(agentId),
             apiKeys,
           },
         },
@@ -330,9 +328,9 @@ export function Thread() {
     stream.submit(undefined, {
       checkpoint: parentCheckpoint,
       streamMode: ["values"],
+      context: getAgentConfig(agentId),
       config: {
         configurable: {
-          ...getAgentConfig(agentId),
           apiKeys,
         },
       },

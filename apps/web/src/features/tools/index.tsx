@@ -87,7 +87,7 @@ export default function ToolsInterface(): React.ReactNode {
               if (!selectedTenant?.tenantName) return;
               const typebotBaseUrl =
                 process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL ||
-                "http://eddie.us-east-1.prd.cloudhumans.io";
+                "http://localhost:3002";
               const url = `${typebotBaseUrl}/pt-BR/typebots/create?type=ai_workflow&tenant_name=${encodeURIComponent(
                 selectedTenant.tenantName,
               )}`;

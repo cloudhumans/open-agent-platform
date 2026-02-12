@@ -47,9 +47,7 @@ export function loadTenantsFromEnv(): Tenant[] {
     return normalizedFromJson;
   }
 
-  const rawEnv = TENANTS_ENV_KEYS.map((key) => process.env[key]).find(
-    Boolean,
-  );
+  const rawEnv = TENANTS_ENV_KEYS.map((key) => process.env[key]).find(Boolean);
 
   if (!rawEnv) {
     return [];

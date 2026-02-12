@@ -188,19 +188,23 @@ export function extractConfigurationsFromAgent({
   const ragConfig = configSchemaToRagConfig(schema);
   const agentsConfig = configSchemaToAgentsConfig(schema);
 
+  // Prefer assistant context (new path), fall back to configurable (legacy path)
+  const agentContext = (agent.context ?? {}) as Record<string, any>;
+  const configurable =
+    agent.config?.configurable ?? ({} as Record<string, any>);
+
   const configFieldsWithDefaults = configFields.map((f) => {
-    const defaultConfig = agent.config?.configurable?.[f.label] ?? f.default;
+    const defaultConfig =
+      agentContext[f.label] ?? configurable[f.label] ?? f.default;
     return {
       ...f,
       default: defaultConfig,
     };
   });
 
-  const configurable =
-    agent.config?.configurable ?? ({} as Record<string, any>);
-
   const configToolsWithDefaults = toolConfig.map((f) => {
-    const defaultConfig = (configurable[f.label] ??
+    const defaultConfig = (agentContext[f.label] ??
+      configurable[f.label] ??
       f.default) as ConfigurableFieldMCPMetadata["default"];
     return {
       ...f,
@@ -213,32 +217,32 @@ export function extractConfigurationsFromAgent({
     };
   });
 
+  const ragSource =
+    agentContext[ragConfig?.label ?? ""] ??
+    configurable[ragConfig?.label ?? ""];
   const configRagWithDefaults = ragConfig
     ? {
         ...ragConfig,
         default: {
           collections:
-            (
-              configurable[
-                ragConfig.label
-              ] as ConfigurableFieldRAGMetadata["default"]
-            )?.collections ??
+            (ragSource as ConfigurableFieldRAGMetadata["default"])
+              ?.collections ??
             ragConfig.default?.collections ??
             [],
-          rag_url:
-            configurable[ragConfig.label]?.rag_url ??
-            process.env.NEXT_PUBLIC_RAG_API_URL,
+          rag_url: ragSource?.rag_url ?? process.env.NEXT_PUBLIC_RAG_API_URL,
         },
       }
     : undefined;
 
+  const agentsSource =
+    agentContext[agentsConfig?.label ?? ""] ??
+    configurable[agentsConfig?.label ?? ""];
   const configurableAgentsWithDefaults = agentsConfig
     ? {
         ...agentsConfig,
         default:
-          Array.isArray(configurable[agentsConfig.label]) &&
-          (configurable[agentsConfig.label] as any[]).length > 0
-            ? (configurable[agentsConfig.label] as {
+          Array.isArray(agentsSource) && (agentsSource as any[]).length > 0
+            ? (agentsSource as {
                 agent_id?: string;
                 deployment_url?: string;
                 name?: string;

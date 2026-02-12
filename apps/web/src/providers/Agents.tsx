@@ -79,7 +79,8 @@ async function getAgents(
   const agentsPromise: Promise<Agent[]>[] = deployments.map(
     async (deployment) => {
       const client = createClient(deployment.id, accessToken);
-      const tenantId = selectedTenant?.id ?? user.metadata?.["custom:tenant_id"];
+      const tenantId =
+        selectedTenant?.id ?? user.metadata?.["custom:tenant_id"];
       const tenantName = selectedTenant?.tenantName;
 
       const queryPromises = [
@@ -104,11 +105,15 @@ async function getAgents(
       allAssistantsResponse.forEach((assistant) => {
         const isPublic = assistant.metadata?.public;
         const agentTenantId = assistant.metadata?.tenant;
+        const agentContextTenant = (
+          assistant.context as Record<string, unknown>
+        )?.tenant;
         const agentConfigTenant = assistant.config?.configurable?.tenant;
 
-        // 1. Agent belongs to the user's tenant (Legacy ID check OR Name check)
+        // 1. Agent belongs to the user's tenant (context, legacy configurable, or metadata)
         if (
           (agentTenantId && agentTenantId === tenantId) ||
+          (agentContextTenant && agentContextTenant === tenantName) ||
           (agentConfigTenant && agentConfigTenant === tenantName)
         ) {
           assistantMap.set(assistant.assistant_id, assistant);
@@ -116,7 +121,12 @@ async function getAgents(
         }
 
         // 2. Legacy: Agent has NO public flag AND NO tenant (effectively public legacy)
-        if (!isPublic && !agentTenantId && !agentConfigTenant) {
+        if (
+          !isPublic &&
+          !agentTenantId &&
+          !agentContextTenant &&
+          !agentConfigTenant
+        ) {
           assistantMap.set(assistant.assistant_id, assistant);
           return;
         }

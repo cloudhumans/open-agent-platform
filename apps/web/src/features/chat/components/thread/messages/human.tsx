@@ -77,9 +77,7 @@ export function HumanMessage({
             messages: [...(values.messages.slice(0, -1) ?? []), newMessage],
           };
         },
-        config: {
-          configurable: getAgentConfig(agentId),
-        },
+        context: getAgentConfig(agentId),
         metadata: {
           supabaseAccessToken: session?.accessToken,
         },

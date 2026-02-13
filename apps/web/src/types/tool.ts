@@ -2,10 +2,7 @@ export type InputSchema = {
   type: "object";
   properties?: Record<string, any>;
   required?: string[];
-};
-
-export type AnnotationsSchema = {
-  workflowId?: string;
+  [key: string]: unknown;
 };
 
 export interface Tool {
@@ -21,7 +18,6 @@ export interface Tool {
    * The tool's input schema
    */
   inputSchema: InputSchema;
-  annotations?: AnnotationsSchema;
   _meta?: {
     workflowId?: string;
     [key: string]: unknown;

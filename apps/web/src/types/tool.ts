@@ -6,6 +6,13 @@ export type InputSchema = {
 
 export type AnnotationsSchema = {
   workflowId?: string;
+  priority?: number;
+  audience?: string[];
+  title?: string;
+  readOnlyHint?: boolean;
+  destructiveHint?: boolean;
+  idempotentHint?: boolean;
+  openWorldHint?: boolean;
 }
 
 export interface Tool {

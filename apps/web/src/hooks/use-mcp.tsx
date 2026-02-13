@@ -1,5 +1,5 @@
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { CustomMCPClient as Client } from "@/lib/mcp-client-custom";
 import { Tool } from "@/types/tool";
 import { useState } from "react";
 import { useAuthContext } from "@/providers/Auth";

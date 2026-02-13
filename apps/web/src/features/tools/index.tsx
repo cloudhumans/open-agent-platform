@@ -107,12 +107,14 @@ export default function ToolsInterface(): React.ReactNode {
           Array.from({ length: 6 }).map((_, index) => (
             <ToolCardLoading key={`tool-card-loading-${index}`} />
           ))}
-        {filteredTools.map((tool, index) => (
-          <ToolCard
-            key={`${tool.name}-${index}`}
-            tool={tool}
-          />
-        ))}
+        {filteredTools.map((tool, index) => {
+          return (
+            <ToolCard
+              key={`${tool.name}-${index}`}
+              tool={tool}
+            />
+          );
+        })}
         {filteredTools.length === 0 && toolSearchTerm && (
           <p className="my-4 w-full text-center text-sm text-slate-500">
             No tools found matching "{toolSearchTerm}".

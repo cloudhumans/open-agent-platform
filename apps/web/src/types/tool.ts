@@ -6,7 +6,7 @@ export type InputSchema = {
 
 export type AnnotationsSchema = {
   workflowId?: string;
-}
+};
 
 export interface Tool {
   /**
@@ -22,4 +22,8 @@ export interface Tool {
    */
   inputSchema: InputSchema;
   annotations?: AnnotationsSchema;
+  _meta?: {
+    workflowId?: string;
+    [key: string]: unknown;
+  };
 }

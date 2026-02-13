@@ -22,7 +22,9 @@ interface ToolDetailsDialogProps {
 }
 
 export function ToolDetailsDialog({ tool, children }: ToolDetailsDialogProps) {
-  const typebotBaseUrl = process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL || "http://eddie.us-east-1.prd.cloudhumans.io";
+  const typebotBaseUrl =
+    process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL ||
+    "http://eddie.us-east-1.prd.cloudhumans.io";
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -42,7 +44,11 @@ export function ToolDetailsDialog({ tool, children }: ToolDetailsDialogProps) {
           <SchemaRenderer schema={tool.inputSchema} />
         </div>
         <DialogFooter>
-          <NextLink href={`${typebotBaseUrl}/typebots/${tool.annotations?.workflowId}/edit`}>
+          <NextLink
+            href={`${typebotBaseUrl}/typebots/${tool._meta?.workflowId}/edit`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Button variant="outline">
               <Workflow className="size-4" />
               View workflow

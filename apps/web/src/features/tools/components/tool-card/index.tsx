@@ -21,7 +21,9 @@ interface ToolCardProps {
 }
 
 export function ToolCard({ tool }: ToolCardProps) {
-  const typebotBaseUrl = process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL || "http://eddie.us-east-1.prd.cloudhumans.io";
+  const typebotBaseUrl =
+    process.env.NEXT_PUBLIC_TYPEBOT_BASE_URL ||
+    "http://eddie.us-east-1.prd.cloudhumans.io";
   return (
     <Card className="border border-gray-200 shadow-xs">
       <CardHeader>
@@ -41,8 +43,12 @@ export function ToolCard({ tool }: ToolCardProps) {
           </Button>
         </NextLink>
         <div className="flex items-center gap-2">
-          <NextLink href={`${typebotBaseUrl}/typebots/${tool.annotations?.workflowId}/edit`}>
-            <TooltipIconButton 
+          <NextLink
+            href={`${typebotBaseUrl}/typebots/${tool._meta?.workflowId}/edit`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <TooltipIconButton
               variant="outline"
               tooltip="View workflow"
               className="size-9"

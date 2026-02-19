@@ -530,8 +530,10 @@ export function ConfigFieldAgents({
   label,
   agentId,
   className,
-  value: externalValue, // Rename to avoid conflict
-  setValue: externalSetValue, // Rename to avoid conflict
+  value: externalValue,
+  setValue: externalSetValue,
+  selectedProject,
+  availableTags,
 }: Pick<
   ConfigFieldProps,
   | "id"
@@ -541,15 +543,27 @@ export function ConfigFieldAgents({
   | "className"
   | "value"
   | "setValue"
->) {
+> & {
+  selectedProject?: string;
+  availableTags?: string[];
+}) {
   const store = useConfigStore();
   const actualAgentId = `${agentId}:agents`;
 
   const { agents, loading } = useAgentsContext();
   const deployments = getDeployments();
 
-  // Do not allow adding itself as a sub-agent
-  const filteredAgents = agents.filter((a) => a.assistant_id !== agentId);
+  // Do not allow adding itself as a sub-agent.
+  // If a project is selected, only show agents from that project.
+  const filteredAgents = agents.filter((a) => {
+    if (a.assistant_id === agentId) return false;
+    if (selectedProject) {
+      const agentProjectName =
+        (a.config?.configurable as Record<string, any>)?.project_name ?? undefined;
+      return agentProjectName === selectedProject;
+    }
+    return true;
+  });
 
   const isExternallyManaged = externalSetValue !== undefined;
 
@@ -583,12 +597,16 @@ export function ConfigFieldAgents({
         toast.error("Deployment not found");
       }
 
+      // Preserve project_name and tag from existing defaults or resolve from agent metadata
+      const existing = defaults?.find((d) => d.agent_id === agent_id);
       return {
         agent_id,
         deployment_url,
         name: agents.find((a) => a.assistant_id === agent_id)?.name,
         description: agents.find((a) => a.assistant_id === agent_id)?.metadata
           ?.description as string | undefined,
+        project_name: existing?.project_name ?? selectedProject,
+        tag: existing?.tag,
       };
     });
 
@@ -597,6 +615,17 @@ export function ConfigFieldAgents({
       return;
     }
 
+    store.updateConfig(actualAgentId, label, newDefaults);
+  };
+
+  const handleTagChange = (agentId: string, tag: string) => {
+    const newDefaults = (defaults ?? []).map((d) =>
+      d.agent_id === agentId ? { ...d, tag: tag || undefined } : d,
+    );
+    if (isExternallyManaged) {
+      externalSetValue(newDefaults);
+      return;
+    }
     store.updateConfig(actualAgentId, label, newDefaults);
   };
 
@@ -615,6 +644,35 @@ export function ConfigFieldAgents({
         multiple
         className="w-full"
       />
+
+      {/* Tag selector per agent */}
+      {defaults.filter((a) => a.agent_id).length > 0 && availableTags && availableTags.length > 0 && (
+        <div className="mt-2 space-y-1">
+          {defaults.filter((a) => a.agent_id).map((agent) => (
+            <div key={agent.agent_id} className="flex items-center gap-2">
+              <span className="flex-1 truncate text-xs text-muted-foreground" title={agent.name}>
+                {agent.name}
+              </span>
+              <Select
+                value={agent.tag ?? ""}
+                onValueChange={(tag) => handleTagChange(agent.agent_id!, tag)}
+              >
+                <SelectTrigger className="h-7 w-40 text-xs">
+                  <SelectValue placeholder="No tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No tag</SelectItem>
+                  {availableTags.map((t) => (
+                    <SelectItem key={t} value={t} className="text-xs">
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ))}
+        </div>
+      )}
 
       <p className="text-xs text-gray-500">
         The agents to make available to this supervisor.

@@ -13,6 +13,15 @@ import {
 } from "@/features/chat/components/configuration-sidebar/config-field";
 import { useSearchTools } from "@/hooks/use-search-tools";
 import { useMCPContext } from "@/providers/MCP";
+import { useAuthContext } from "@/providers/Auth";
+import { useClaudiaTags } from "@/hooks/use-claudia-tags";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import {
   ConfigurableFieldAgentsMetadata,
@@ -62,6 +71,18 @@ export function AgentFieldsForm({
   }>();
 
   const { tools, setTools, getTools, cursor, loading } = useMCPContext();
+  const { user } = useAuthContext();
+
+  // Parse comma-separated claudia projects from Cognito token
+  const claudiaProjects: string[] = (
+    (user?.metadata?.["custom:claudia_projects"] as string | undefined) ?? ""
+  )
+    .split(",")
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  const selectedProject: string | undefined = form.watch("config.project") ?? undefined;
+  const availableTags = useClaudiaTags(selectedProject);
 
   const { toolSearchTerm, debouncedSetSearchTerm, displayTools } =
     useSearchTools(tools, {
@@ -244,6 +265,35 @@ export function AgentFieldsForm({
               <p className="text-lg font-semibold tracking-tight">
                 Supervisor Agents
               </p>
+
+              {/* Claudia project selector */}
+              {claudiaProjects.length > 0 && (
+                <div className="flex w-full flex-col gap-1">
+                  <Label>Claudia Project</Label>
+                  <Controller
+                    control={form.control}
+                    name="config.project"
+                    render={({ field: { value, onChange } }) => (
+                      <Select value={value ?? ""} onValueChange={onChange}>
+                        <SelectTrigger id="claudia_project" className="w-full">
+                          <SelectValue placeholder="Select project..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {claudiaProjects.map((p) => (
+                            <SelectItem key={p} value={p}>
+                              {p}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Only agents belonging to this project will be available.
+                  </p>
+                </div>
+              )}
+
               <Controller
                 control={form.control}
                 name={`config.${agentsConfigurations[0].label}`}
@@ -254,6 +304,8 @@ export function AgentFieldsForm({
                     agentId={agentId}
                     value={value}
                     setValue={onChange}
+                    selectedProject={selectedProject}
+                    availableTags={availableTags}
                   />
                 )}
               />

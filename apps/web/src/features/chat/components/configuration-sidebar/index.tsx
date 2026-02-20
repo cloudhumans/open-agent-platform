@@ -137,7 +137,8 @@ export const ConfigurationSidebar = forwardRef<
     supportedConfigs,
   } = useAgentConfig();
   const { updateAgent, createAgent } = useAgents();
-
+  const claudiaConfigs = configurations.filter((c) => c.type === "claudia_project" || c.type === "claudia_tag");
+  const generalConfigs = configurations.filter((c) => c.type !== "claudia_project" && c.type !== "claudia_tag");
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [
@@ -325,33 +326,66 @@ export const ConfigurationSidebar = forwardRef<
                 value="general"
                 className="m-0 p-4"
               >
-                <ConfigSection title="Configuration">
-                  {loading || !agentId ? (
-                    <div className="space-y-4">
-                      <Skeleton className="h-8 w-full" />
-                      <Skeleton className="h-8 w-full" />
-                      <Skeleton className="h-8 w-full" />
-                    </div>
-                  ) : (
-                    configurations.map((c, index) => (
-                      <ConfigField
-                        key={`${c.label}-${index}`}
-                        id={c.label}
-                        label={c.label}
-                        type={
-                          c.type === "boolean" ? "switch" : (c.type ?? "text")
-                        }
-                        description={c.description}
-                        placeholder={c.placeholder}
-                        options={c.options}
-                        min={c.min}
-                        max={c.max}
-                        step={c.step}
-                        agentId={agentId}
-                      />
-                    ))
-                  )}
-                </ConfigSection>
+                {claudiaConfigs.length > 0 && (
+                  <ConfigSection title="Claudia Configuration" className="mb-6">
+                    {loading || !agentId ? (
+                      <div className="space-y-4">
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                      </div>
+                    ) : (
+                      claudiaConfigs.map((c, index) => (
+                        <ConfigField
+                          key={`${c.label}-${index}`}
+                          id={c.label}
+                          label={c.label}
+                          type={
+                            c.type === "boolean" ? "switch" : (c.type ?? "text")
+                          }
+                          description={c.description}
+                          placeholder={c.placeholder}
+                          options={c.options}
+                          min={c.min}
+                          max={c.max}
+                          step={c.step}
+                          agentId={agentId}
+                          dependencyValue={configsByAgentId[agentId]?.project_name ?? configsByAgentId[agentId]?.project}
+                        />
+                      ))
+                    )}
+                  </ConfigSection>
+                )}
+
+                {generalConfigs.length > 0 && (
+                  <ConfigSection title="General Configuration" className={claudiaConfigs.length > 0 ? "pt-2 border-t" : ""}>
+                    {loading || !agentId ? (
+                      <div className="space-y-4">
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                      </div>
+                    ) : (
+                      generalConfigs.map((c, index) => (
+                        <ConfigField
+                          key={`${c.label}-${index}`}
+                          id={c.label}
+                          label={c.label}
+                          type={
+                            c.type === "boolean" ? "switch" : (c.type ?? "text")
+                          }
+                          description={c.description}
+                          placeholder={c.placeholder}
+                          options={c.options}
+                          min={c.min}
+                          max={c.max}
+                          step={c.step}
+                          agentId={agentId}
+                          dependencyValue={configsByAgentId[agentId]?.project_name ?? configsByAgentId[agentId]?.project}
+                        />
+                      ))
+                    )}
+                  </ConfigSection>
+                )}
               </TabsContent>
 
               {supportedConfigs.includes("tools") && (
@@ -455,6 +489,7 @@ export const ConfigurationSidebar = forwardRef<
                         id={agentsConfigurations[0].label}
                         label={agentsConfigurations[0].label}
                         agentId={agentId}
+                        selectedProject={configsByAgentId[agentId]?.project}
                       />
                     )}
                   </ConfigSection>

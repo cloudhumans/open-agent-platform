@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,9 @@ import { AgentsCombobox } from "@/components/ui/agents-combobox";
 import { useAgentsContext } from "@/providers/Agents";
 import { getDeployments } from "@/lib/environment/deployments";
 import { toast } from "sonner";
+import { useAuthContext } from "@/providers/Auth";
+import { useClaudiaTags } from "@/hooks/use-claudia-tags";
+import { useTenantContext } from "@/providers/Tenant";
 
 interface Option {
   label: string;
@@ -58,7 +61,9 @@ interface ConfigFieldProps {
     | "switch"
     | "slider"
     | "select"
-    | "json";
+    | "json"
+    | "claudia_project"
+    | "claudia_tag";
   description?: string;
   placeholder?: string;
   options?: Option[];
@@ -70,6 +75,7 @@ interface ConfigFieldProps {
   value?: any;
   setValue?: (value: any) => void;
   agentId: string;
+  dependencyValue?: string; // e.g. project name for resolving tags
 }
 
 export function ConfigField({
@@ -86,9 +92,18 @@ export function ConfigField({
   value: externalValue, // Rename to avoid conflict
   setValue: externalSetValue, // Rename to avoid conflict
   agentId,
+  dependencyValue,
 }: ConfigFieldProps) {
   const store = useConfigStore();
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [openTag, setOpenTag] = useState(false);
+  const { user } = useAuthContext();
+  const { selectedTenant } = useTenantContext();
+  const claudiaProjects = useMemo(() => {
+    return (selectedTenant?.claudiaProjectIds ?? []).filter(Boolean);
+  }, [selectedTenant]);
+  const availableTags = useClaudiaTags(dependencyValue);
 
   // Determine whether to use external state or Zustand store
   const isExternallyManaged = externalSetValue !== undefined;
@@ -265,6 +280,116 @@ export function ConfigField({
             ))}
           </SelectContent>
         </Select>
+      )}
+
+      {type === "claudia_project" && (
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full justify-between font-normal"
+            >
+              {currentValue
+                ? claudiaProjects.find((project) => project === currentValue)
+                : (placeholder || "Select a project...")}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search project..." />
+              <CommandList>
+                <CommandEmpty>No project found.</CommandEmpty>
+                <CommandGroup>
+                  {claudiaProjects.map((project) => (
+                    <CommandItem
+                      key={project}
+                      value={project}
+                      onSelect={(val) => {
+                        handleChange(val);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          currentValue === project ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {project}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      )}
+
+      {type === "claudia_tag" && (
+        <Popover open={openTag} onOpenChange={setOpenTag}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={openTag}
+              disabled={!dependencyValue || availableTags.length === 0}
+              className="w-full justify-between font-normal"
+            >
+              {currentValue
+                ? availableTags.find((tag) => tag === currentValue)
+                : !dependencyValue
+                ? "Select a project first"
+                : (placeholder || "Select a tag...")}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search tag..." />
+              <CommandList>
+                <CommandEmpty>No tag found.</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem
+                    value="_none_"
+                    onSelect={() => {
+                      handleChange("");
+                      setOpenTag(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        !currentValue ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    No tag
+                  </CommandItem>
+                  {availableTags.map((tag) => (
+                    <CommandItem
+                      key={tag}
+                      value={tag}
+                      onSelect={(val) => {
+                        handleChange(val);
+                        setOpenTag(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          currentValue === tag ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {tag}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       )}
 
       {type === "json" && (
@@ -533,7 +658,6 @@ export function ConfigFieldAgents({
   value: externalValue,
   setValue: externalSetValue,
   selectedProject,
-  availableTags,
 }: Pick<
   ConfigFieldProps,
   | "id"
@@ -545,7 +669,6 @@ export function ConfigFieldAgents({
   | "setValue"
 > & {
   selectedProject?: string;
-  availableTags?: string[];
 }) {
   const store = useConfigStore();
   const actualAgentId = `${agentId}:agents`;
@@ -605,8 +728,14 @@ export function ConfigFieldAgents({
         name: agents.find((a) => a.assistant_id === agent_id)?.name,
         description: agents.find((a) => a.assistant_id === agent_id)?.metadata
           ?.description as string | undefined,
-        project_name: existing?.project_name ?? selectedProject,
-        tag: existing?.tag,
+        project_name:
+          existing?.project_name ??
+          (agents.find((a) => a.assistant_id === agent_id)?.config
+            ?.configurable as Record<string, any>)?.project_name,
+        tag:
+          existing?.tag ??
+          (agents.find((a) => a.assistant_id === agent_id)?.config
+            ?.configurable as Record<string, any>)?.tag,
       };
     });
 
@@ -644,35 +773,6 @@ export function ConfigFieldAgents({
         multiple
         className="w-full"
       />
-
-      {/* Tag selector per agent */}
-      {defaults.filter((a) => a.agent_id).length > 0 && availableTags && availableTags.length > 0 && (
-        <div className="mt-2 space-y-1">
-          {defaults.filter((a) => a.agent_id).map((agent) => (
-            <div key={agent.agent_id} className="flex items-center gap-2">
-              <span className="flex-1 truncate text-xs text-muted-foreground" title={agent.name}>
-                {agent.name}
-              </span>
-              <Select
-                value={agent.tag ?? ""}
-                onValueChange={(tag) => handleTagChange(agent.agent_id!, tag)}
-              >
-                <SelectTrigger className="h-7 w-40 text-xs">
-                  <SelectValue placeholder="No tag" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">No tag</SelectItem>
-                  {availableTags.map((t) => (
-                    <SelectItem key={t} value={t} className="text-xs">
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          ))}
-        </div>
-      )}
 
       <p className="text-xs text-gray-500">
         The agents to make available to this supervisor.

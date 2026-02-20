@@ -7,7 +7,9 @@ export type ConfigurableFieldUIType =
   | "boolean"
   | "slider"
   | "select"
-  | "json";
+  | "json"
+  | "claudia_project"
+  | "claudia_tag";
 
 /**
  * The type interface for options in a select field.

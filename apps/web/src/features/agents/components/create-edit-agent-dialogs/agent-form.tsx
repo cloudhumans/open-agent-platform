@@ -13,15 +13,6 @@ import {
 } from "@/features/chat/components/configuration-sidebar/config-field";
 import { useSearchTools } from "@/hooks/use-search-tools";
 import { useMCPContext } from "@/providers/MCP";
-import { useAuthContext } from "@/providers/Auth";
-import { useClaudiaTags } from "@/hooks/use-claudia-tags";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import {
   ConfigurableFieldAgentsMetadata,
@@ -71,10 +62,8 @@ export function AgentFieldsForm({
   }>();
 
   const { tools, setTools, getTools, cursor, loading } = useMCPContext();
-  const { user } = useAuthContext();
 
   const selectedProjectForTags = form.watch("config.project_name") ?? form.watch("config.project") ?? undefined;
-  const availableTags = useClaudiaTags(selectedProjectForTags);
 
   const { toolSearchTerm, debouncedSetSearchTerm, displayTools } =
     useSearchTools(tools, {

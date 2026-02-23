@@ -42,7 +42,6 @@ import { AgentsCombobox } from "@/components/ui/agents-combobox";
 import { useAgentsContext } from "@/providers/Agents";
 import { getDeployments } from "@/lib/environment/deployments";
 import { toast } from "sonner";
-import { useAuthContext } from "@/providers/Auth";
 import { useClaudiaTags } from "@/hooks/use-claudia-tags";
 import { useTenantContext } from "@/providers/Tenant";
 
@@ -98,7 +97,6 @@ export function ConfigField({
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [openTag, setOpenTag] = useState(false);
-  const { user } = useAuthContext();
   const { selectedTenant } = useTenantContext();
   const claudiaProjects = useMemo(() => {
     return (selectedTenant?.claudiaProjectIds ?? []).filter(Boolean);
@@ -747,16 +745,7 @@ export function ConfigFieldAgents({
     store.updateConfig(actualAgentId, label, newDefaults);
   };
 
-  const handleTagChange = (agentId: string, tag: string) => {
-    const newDefaults = (defaults ?? []).map((d) =>
-      d.agent_id === agentId ? { ...d, tag: tag || undefined } : d,
-    );
-    if (isExternallyManaged) {
-      externalSetValue(newDefaults);
-      return;
-    }
-    store.updateConfig(actualAgentId, label, newDefaults);
-  };
+
 
   return (
     <div className={cn("w-full space-y-2", className)}>

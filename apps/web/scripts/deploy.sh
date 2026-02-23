@@ -20,6 +20,7 @@ docker build -f apps/web/Dockerfile -t open-agent-platform:${IMAGE_TAG} \
   --build-arg NEXT_PUBLIC_MCP_SERVER_URL="https://mcp.cloudhumans.com/typebot" \
   --build-arg NEXT_PUBLIC_MCP_AUTH_REQUIRED="true" \
   --build-arg NEXT_PUBLIC_TYPEBOT_BASE_URL="http://eddie.us-east-1.prd.cloudhumans.io" \
+  --build-arg NEXT_PUBLIC_CLAUDIA_API_URL="https://claudia-api.us-east-1.prd.cloudhumans.io/api" \
   .
 
 echo "🏷️  Tagging image..."

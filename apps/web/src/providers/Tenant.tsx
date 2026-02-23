@@ -9,7 +9,7 @@ import React, {
   useCallback,
 } from "react";
 import { Tenant } from "@/types/tenant";
-import { loadTenantsFromEnv } from "@/lib/tenants";
+import { loadTenantsFromEnv, fetchTenants } from "@/lib/tenants";
 import { useAuthContext } from "./Auth";
 
 type TenantContextValue = {
@@ -18,13 +18,47 @@ type TenantContextValue = {
   selectedTenantId: string;
   selectedTenant: Tenant | null;
   setSelectedTenantKey: (tenantKey: string) => void;
+  isLoading: boolean;
 };
 
 const TenantContext = createContext<TenantContextValue | undefined>(undefined);
 
 export function TenantProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthContext();
-  const allTenants = useMemo(() => loadTenantsFromEnv(), []);
+  const { user, session } = useAuthContext();
+  const [allTenants, setAllTenants] = useState<Tenant[]>(() => loadTenantsFromEnv());
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      const apiUrl = process.env.NEXT_PUBLIC_BACKOFFICE_API_URL;
+      console.warn("TenantProvider: Effect trigger", { 
+        hasAccessToken: !!session?.accessToken,
+        accessTokenPrefix: session?.accessToken?.substring(0, 10),
+        apiUrl: apiUrl,
+        sessionStatus: session === null ? "null (logged out)" : (session === undefined ? "undefined" : "exists")
+      });
+      
+      if (session?.accessToken) {
+        setIsLoading(true);
+        try {
+          console.warn("TenantProvider: Calling fetchTenants...");
+          const fetched = await fetchTenants(session.accessToken);
+          console.warn(`TenantProvider: Received ${fetched.length} tenants from API`);
+          if (fetched.length > 0) {
+            setAllTenants(fetched);
+          }
+        } catch (error) {
+          console.error("TenantProvider: Exception during fetch", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        // Se não tem accessToken, paramos o loading
+        setIsLoading(false);
+      }
+    }
+    load();
+  }, [session]);
 
   const tenants = useMemo(() => {
     if (!user) return [];
@@ -81,7 +115,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!tenants.length) return;
+    if (isLoading || !tenants.length) return;
 
     const currentKey = selectedTenantKey || getStoredKey();
 
@@ -97,7 +131,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     } else {
       setSelectedTenantKey(tenants[0].key);
     }
-  }, [tenants, selectedTenantKey, setSelectedTenantKey, getStoredKey]);
+  }, [tenants, selectedTenantKey, setSelectedTenantKey, getStoredKey, isLoading]);
 
   const selectedTenant =
     tenants.find((tenant) => tenant.key === selectedTenantKey) ?? null;
@@ -109,6 +143,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     selectedTenantId,
     selectedTenant,
     setSelectedTenantKey,
+    isLoading,
   };
 
   return (

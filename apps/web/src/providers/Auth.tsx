@@ -97,6 +97,10 @@ export function AuthProvider({
   // Set up auth state change listener
   useEffect(() => {
     const { unsubscribe } = provider.onAuthStateChange((newSession) => {
+      console.warn("AuthProvider: Auth state changed", { 
+        hasSession: !!newSession, 
+        hasAccessToken: !!newSession?.accessToken 
+      });
       setSession(newSession);
       setUser(newSession?.user || null);
     });

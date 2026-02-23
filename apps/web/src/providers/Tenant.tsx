@@ -72,29 +72,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        const tokenResponse = await fetch("/api/backoffice/token", {
-          method: "POST",
-        });
-
-        if (!tokenResponse.ok) {
-          throw new Error(
-            `Failed to generate backoffice token: ${tokenResponse.statusText}`,
-          );
-        }
-
-        const tokenData = (await tokenResponse.json()) as {
-          access_token?: string;
-        };
-
-        if (!tokenData.access_token) {
-          throw new Error("Backoffice token response missing access_token");
-        }
-
-        const tenantsResponse = await fetch("/api/backoffice/tenants", {
-          headers: {
-            Authorization: `Bearer ${tokenData.access_token}`,
-          },
-        });
+        const tenantsResponse = await fetch("/api/backoffice/tenants");
 
         if (!tenantsResponse.ok) {
           throw new Error(

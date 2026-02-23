@@ -13,6 +13,15 @@ import {
 } from "@/features/chat/components/configuration-sidebar/config-field";
 import { useSearchTools } from "@/hooks/use-search-tools";
 import { useMCPContext } from "@/providers/MCP";
+import { useAuthContext } from "@/providers/Auth";
+import { useClaudiaTags } from "@/hooks/use-claudia-tags";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import {
   ConfigurableFieldAgentsMetadata,
@@ -62,6 +71,10 @@ export function AgentFieldsForm({
   }>();
 
   const { tools, setTools, getTools, cursor, loading } = useMCPContext();
+  const { user } = useAuthContext();
+
+  const selectedProjectForTags = form.watch("config.project_name") ?? form.watch("config.project") ?? undefined;
+  const availableTags = useClaudiaTags(selectedProjectForTags);
 
   const { toolSearchTerm, debouncedSetSearchTerm, displayTools } =
     useSearchTools(tools, {
@@ -76,6 +89,9 @@ export function AgentFieldsForm({
     toolConfigurations,
     searchTerm: toolSearchTerm,
   });
+
+  const claudiaConfigs = configurations.filter((c) => c.type === "claudia_project" || c.type === "claudia_tag");
+  const generalConfigs = configurations.filter((c) => c.type !== "claudia_project" && c.type !== "claudia_tag");
 
   return (
     <div className="flex flex-col gap-8 py-4">
@@ -104,14 +120,14 @@ export function AgentFieldsForm({
       </div>
 
       <>
-        {configurations.length > 0 && (
+        {claudiaConfigs.length > 0 && (
           <>
             <Separator />
             <div className="flex w-full flex-col items-start justify-start gap-2 space-y-2">
               <p className="text-lg font-semibold tracking-tight">
-                Agent Configuration
+                Claudia Configuration
               </p>
-              {configurations.map((c, index) => (
+              {claudiaConfigs.map((c, index) => (
                 <Controller
                   key={`${c.label}-${index}`}
                   control={form.control}
@@ -133,6 +149,45 @@ export function AgentFieldsForm({
                       value={value}
                       setValue={onChange}
                       agentId={agentId}
+                      dependencyValue={selectedProjectForTags}
+                    />
+                  )}
+                />
+              ))}
+            </div>
+          </>
+        )}
+        
+        {generalConfigs.length > 0 && (
+          <>
+            <Separator />
+            <div className="flex w-full flex-col items-start justify-start gap-2 space-y-2">
+              <p className="text-lg font-semibold tracking-tight">
+                General Configuration
+              </p>
+              {generalConfigs.map((c, index) => (
+                <Controller
+                  key={`${c.label}-${index}`}
+                  control={form.control}
+                  name={`config.${c.label}`}
+                  render={({ field: { value, onChange } }) => (
+                    <ConfigField
+                      className="w-full"
+                      id={c.label}
+                      label={c.label}
+                      type={
+                        c.type === "boolean" ? "switch" : (c.type ?? "text")
+                      }
+                      description={c.description}
+                      placeholder={c.placeholder}
+                      options={c.options}
+                      min={c.min}
+                      max={c.max}
+                      step={c.step}
+                      value={value}
+                      setValue={onChange}
+                      agentId={agentId}
+                      dependencyValue={selectedProjectForTags}
                     />
                   )}
                 />
@@ -254,6 +309,7 @@ export function AgentFieldsForm({
                     agentId={agentId}
                     value={value}
                     setValue={onChange}
+                    selectedProject={form.watch("config.project")}
                   />
                 )}
               />

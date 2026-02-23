@@ -7,7 +7,9 @@ export type ConfigurableFieldUIType =
   | "boolean"
   | "slider"
   | "select"
-  | "json";
+  | "json"
+  | "claudia_project"
+  | "claudia_tag";
 
 /**
  * The type interface for options in a select field.
@@ -97,5 +99,7 @@ export type ConfigurableFieldAgentsMetadata = {
     agent_id?: string;
     deployment_url?: string;
     name?: string;
+    project_name?: string;
+    tag?: string;
   }[];
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,9 @@ import { AgentsCombobox } from "@/components/ui/agents-combobox";
 import { useAgentsContext } from "@/providers/Agents";
 import { getDeployments } from "@/lib/environment/deployments";
 import { toast } from "sonner";
+import { useAuthContext } from "@/providers/Auth";
+import { useClaudiaTags } from "@/hooks/use-claudia-tags";
+import { useTenantContext } from "@/providers/Tenant";
 
 interface Option {
   label: string;
@@ -58,7 +61,9 @@ interface ConfigFieldProps {
     | "switch"
     | "slider"
     | "select"
-    | "json";
+    | "json"
+    | "claudia_project"
+    | "claudia_tag";
   description?: string;
   placeholder?: string;
   options?: Option[];
@@ -70,6 +75,7 @@ interface ConfigFieldProps {
   value?: any;
   setValue?: (value: any) => void;
   agentId: string;
+  dependencyValue?: string; // e.g. project name for resolving tags
 }
 
 export function ConfigField({
@@ -86,9 +92,18 @@ export function ConfigField({
   value: externalValue, // Rename to avoid conflict
   setValue: externalSetValue, // Rename to avoid conflict
   agentId,
+  dependencyValue,
 }: ConfigFieldProps) {
   const store = useConfigStore();
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [openTag, setOpenTag] = useState(false);
+  const { user } = useAuthContext();
+  const { selectedTenant } = useTenantContext();
+  const claudiaProjects = useMemo(() => {
+    return (selectedTenant?.claudiaProjectIds ?? []).filter(Boolean);
+  }, [selectedTenant]);
+  const availableTags = useClaudiaTags(dependencyValue);
 
   // Determine whether to use external state or Zustand store
   const isExternallyManaged = externalSetValue !== undefined;
@@ -265,6 +280,116 @@ export function ConfigField({
             ))}
           </SelectContent>
         </Select>
+      )}
+
+      {type === "claudia_project" && (
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full justify-between font-normal"
+            >
+              {currentValue
+                ? claudiaProjects.find((project) => project === currentValue)
+                : (placeholder || "Select a project...")}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search project..." />
+              <CommandList>
+                <CommandEmpty>No project found.</CommandEmpty>
+                <CommandGroup>
+                  {claudiaProjects.map((project) => (
+                    <CommandItem
+                      key={project}
+                      value={project}
+                      onSelect={(val) => {
+                        handleChange(val);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          currentValue === project ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {project}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+      )}
+
+      {type === "claudia_tag" && (
+        <Popover open={openTag} onOpenChange={setOpenTag}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={openTag}
+              disabled={!dependencyValue || availableTags.length === 0}
+              className="w-full justify-between font-normal"
+            >
+              {currentValue
+                ? availableTags.find((tag) => tag === currentValue)
+                : !dependencyValue
+                ? "Select a project first"
+                : (placeholder || "Select a tag...")}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search tag..." />
+              <CommandList>
+                <CommandEmpty>No tag found.</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem
+                    value="_none_"
+                    onSelect={() => {
+                      handleChange("");
+                      setOpenTag(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        !currentValue ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    No tag
+                  </CommandItem>
+                  {availableTags.map((tag) => (
+                    <CommandItem
+                      key={tag}
+                      value={tag}
+                      onSelect={(val) => {
+                        handleChange(val);
+                        setOpenTag(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          currentValue === tag ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {tag}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       )}
 
       {type === "json" && (
@@ -530,8 +655,9 @@ export function ConfigFieldAgents({
   label,
   agentId,
   className,
-  value: externalValue, // Rename to avoid conflict
-  setValue: externalSetValue, // Rename to avoid conflict
+  value: externalValue,
+  setValue: externalSetValue,
+  selectedProject,
 }: Pick<
   ConfigFieldProps,
   | "id"
@@ -541,15 +667,26 @@ export function ConfigFieldAgents({
   | "className"
   | "value"
   | "setValue"
->) {
+> & {
+  selectedProject?: string;
+}) {
   const store = useConfigStore();
   const actualAgentId = `${agentId}:agents`;
 
   const { agents, loading } = useAgentsContext();
   const deployments = getDeployments();
 
-  // Do not allow adding itself as a sub-agent
-  const filteredAgents = agents.filter((a) => a.assistant_id !== agentId);
+  // Do not allow adding itself as a sub-agent.
+  // If a project is selected, only show agents from that project.
+  const filteredAgents = agents.filter((a) => {
+    if (a.assistant_id === agentId) return false;
+    if (selectedProject) {
+      const agentProjectName =
+        (a.config?.configurable as Record<string, any>)?.project_name ?? undefined;
+      return agentProjectName === selectedProject;
+    }
+    return true;
+  });
 
   const isExternallyManaged = externalSetValue !== undefined;
 
@@ -583,12 +720,22 @@ export function ConfigFieldAgents({
         toast.error("Deployment not found");
       }
 
+      // Preserve project_name and tag from existing defaults or resolve from agent metadata
+      const existing = defaults?.find((d) => d.agent_id === agent_id);
       return {
         agent_id,
         deployment_url,
         name: agents.find((a) => a.assistant_id === agent_id)?.name,
         description: agents.find((a) => a.assistant_id === agent_id)?.metadata
           ?.description as string | undefined,
+        project_name:
+          existing?.project_name ??
+          (agents.find((a) => a.assistant_id === agent_id)?.config
+            ?.configurable as Record<string, any>)?.project_name,
+        tag:
+          existing?.tag ??
+          (agents.find((a) => a.assistant_id === agent_id)?.config
+            ?.configurable as Record<string, any>)?.tag,
       };
     });
 
@@ -597,6 +744,17 @@ export function ConfigFieldAgents({
       return;
     }
 
+    store.updateConfig(actualAgentId, label, newDefaults);
+  };
+
+  const handleTagChange = (agentId: string, tag: string) => {
+    const newDefaults = (defaults ?? []).map((d) =>
+      d.agent_id === agentId ? { ...d, tag: tag || undefined } : d,
+    );
+    if (isExternallyManaged) {
+      externalSetValue(newDefaults);
+      return;
+    }
     store.updateConfig(actualAgentId, label, newDefaults);
   };
 

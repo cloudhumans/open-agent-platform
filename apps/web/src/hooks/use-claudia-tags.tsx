@@ -23,8 +23,8 @@ export function useClaudiaTags(projectName: string | undefined): string[] {
     async function fetchTags() {
       try {
         const headers: HeadersInit = {};
-        if (session?.accessToken) {
-          headers["Authorization"] = `Bearer ${session.accessToken}`;
+        if (session?.idToken) {
+          headers["Authorization"] = `Bearer ${session.idToken}`;
         }
         const res = await fetch(
           `${apiUrl}/ids-tag/project/${encodeURIComponent(projectName!)}/names`,
@@ -40,7 +40,7 @@ export function useClaudiaTags(projectName: string | undefined): string[] {
 
     fetchTags();
     return () => controller.abort();
-  }, [projectName, session?.accessToken]);
+  }, [projectName, session?.idToken]);
 
   return tags;
 }

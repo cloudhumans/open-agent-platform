@@ -147,12 +147,13 @@ export class CognitoAuthProvider implements AuthProvider {
         onSuccess: async (result) => {
           const user = await this.formatUser(cognitoUser);
           const accessToken = result.getAccessToken().getJwtToken();
-          // idToken is available via result.getIdToken().getJwtToken() if needed
+          const idToken = result.getIdToken().getJwtToken();
           const refreshToken = result.getRefreshToken().getToken();
           
           const session: Session = {
              user,
              accessToken, // Standard access token
+             idToken,
              refreshToken,
              expiresAt: result.getAccessToken().getExpiration(),
           };
@@ -211,6 +212,7 @@ export class CognitoAuthProvider implements AuthProvider {
         resolve({
             user,
             accessToken: session.getAccessToken().getJwtToken(),
+            idToken: session.getIdToken().getJwtToken(),
             refreshToken: session.getRefreshToken().getToken(),
             expiresAt: session.getAccessToken().getExpiration()
         });

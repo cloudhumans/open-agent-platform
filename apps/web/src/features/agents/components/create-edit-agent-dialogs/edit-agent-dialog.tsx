@@ -18,6 +18,8 @@ import { useTenantContext } from "@/providers/Tenant";
 import { AgentFieldsForm, AgentFieldsFormLoading } from "./agent-form";
 import { Agent } from "@/types/agent";
 import { FormProvider, useForm } from "react-hook-form";
+import { hasStaleSupervisors } from "@/lib/agent-utils";
+import { StaleSupervisorsWarningDialog } from "./stale-supervisors-warning-dialog";
 
 interface EditAgentDialogProps {
   agent: Agent;
@@ -28,12 +30,14 @@ interface EditAgentDialogProps {
 function EditAgentDialogContent({
   agent,
   onClose,
+  onStaleSupervisors,
 }: {
   agent: Agent;
   onClose: () => void;
+  onStaleSupervisors: () => void;
 }) {
   const { updateAgent, deleteAgent } = useAgents();
-  const { refreshAgents } = useAgentsContext();
+  const { agents, refreshAgents } = useAgentsContext();
   const {
     getSchemaAndUpdateConfig,
 
@@ -89,6 +93,10 @@ function EditAgentDialogContent({
     }
 
     toast.success("Agent updated successfully!");
+
+    if (hasStaleSupervisors(agent, data, agents)) {
+      onStaleSupervisors();
+    }
 
     onClose();
     refreshAgents();
@@ -183,6 +191,7 @@ export function EditAgentDialog({
   onOpenChange,
 }: EditAgentDialogProps) {
   const [openCounter, setOpenCounter] = useState(0);
+  const [showStaleWarning, setShowStaleWarning] = useState(false);
 
   const lastOpen = useRef(open);
   useLayoutEffect(() => {
@@ -193,15 +202,22 @@ export function EditAgentDialog({
   }, [open, setOpenCounter]);
 
   return (
-    <AlertDialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
-      <EditAgentDialogContent
-        key={openCounter}
-        agent={agent}
-        onClose={() => onOpenChange(false)}
+    <>
+      <AlertDialog
+        open={open}
+        onOpenChange={onOpenChange}
+      >
+        <EditAgentDialogContent
+          key={openCounter}
+          agent={agent}
+          onClose={() => onOpenChange(false)}
+          onStaleSupervisors={() => setShowStaleWarning(true)}
+        />
+      </AlertDialog>
+      <StaleSupervisorsWarningDialog
+        open={showStaleWarning}
+        onOpenChange={setShowStaleWarning}
       />
-    </AlertDialog>
+    </>
   );
 }

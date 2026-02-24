@@ -3,6 +3,7 @@ import { getDeployments } from "./environment/deployments";
 import { Assistant } from "@langchain/langgraph-sdk";
 import { toast } from "sonner";
 import React from "react";
+import { ConfigurableFieldAgentsMetadata } from "@/types/configurable";
 
 /**
  * Determines if an agent is the user's default agent.
@@ -128,6 +129,84 @@ export function requiresApiKeysButNotSet(
 ): boolean {
   const deployment = getDeployments().find((d) => d.id === deploymentId);
   return deployment?.requiresApiKeys === true && !hasApiKeys;
+}
+
+/**
+ * Compares tracked fields (name, description, project_name, tag) between the
+ * original agent and form submission data.
+ * Returns true if any of them changed.
+ */
+export function didTrackedFieldsChange(
+  agent: Agent,
+  data: { name: string; description: string; config: Record<string, any> },
+): boolean {
+  const normalize = (v: unknown): string =>
+    v === undefined || v === null ? "" : String(v);
+
+  const configurable = (agent.config?.configurable ?? {}) as Record<
+    string,
+    unknown
+  >;
+  const newConfigurable = (data.config?.configurable ?? {}) as Record<
+    string,
+    unknown
+  >;
+
+  return (
+    normalize(agent.name) !== normalize(data.name) ||
+    normalize(agent.metadata?.description) !== normalize(data.description) ||
+    normalize(configurable.project_name) !==
+      normalize(newConfigurable.project_name) ||
+    normalize(configurable.tag) !== normalize(newConfigurable.tag)
+  );
+}
+
+/**
+ * Finds all supervisor agents that reference a given agent ID in their
+ * configurable values.
+ */
+export function findSupervisorsReferencingAgent(
+  allAgents: Agent[],
+  agentId: string,
+): Agent[] {
+  const supervisors = allAgents.filter((a) =>
+    a.supportedConfigs?.includes("supervisor"),
+  );
+
+  return supervisors.filter((sup) => {
+    const configurable = sup.config?.configurable;
+    if (!configurable || typeof configurable !== "object") return false;
+
+    return Object.values(configurable).some((value) => {
+      if (!Array.isArray(value)) return false;
+      return value.some(
+        (item: ConfigurableFieldAgentsMetadata["default"]) =>
+          item &&
+          typeof item === "object" &&
+          "agent_id" in item &&
+          (item as { agent_id: string }).agent_id === agentId,
+      );
+    });
+  });
+}
+
+/**
+ * After saving a react-agent, returns true if any supervisors reference
+ * the agent and tracked fields (name, description, project_name, tag) changed,
+ * meaning supervisor snapshots may be stale.
+ */
+export function hasStaleSupervisors(
+  agent: Agent,
+  data: { name: string; description: string; config: Record<string, any> },
+  allAgents: Agent[],
+): boolean {
+  if (!didTrackedFieldsChange(agent, data)) return false;
+
+  const affected = findSupervisorsReferencingAgent(
+    allAgents,
+    agent.assistant_id,
+  );
+  return affected.length > 0;
 }
 
 /**

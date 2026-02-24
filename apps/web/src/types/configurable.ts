@@ -99,6 +99,7 @@ export type ConfigurableFieldAgentsMetadata = {
     agent_id?: string;
     deployment_url?: string;
     name?: string;
+    description?: string;
     project_name?: string;
     tag?: string;
   }[];

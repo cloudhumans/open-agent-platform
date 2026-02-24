@@ -73,7 +73,10 @@ export function AgentFieldsForm({
   const { tools, setTools, getTools, cursor, loading } = useMCPContext();
   const { user } = useAuthContext();
 
-  const selectedProjectForTags = form.watch("config.project_name") ?? form.watch("config.project") ?? undefined;
+  const selectedProjectForTags =
+    form.watch("config.project_name") ??
+    form.watch("config.project") ??
+    undefined;
   const availableTags = useClaudiaTags(selectedProjectForTags);
 
   const { toolSearchTerm, debouncedSetSearchTerm, displayTools } =
@@ -90,8 +93,12 @@ export function AgentFieldsForm({
     searchTerm: toolSearchTerm,
   });
 
-  const claudiaConfigs = configurations.filter((c) => c.type === "claudia_project" || c.type === "claudia_tag");
-  const generalConfigs = configurations.filter((c) => c.type !== "claudia_project" && c.type !== "claudia_tag");
+  const claudiaConfigs = configurations.filter(
+    (c) => c.type === "claudia_project" || c.type === "claudia_tag",
+  );
+  const generalConfigs = configurations.filter(
+    (c) => c.type !== "claudia_project" && c.type !== "claudia_tag",
+  );
 
   return (
     <div className="flex flex-col gap-8 py-4">
@@ -157,7 +164,7 @@ export function AgentFieldsForm({
             </div>
           </>
         )}
-        
+
         {generalConfigs.length > 0 && (
           <>
             <Separator />

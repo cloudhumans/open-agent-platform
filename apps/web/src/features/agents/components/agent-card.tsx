@@ -48,12 +48,15 @@ function CopyAssistantId({ assistantId }: { assistantId: string }) {
         onClick={handleCopy}
         variant="ghost"
         tooltip="Copy Assistant ID"
-        className="flex w-fit max-w-fit flex-grow-0 cursor-pointer items-center gap-1 rounded-md border-[1px] border-gray-200 p-1 hover:bg-gray-50/90 h-6"
+        className="flex h-6 w-fit max-w-fit flex-grow-0 cursor-pointer items-center gap-1 rounded-md border-[1px] border-gray-200 p-1 hover:bg-gray-50/90"
       >
-        <p className="font-mono text-[10px] text-muted-foreground">
+        <p className="text-muted-foreground font-mono text-[10px]">
           Assistant ID
         </p>
-        <AnimatePresence mode="wait" initial={false}>
+        <AnimatePresence
+          mode="wait"
+          initial={false}
+        >
           {copied ? (
             <motion.div
               key="check"
@@ -154,8 +157,8 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
       <Card
         key={agent.assistant_id}
         className={cn(
-          "overflow-hidden relative bg-slate-50 dark:bg-black flex flex-col h-full min-h-[220px]",
-          isTemplate && "border-slate-300 border-dashed",
+          "relative flex h-full min-h-[220px] flex-col overflow-hidden bg-slate-50 dark:bg-black",
+          isTemplate && "border-dashed border-slate-300",
         )}
         style={
           isTemplate
@@ -167,7 +170,7 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
             : undefined
         }
       >
-        <CardHeader className="space-y-2 pb-2 relative z-10">
+        <CardHeader className="relative z-10 space-y-2 pb-2">
           <div className="flex items-start justify-between">
             <CardTitle className="flex w-full flex-wrap items-center gap-2">
               <p className={cn(isTemplate && "font-light")}>{displayName}</p>
@@ -183,7 +186,7 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
                           variant="outline"
                           className={cn(
                             isTemplate &&
-                              "bg-white/50 backdrop-blur-sm font-light",
+                              "bg-white/50 font-light backdrop-blur-sm",
                           )}
                         >
                           <Cloud />
@@ -201,7 +204,7 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
                           variant="outline"
                           className={cn(
                             isTemplate &&
-                              "bg-white/50 backdrop-blur-sm font-light",
+                              "bg-white/50 font-light backdrop-blur-sm",
                           )}
                         >
                           <Bot />
@@ -217,7 +220,7 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
               )}
             </CardTitle>
           </div>
-          <div className="flex flex-col items-start justify-start gap-2 mt-2">
+          <div className="mt-2 flex flex-col items-start justify-start gap-2">
             {displayDescription && typeof displayDescription === "string" ? (
               <p
                 className={cn(
@@ -238,7 +241,7 @@ export function AgentCard({ agent, showDeployment }: AgentCardProps) {
             </div>
           </div>
         </CardHeader>
-        <CardFooter className="mt-auto flex w-full justify-between pt-2 relative z-10">
+        <CardFooter className="relative z-10 mt-auto flex w-full justify-between pt-2">
           {!isDefaultAgent && (
             <Button
               variant="outline"

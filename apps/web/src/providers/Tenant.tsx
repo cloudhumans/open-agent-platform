@@ -9,11 +9,12 @@ import React, {
   useRef,
 } from "react";
 import { Tenant } from "@/types/tenant";
-import { normalizeTenant } from "@/lib/tenants";
+import { normalizeTenants } from "@/lib/tenants";
 import { useAuthContext } from "./Auth";
 
 type TenantContextValue = {
   tenants: Tenant[];
+  loading: boolean;
   selectedTenantKey: string;
   selectedTenantId: string;
   selectedTenant: Tenant | null;
@@ -46,8 +47,9 @@ function getStoredKey(): string | null {
 }
 
 export function TenantProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthContext();
+  const { user, session } = useAuthContext();
   const [allTenants, setAllTenants] = useState<Tenant[]>([]);
+  const [loading, setLoading] = useState(true);
   const cacheRef = useRef<{
     userId: string | null;
     fetchedAt: number;
@@ -57,8 +59,12 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!user) {
       setAllTenants([]);
+      setLoading(false);
       return;
     }
+
+    const abortController = new AbortController();
+    setLoading(true);
 
     const fetchTenants = async () => {
       try {
@@ -69,10 +75,19 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
           now - cacheRef.current.fetchedAt < TENANTS_CACHE_TTL_MS
         ) {
           setAllTenants(cacheRef.current.tenants);
+          setLoading(false);
           return;
         }
 
-        const tenantsResponse = await fetch("/api/backoffice/tenants");
+        const headers: HeadersInit = {};
+        if (session?.accessToken) {
+          headers["Authorization"] = `Bearer ${session.accessToken}`;
+        }
+
+        const tenantsResponse = await fetch("/api/backoffice/tenants", {
+          signal: abortController.signal,
+          headers,
+        });
 
         if (!tenantsResponse.ok) {
           throw new Error(
@@ -80,27 +95,35 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
           );
         }
 
-        const responseBody = (await tenantsResponse.json()) as unknown;
-        const rawTenants = Array.isArray(responseBody) ? responseBody : [];
+        const responseBody = await tenantsResponse.json();
 
-        const normalizedTenants = rawTenants
-          .map((raw) => normalizeTenant(raw as Tenant))
-          .filter((tenant): tenant is Tenant => !!tenant);
+        if (abortController.signal.aborted) return;
+
+        const normalizedTenants = normalizeTenants(responseBody);
 
         setAllTenants(normalizedTenants);
+        setLoading(false);
         cacheRef.current = {
           userId,
           fetchedAt: now,
           tenants: normalizedTenants,
         };
       } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
         console.error("Failed to load tenants from backoffice", error);
         setAllTenants([]);
+        setLoading(false);
       }
     };
 
     fetchTenants();
-  }, [user]);
+
+    return () => {
+      abortController.abort();
+    };
+  }, [user, session]);
 
   const tenants = useMemo(() => {
     if (!user) return [];
@@ -152,6 +175,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     tenants,
+    loading,
     selectedTenantKey,
     selectedTenantId,
     selectedTenant,

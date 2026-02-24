@@ -1,7 +1,15 @@
 import { NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { verifyCognitoToken } from "@/lib/auth/cognito-server";
 
 const HOUR_MS = 60 * 60 * 1000;
 const TOKEN_CACHE_TTL_MS = 20 * HOUR_MS;
+
+/**
+ * Allowed cookie-name characters (subset of RFC 6265 §4.1.1 token).
+ * Permits alphanumerics, underscores, hyphens, and dots.
+ */
+const COOKIE_NAME_RE = /^[\w.-]+$/;
 
 const BACKOFFICE_API_URL =
   process.env.BACKOFFICE_API_URL ?? "http://localhost:8001";
@@ -28,7 +36,48 @@ function getTargetUrl(req: NextRequest) {
   return targetUrlObj.toString();
 }
 
-async function getBackofficeToken(req: NextRequest): Promise<string | null> {
+/**
+ * Verify that the incoming request is authenticated.
+ * Supports both Supabase (cookie-based) and Cognito (Bearer token) auth.
+ */
+async function isAuthenticated(req: NextRequest): Promise<boolean> {
+  // Cognito auth: validate the JWT against Cognito's JWKS
+  if (process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID) {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return false;
+    }
+
+    const token = authHeader.slice(7);
+    return verifyCognitoToken(token);
+  }
+
+  // Supabase auth: verify session via cookies
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return false;
+  }
+
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      get(name: string) {
+        if (!COOKIE_NAME_RE.test(name)) return undefined;
+        return req.cookies.get(name)?.value;
+      },
+      set() {},
+      remove() {},
+    },
+  });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return !!user;
+}
+
+async function getBackofficeToken(): Promise<string | null> {
   const now = Date.now();
   if (tokenCache && now < tokenCache.expiresAt) {
     return tokenCache.accessToken;
@@ -39,19 +88,19 @@ async function getBackofficeToken(req: NextRequest): Promise<string | null> {
     return null;
   }
 
+  if (!BACKOFFICE_TOKEN_BASIC_AUTH) {
+    console.error(
+      "BACKOFFICE_TOKEN_BASIC_AUTH is not configured. " +
+        "Server-to-server token retrieval requires this env var.",
+    );
+    return null;
+  }
+
   const url = new URL(BACKOFFICE_TOKEN_URL);
 
   const headers = new Headers();
   headers.set("Content-Type", "application/x-www-form-urlencoded");
-
-  if (BACKOFFICE_TOKEN_BASIC_AUTH) {
-    headers.set("Authorization", `Basic ${BACKOFFICE_TOKEN_BASIC_AUTH}`);
-  } else {
-    const incomingAuth = req.headers.get("authorization");
-    if (incomingAuth) {
-      headers.set("Authorization", incomingAuth);
-    }
-  }
+  headers.set("Authorization", `Basic ${BACKOFFICE_TOKEN_BASIC_AUTH}`);
 
   const body = new URLSearchParams({
     grant_type: "client_credentials",
@@ -63,7 +112,6 @@ async function getBackofficeToken(req: NextRequest): Promise<string | null> {
       method: "POST",
       headers,
       body,
-      signal: req.signal,
     });
 
     if (!response.ok) {
@@ -109,8 +157,23 @@ async function getBackofficeToken(req: NextRequest): Promise<string | null> {
 
 export async function proxyRequest(req: NextRequest): Promise<Response> {
   try {
+    // Auth check: ensure the caller is authenticated
+    const authenticated = await isAuthenticated(req);
+    if (!authenticated) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "Authentication required",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
     const targetUrl = getTargetUrl(req);
-    const accessToken = await getBackofficeToken(req);
+    const accessToken = await getBackofficeToken();
     if (!accessToken) {
       return new Response(
         JSON.stringify({
@@ -133,16 +196,20 @@ export async function proxyRequest(req: NextRequest): Promise<Response> {
     headers.set("Authorization", `Bearer ${accessToken}`);
 
     let body: BodyInit | null | undefined = undefined;
-    if (req.method !== "GET" && req.method !== "HEAD") {
-      body = req.body;
-    }
 
-    const response = await fetch(targetUrl, {
+    const fetchOptions: RequestInit & { duplex?: string } = {
       method: req.method,
       headers,
-      body,
       signal: req.signal,
-    });
+    };
+
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      body = req.body;
+      fetchOptions.body = body;
+      fetchOptions.duplex = "half";
+    }
+
+    const response = await fetch(targetUrl, fetchOptions);
 
     return new Response(response.body, {
       status: response.status,

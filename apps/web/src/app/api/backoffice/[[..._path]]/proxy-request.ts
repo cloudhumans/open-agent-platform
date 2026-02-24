@@ -10,8 +10,10 @@ const OAP_BACKEND_COGNITO_APP_CLIENT_TOKEN_URL =
   process.env.OAP_BACKEND_COGNITO_APP_CLIENT_TOKEN_URL ?? "";
 const OAP_BACKEND_COGNITO_APP_CLIENT_TOKEN_SCOPE =
   process.env.OAP_BACKEND_COGNITO_APP_CLIENT_TOKEN_SCOPE ?? "";
-const OAP_BACKEND_COGNITO_APP_CLIENT_BASIC_AUTH =
-  process.env.OAP_BACKEND_COGNITO_APP_CLIENT_BASIC_AUTH ?? "";
+const OAP_BACKEND_COGNITO_APP_CLIENT_ID =
+  process.env.OAP_BACKEND_COGNITO_APP_CLIENT_ID ?? "";
+const OAP_BACKEND_COGNITO_APP_CLIENT_SECRET =
+  process.env.OAP_BACKEND_COGNITO_APP_CLIENT_SECRET ?? "";
 
 let tokenCache: {
   fetchedAt: number;
@@ -55,10 +57,10 @@ async function getBackofficeToken(): Promise<string | null> {
     return null;
   }
 
-  if (!OAP_BACKEND_COGNITO_APP_CLIENT_BASIC_AUTH) {
+  if (!OAP_BACKEND_COGNITO_APP_CLIENT_ID || !OAP_BACKEND_COGNITO_APP_CLIENT_SECRET) {
     console.error(
-      "OAP_BACKEND_COGNITO_APP_CLIENT_BASIC_AUTH is not configured. " +
-        "Server-to-server token retrieval requires this env var.",
+      "OAP_BACKEND_COGNITO_APP_CLIENT_ID or OAP_BACKEND_COGNITO_APP_CLIENT_SECRET is not configured. " +
+        "Server-to-server token retrieval requires these env vars.",
     );
     return null;
   }
@@ -67,13 +69,11 @@ async function getBackofficeToken(): Promise<string | null> {
 
   const headers = new Headers();
   headers.set("Content-Type", "application/x-www-form-urlencoded");
-  headers.set(
-    "Authorization",
-    `Basic ${OAP_BACKEND_COGNITO_APP_CLIENT_BASIC_AUTH}`,
-  );
 
   const body = new URLSearchParams({
     grant_type: "client_credentials",
+    client_id: OAP_BACKEND_COGNITO_APP_CLIENT_ID,
+    client_secret: OAP_BACKEND_COGNITO_APP_CLIENT_SECRET,
     scope: OAP_BACKEND_COGNITO_APP_CLIENT_TOKEN_SCOPE,
   }).toString();
 
@@ -159,7 +159,12 @@ export async function proxyRequest(req: NextRequest): Promise<Response> {
     const headers = new Headers();
     req.headers.forEach((value, key) => {
       const lowerKey = key.toLowerCase();
-      if (lowerKey !== "host" && lowerKey !== "authorization") {
+      if (
+        lowerKey !== "host" &&
+        lowerKey !== "authorization" &&
+        lowerKey !== "origin" &&
+        lowerKey !== "referer"
+      ) {
         headers.append(key, value);
       }
     });
@@ -180,6 +185,20 @@ export async function proxyRequest(req: NextRequest): Promise<Response> {
     }
 
     const response = await fetch(targetUrl, fetchOptions);
+
+    if (!response.ok) {
+      console.error(`Backoffice API returned ${response.status} for ${targetUrl}`);
+      return new Response(
+        JSON.stringify({
+          message: "Upstream backoffice API error",
+          statusCode: response.status,
+        }),
+        {
+          status: response.status,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
 
     return new Response(response.body, {
       status: response.status,

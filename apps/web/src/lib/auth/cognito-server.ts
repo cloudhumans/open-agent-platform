@@ -1,45 +1,34 @@
-import { createRemoteJWKSet, jwtVerify } from "jose";
+import { CognitoJwtVerifier } from "aws-jwt-verify";
 
-/**
- * Lazily-created JWKS fetcher for Cognito token validation.
- * Caches the JWKS keys internally (handled by jose).
- */
-let cognitoJWKS: ReturnType<typeof createRemoteJWKSet> | null = null;
+let verifier: ReturnType<typeof CognitoJwtVerifier.create> | null = null;
 
-function getUserPoolId(): string {
-  const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
-  if (!userPoolId) {
-    throw new Error(
-      "NEXT_PUBLIC_COGNITO_USER_POOL_ID is required for Cognito JWT validation",
-    );
+function getVerifier() {
+  if (!verifier) {
+    const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+
+    if (!userPoolId || !clientId) {
+      throw new Error(
+        "NEXT_PUBLIC_COGNITO_USER_POOL_ID and NEXT_PUBLIC_COGNITO_CLIENT_ID are required for Cognito JWT validation",
+      );
+    }
+
+    verifier = CognitoJwtVerifier.create({
+      userPoolId,
+      tokenUse: "access",
+      clientId,
+    });
   }
-  return userPoolId;
-}
-
-function getIssuer(): string {
-  const userPoolId = getUserPoolId();
-  const region = userPoolId.split("_")[0];
-  return `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`;
-}
-
-function getJWKS() {
-  if (!cognitoJWKS) {
-    const jwksUrl = new URL(`${getIssuer()}/.well-known/jwks.json`);
-    cognitoJWKS = createRemoteJWKSet(jwksUrl);
-  }
-  return cognitoJWKS;
+  return verifier;
 }
 
 /**
- * Verify a Cognito JWT (access or id token) against the JWKS endpoint.
- * Returns `true` if the token is valid, `false` otherwise.
+ * Verify a Cognito access token against the JWKS endpoint.
+ * Validates issuer, signature, expiration, token_use, and client_id.
  */
 export async function verifyCognitoToken(token: string): Promise<boolean> {
   try {
-    const JWKS = getJWKS();
-    await jwtVerify(token, JWKS, {
-      issuer: getIssuer(),
-    });
+    await getVerifier().verify(token);
     return true;
   } catch {
     return false;

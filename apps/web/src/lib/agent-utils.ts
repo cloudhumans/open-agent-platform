@@ -191,44 +191,22 @@ export function findSupervisorsReferencingAgent(
 }
 
 /**
- * After saving a react-agent, warns the user if any supervisors reference
- * the agent and tracked fields have changed (making the supervisor snapshots stale).
+ * After saving a react-agent, returns true if any supervisors reference
+ * the agent and tracked fields (name, description, project_name, tag) changed,
+ * meaning supervisor snapshots may be stale.
  */
-export function warnStaleSupervisors(
+export function hasStaleSupervisors(
   agent: Agent,
   data: { name: string; description: string; config: Record<string, any> },
   allAgents: Agent[],
-): void {
-  if (!didTrackedFieldsChange(agent, data)) return;
+): boolean {
+  if (!didTrackedFieldsChange(agent, data)) return false;
 
   const affected = findSupervisorsReferencingAgent(
     allAgents,
     agent.assistant_id,
   );
-  if (affected.length === 0) return;
-
-  const names = affected.map((a) => a.name).join(", ");
-
-  toast.warning(
-    React.createElement(
-      "div",
-      { className: "space-y-1" },
-      React.createElement(
-        "p",
-        { className: "font-medium" },
-        "Stale supervisor configuration detected",
-      ),
-      React.createElement(
-        "p",
-        null,
-        `The following supervisor(s) reference this agent and may need redeployment: ${names}`,
-      ),
-    ),
-    {
-      duration: 10000,
-      richColors: true,
-    },
-  );
+  return affected.length > 0;
 }
 
 /**

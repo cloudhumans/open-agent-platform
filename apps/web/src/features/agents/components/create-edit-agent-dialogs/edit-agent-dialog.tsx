@@ -18,6 +18,7 @@ import { useTenantContext } from "@/providers/Tenant";
 import { AgentFieldsForm, AgentFieldsFormLoading } from "./agent-form";
 import { Agent } from "@/types/agent";
 import { FormProvider, useForm } from "react-hook-form";
+import { warnStaleSupervisors } from "@/lib/agent-utils";
 
 interface EditAgentDialogProps {
   agent: Agent;
@@ -33,7 +34,7 @@ function EditAgentDialogContent({
   onClose: () => void;
 }) {
   const { updateAgent, deleteAgent } = useAgents();
-  const { refreshAgents } = useAgentsContext();
+  const { agents, refreshAgents } = useAgentsContext();
   const {
     getSchemaAndUpdateConfig,
 
@@ -89,6 +90,7 @@ function EditAgentDialogContent({
     }
 
     toast.success("Agent updated successfully!");
+    warnStaleSupervisors(agent, data, agents);
 
     onClose();
     refreshAgents();

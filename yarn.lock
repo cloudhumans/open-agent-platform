@@ -1617,6 +1617,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mongodb-js/saslprep@npm:^1.3.0":
+  version: 1.4.6
+  resolution: "@mongodb-js/saslprep@npm:1.4.6"
+  dependencies:
+    sparse-bitfield: ^3.0.3
+  checksum: a062ccaa3238317425b16e2ff0d38dbf204c9198b165ca91e3efd9f564e26291de225733bd63e5e6d96b5933706df5aed528b10c2cd046a700174a18f0bbafec
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^0.2.11":
   version: 0.2.12
   resolution: "@napi-rs/wasm-runtime@npm:0.2.12"
@@ -1829,6 +1838,7 @@ __metadata:
     langgraph-nextjs-api-passthrough: ^0.1.0
     lodash: ^4.17.21
     lucide-react: ^0.488.0
+    mongoose: ^9.2.2
     next: 15
     next-themes: ^0.4.6
     nuqs: ^2.4.1
@@ -4261,6 +4271,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/webidl-conversions@npm:*":
+  version: 7.0.3
+  resolution: "@types/webidl-conversions@npm:7.0.3"
+  checksum: 535ead9de4d3d6c8e4f4fa14e9db780d2a31e8020debc062f337e1420a41c3265e223e4f4b628f97a11ecf3b96390962cd88a9ffe34f44e159dec583ff49aa34
+  languageName: node
+  linkType: hard
+
+"@types/whatwg-url@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@types/whatwg-url@npm:13.0.0"
+  dependencies:
+    "@types/webidl-conversions": "*"
+  checksum: 82018c7dc057dd4b5ee6137e54a659d2d043146eaade8afc2dda472773cc66f2abad73525020a2bf399a09b1bf448504f9e519d6b2d7495e6e781bb5de686753
+  languageName: node
+  linkType: hard
+
 "@types/ws@npm:^8.18.1":
   version: 8.18.1
   resolution: "@types/ws@npm:8.18.1"
@@ -5351,6 +5377,13 @@ __metadata:
   bin:
     browserslist: cli.js
   checksum: 895357d912ae5a88a3fa454d2d280e9869e13432df30ca8918e206c0783b3b59375b178fdaf16d0041a1cf21ac45c8eb0a20f96f73dbd9662abf4cf613177a1e
+  languageName: node
+  linkType: hard
+
+"bson@npm:^7.0.0":
+  version: 7.2.0
+  resolution: "bson@npm:7.2.0"
+  checksum: a595141c6fb80771d7a5042d05bb73fc875b0448f6be360c88dd8468dad0d75d3511156020f6f22ca2bc7f9a2edc117aa1834b38c816eaea3abd0820238ff0ba
   languageName: node
   linkType: hard
 
@@ -9211,6 +9244,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kareem@npm:3.2.0":
+  version: 3.2.0
+  resolution: "kareem@npm:3.2.0"
+  checksum: db6e61c83600f051cc8a3478a2e50f2c7c281b20c4f4a1ab7deef157e38a8d36eec4e2fee128b82dfc225e991af50b57d5658014a97f8229d8131d8e9ad31e49
+  languageName: node
+  linkType: hard
+
 "katex@npm:^0.16.0, katex@npm:latest":
   version: 0.16.27
   resolution: "katex@npm:0.16.27"
@@ -9893,6 +9933,13 @@ __metadata:
   version: 1.1.0
   resolution: "media-typer@npm:1.1.0"
   checksum: a58dd60804df73c672942a7253ccc06815612326dc1c0827984b1a21704466d7cde351394f47649e56cf7415e6ee2e26e000e81b51b3eebb5a93540e8bf93cbd
+  languageName: node
+  linkType: hard
+
+"memory-pager@npm:^1.0.2":
+  version: 1.5.0
+  resolution: "memory-pager@npm:1.5.0"
+  checksum: d1a2e684583ef55c61cd3a49101da645b11ad57014dfc565e0b43baa9004b743f7e4ab81493d8fff2ab24e9950987cc3209c94bcc4fc8d7e30a475489a1f15e9
   languageName: node
   linkType: hard
 
@@ -10634,6 +10681,64 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb-connection-string-url@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "mongodb-connection-string-url@npm:7.0.1"
+  dependencies:
+    "@types/whatwg-url": ^13.0.0
+    whatwg-url: ^14.1.0
+  checksum: b1d1fc452e480195f819e0e12af32dc24fbb1737c37411afe8db3aa0da164a4597150a8bd687c31c0fea3ea902b6b694a2599aacb8d8edfe368d5939ac9fab3e
+  languageName: node
+  linkType: hard
+
+"mongodb@npm:~7.0":
+  version: 7.0.0
+  resolution: "mongodb@npm:7.0.0"
+  dependencies:
+    "@mongodb-js/saslprep": ^1.3.0
+    bson: ^7.0.0
+    mongodb-connection-string-url: ^7.0.0
+  peerDependencies:
+    "@aws-sdk/credential-providers": ^3.806.0
+    "@mongodb-js/zstd": ^7.0.0
+    gcp-metadata: ^7.0.1
+    kerberos: ^7.0.0
+    mongodb-client-encryption: ">=7.0.0 <7.1.0"
+    snappy: ^7.3.2
+    socks: ^2.8.6
+  peerDependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    "@mongodb-js/zstd":
+      optional: true
+    gcp-metadata:
+      optional: true
+    kerberos:
+      optional: true
+    mongodb-client-encryption:
+      optional: true
+    snappy:
+      optional: true
+    socks:
+      optional: true
+  checksum: 835b2a9c71b4e2a7ca4353d59df63e9c54000e32ecb9e7e6e3a1d19d9e5c48841a5dd94779320cc679eacf5ffcc1e3fc790cc9a5fbe32144dc7c3b707fdf7763
+  languageName: node
+  linkType: hard
+
+"mongoose@npm:^9.2.2":
+  version: 9.2.2
+  resolution: "mongoose@npm:9.2.2"
+  dependencies:
+    kareem: 3.2.0
+    mongodb: ~7.0
+    mpath: 0.9.0
+    mquery: 6.0.0
+    ms: 2.1.3
+    sift: 17.1.3
+  checksum: efaba51d4383f617249215eb2cab67d16038d9ebbc9ca851941923bd35544a05cb6f7839e027dd800ca4fd47517eda5fc9ddb7712d9c613ccb173df9db54308f
+  languageName: node
+  linkType: hard
+
 "motion-dom@npm:^12.28.1":
   version: 12.28.1
   resolution: "motion-dom@npm:12.28.1"
@@ -10647,6 +10752,20 @@ __metadata:
   version: 12.27.2
   resolution: "motion-utils@npm:12.27.2"
   checksum: 8c8d8082165dcc3a9d6e596952dae54055ba154393b53ecc7f3629ce09213b1aa3afd7919724818e869d8b9e47adfe0ababafeed1c0bbad479a471911ef8ba77
+  languageName: node
+  linkType: hard
+
+"mpath@npm:0.9.0":
+  version: 0.9.0
+  resolution: "mpath@npm:0.9.0"
+  checksum: 1052f1f926db04502440f76164ae16ed53aa41f3ce34e7e64e3ed451b7d91ede295c3b600801c5f9eb862f03d9d59b7aa5aaf690c341fc521bef025d0f5cd773
+  languageName: node
+  linkType: hard
+
+"mquery@npm:6.0.0":
+  version: 6.0.0
+  resolution: "mquery@npm:6.0.0"
+  checksum: de7d8d21d31c03bf5929c44dc926b8f7ac6d4f03669ff2c36cf4fa5dbab35d8e079959e80b72fbf757e668722b4a96b86f7617ef153936927ea2bcde4f08be76
   languageName: node
   linkType: hard
 
@@ -11767,7 +11886,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"punycode@npm:^2.1.0":
+"punycode@npm:^2.1.0, punycode@npm:^2.3.1":
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: bb0a0ceedca4c3c57a9b981b90601579058903c62be23c5e8e843d2c2d4148a3ecf029d5133486fb0e1822b098ba8bba09e89d6b21742d02fa26bda6441a6fb2
@@ -13053,6 +13172,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sift@npm:17.1.3":
+  version: 17.1.3
+  resolution: "sift@npm:17.1.3"
+  checksum: 56d09c72720cd75f757dad31fc13cc84461c06c0416d23c1dc05e64276676fa1fecaddb055f0d2aa714d36a93c2acaad8cb2f2ef6d06d8c8bb1af84657de2046
+  languageName: node
+  linkType: hard
+
 "signal-exit@npm:^3.0.2, signal-exit@npm:^3.0.7":
   version: 3.0.7
   resolution: "signal-exit@npm:3.0.7"
@@ -13217,6 +13343,15 @@ __metadata:
   version: 2.0.2
   resolution: "space-separated-tokens@npm:2.0.2"
   checksum: 202e97d7ca1ba0758a0aa4fe226ff98142073bcceeff2da3aad037968878552c3bbce3b3231970025375bbba5aee00c5b8206eda408da837ab2dc9c0f26be990
+  languageName: node
+  linkType: hard
+
+"sparse-bitfield@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "sparse-bitfield@npm:3.0.3"
+  dependencies:
+    memory-pager: ^1.0.2
+  checksum: 174da88dbbcc783d5dbd26921931cc83830280b8055fb05333786ebe6fc015b9601b24972b3d55920dd2d9f5fb120576fbfa2469b08e5222c9cadf3f05210aab
   languageName: node
   linkType: hard
 
@@ -13690,6 +13825,15 @@ __metadata:
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
   checksum: 952c29e2a85d7123239b5cfdd889a0dde47ab0497f0913d70588f19c53f7e0b5327c95f4651e413c74b785147f9637b17410ac8c846d5d4a20a5a33eb6dc3a45
+  languageName: node
+  linkType: hard
+
+"tr46@npm:^5.1.0":
+  version: 5.1.1
+  resolution: "tr46@npm:5.1.1"
+  dependencies:
+    punycode: ^2.3.1
+  checksum: da7a04bd3f77e641abdabe948bb84f24e6ee73e81c8c96c36fe79796c889ba97daf3dbacae778f8581ff60307a4136ee14c9540a5f85ebe44f99c6cc39a97690
   languageName: node
   linkType: hard
 
@@ -14519,6 +14663,23 @@ __metadata:
   version: 3.0.1
   resolution: "webidl-conversions@npm:3.0.1"
   checksum: c92a0a6ab95314bde9c32e1d0a6dfac83b578f8fa5f21e675bc2706ed6981bc26b7eb7e6a1fab158e5ce4adf9caa4a0aee49a52505d4d13c7be545f15021b17c
+  languageName: node
+  linkType: hard
+
+"webidl-conversions@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "webidl-conversions@npm:7.0.0"
+  checksum: f05588567a2a76428515333eff87200fae6c83c3948a7482ebb109562971e77ef6dc49749afa58abb993391227c5697b3ecca52018793e0cb4620a48f10bd21b
+  languageName: node
+  linkType: hard
+
+"whatwg-url@npm:^14.1.0":
+  version: 14.2.0
+  resolution: "whatwg-url@npm:14.2.0"
+  dependencies:
+    tr46: ^5.1.0
+    webidl-conversions: ^7.0.0
+  checksum: c4f1ae1d353b9e56ab3c154cd73bf2b621cea1a2499fd2a9b2a17d448c2ed5e73a8922a0f395939de565fc3661461140111ae2aea26d4006a1ad0cfbf021c034
   languageName: node
   linkType: hard
 

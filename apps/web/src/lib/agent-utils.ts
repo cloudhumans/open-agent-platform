@@ -147,10 +147,7 @@ export function didTrackedFieldsChange(
     string,
     unknown
   >;
-  const newConfigurable = (data.config?.configurable ?? {}) as Record<
-    string,
-    unknown
-  >;
+  const newConfigurable = (data.config ?? {}) as Record<string, unknown>;
 
   return (
     normalize(agent.name) !== normalize(data.name) ||

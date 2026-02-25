@@ -67,8 +67,6 @@ export function AgentFieldsForm({
     form.watch("config.project_name") ??
     form.watch("config.project") ??
     undefined;
-  const availableTags = useClaudiaTags(selectedProjectForTags);
-
   const { toolSearchTerm, debouncedSetSearchTerm, displayTools } =
     useSearchTools(tools, {
       preSelectedTools: toolConfigurations[0]?.default?.tools,

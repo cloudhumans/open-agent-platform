@@ -8,12 +8,20 @@ import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useMcpServers } from "./hooks/use-mcp-servers";
 import { McpServerList } from "./components/mcp-servers/mcp-server-list";
+import { McpServerActions } from "./components/mcp-servers/mcp-server-actions";
 
 /**
  * The Settings interface component containing API Keys configuration.
  */
 export default function SettingsInterface(): React.ReactNode {
-  const { servers, loading: mcpLoading, toggleServer } = useMcpServers();
+  const {
+    servers,
+    loading: mcpLoading,
+    toggleServer,
+    addServer,
+    updateServer,
+    deleteServer,
+  } = useMcpServers();
 
   // Use localStorage hooks for each API key
   const [openaiApiKey, setOpenaiApiKey] = useLocalStorage<string>(
@@ -100,6 +108,16 @@ export default function SettingsInterface(): React.ReactNode {
           servers={servers}
           loading={mcpLoading}
           onToggle={toggleServer}
+          onAdd={addServer}
+          renderActions={(server) =>
+            !server.isDefault ? (
+              <McpServerActions
+                server={server}
+                onEdit={updateServer}
+                onDelete={deleteServer}
+              />
+            ) : null
+          }
         />
       </div>
     </div>

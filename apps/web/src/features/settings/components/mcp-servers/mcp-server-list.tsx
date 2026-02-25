@@ -1,8 +1,11 @@
 "use client";
 
 import React from "react";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { McpServerRow } from "./mcp-server-row";
+import { McpServerFormDialog } from "./mcp-server-form-dialog";
 import type { McpServer } from "../../hooks/use-mcp-servers";
 
 interface McpServerListProps {
@@ -10,7 +13,7 @@ interface McpServerListProps {
   loading: boolean;
   onToggle: (id: string, enabled: boolean) => void;
   renderActions?: (server: McpServer) => React.ReactNode;
-  onAdd?: () => void;
+  onAdd?: (body: Record<string, unknown>) => Promise<void>;
 }
 
 export function McpServerList({
@@ -28,13 +31,18 @@ export function McpServerList({
           Manage MCP server connections for your agents.
         </p>
         {onAdd && (
-          <button
-            type="button"
-            onClick={onAdd}
-            className="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-sm"
-          >
-            Add Server
-          </button>
+          <McpServerFormDialog
+            onSave={onAdd}
+            trigger={
+              <Button
+                variant="outline"
+                size="sm"
+              >
+                <Plus className="mr-1 h-4 w-4" />
+                Add Server
+              </Button>
+            }
+          />
         )}
       </div>
 

@@ -11,7 +11,7 @@ import {
 import { useAgents } from "@/hooks/use-agents";
 import { useAgentConfig } from "@/hooks/use-agent-config";
 import { Bot, LoaderCircle, Trash, X } from "lucide-react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAgentsContext } from "@/providers/Agents";
 import { useTenantContext } from "@/providers/Tenant";
@@ -20,6 +20,7 @@ import { Agent } from "@/types/agent";
 import { FormProvider, useForm } from "react-hook-form";
 import { hasStaleSupervisors } from "@/lib/agent-utils";
 import { StaleSupervisorsWarningDialog } from "./stale-supervisors-warning-dialog";
+import { useMcpServers } from "@/features/settings/hooks/use-mcp-servers";
 
 interface EditAgentDialogProps {
   agent: Agent;
@@ -46,9 +47,14 @@ function EditAgentDialogContent({
     toolConfigurations,
     ragConfigurations,
     agentsConfigurations,
+    hasMcpServers,
   } = useAgentConfig();
   const { selectedTenant } = useTenantContext();
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+  const [selectedMcpServerIds, setSelectedMcpServerIds] = useState<string[]>([]);
+
+  // For pre-populating selected servers on edit: match existing snapshot names to current server IDs
+  const { servers: availableServers } = useMcpServers();
 
   const form = useForm<{
     name: string;
@@ -63,6 +69,29 @@ function EditAgentDialogContent({
     },
   });
 
+  // Pre-populate selectedMcpServerIds from the existing snapshot once both the server list
+  // and schema detection are ready. Match by name — the most stable identifier across
+  // a stored snapshot and the current live server list.
+  const initializedRef = useRef(false);
+  useEffect(() => {
+    if (initializedRef.current) return;
+    if (!hasMcpServers) return;
+    if (availableServers.length === 0) return;
+
+    initializedRef.current = true;
+
+    const rawSnapshot = (agent.config?.configurable?.mcp_servers ?? []) as unknown;
+    const existingSnapshot: { name?: string }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
+    if (existingSnapshot.length > 0) {
+      const ids = existingSnapshot
+        .map((snap) => availableServers.find((s) => s.name === snap.name)?.id)
+        .filter((id): id is string => id !== undefined);
+      if (ids.length > 0) {
+        setSelectedMcpServerIds(ids);
+      }
+    }
+  }, [hasMcpServers, availableServers, agent.config?.configurable?.mcp_servers]);
+
   const handleSubmit = async (data: {
     name: string;
     description: string;
@@ -73,15 +102,43 @@ function EditAgentDialogContent({
       return;
     }
 
+    let mcpServersPayload: unknown[] | undefined;
+
+    if (hasMcpServers) {
+      if (selectedMcpServerIds.length > 0) {
+        // Fetch decrypted server snapshots for selected servers
+        const qs = selectedMcpServerIds.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
+        const snapshotRes = await fetch(`/api/mcp-servers/snapshot?${qs}`);
+        if (!snapshotRes.ok) {
+          toast.error("Failed to fetch MCP server configuration", {
+            description: "Please try again",
+          });
+          return;
+        }
+        const snapshotData = await snapshotRes.json();
+        mcpServersPayload = snapshotData.servers ?? [];
+      } else {
+        // Explicit empty array — agent has no MCP servers assigned
+        mcpServersPayload = [];
+      }
+    }
+
+    const configPayload: Record<string, any> = {
+      ...data.config,
+      tenant: selectedTenant?.tenantName,
+    };
+
+    // Only include mcp_servers if the graph schema declares it
+    if (hasMcpServers) {
+      configPayload.mcp_servers = mcpServersPayload;
+    }
+
     const updatedAgent = await updateAgent(
       agent.assistant_id,
       agent.deploymentId,
       {
         ...data,
-        config: {
-          ...data.config,
-          tenant: selectedTenant?.tenantName,
-        },
+        config: configPayload,
       },
     );
 
@@ -148,6 +205,9 @@ function EditAgentDialogContent({
               agentId={agent.assistant_id}
               ragConfigurations={ragConfigurations}
               agentsConfigurations={agentsConfigurations}
+              hasMcpServers={hasMcpServers}
+              selectedMcpServerIds={selectedMcpServerIds}
+              onMcpSelectionChange={setSelectedMcpServerIds}
             />
           </FormProvider>
         )}

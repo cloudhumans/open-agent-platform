@@ -35,6 +35,22 @@ function CreateAgentFormContent(props: {
   selectedDeployment: Deployment;
   onClose: () => void;
 }) {
+  const { createAgent } = useAgents();
+  const { refreshAgents } = useAgentsContext();
+  const {
+    getSchemaAndUpdateConfig,
+    loading,
+    configurations,
+    toolConfigurations,
+    ragConfigurations,
+    agentsConfigurations,
+    hasMcpServers,
+  } = useAgentConfig();
+  const { selectedTenant } = useTenantContext();
+  const [submitting, setSubmitting] = useState(false);
+  // New agents start with no MCP servers selected (AGNT-02)
+  const [selectedMcpServerIds, setSelectedMcpServerIds] = useState<string[]>([]);
+
   const form = useForm<{
     name: string;
     description: string;
@@ -50,19 +66,6 @@ function CreateAgentFormContent(props: {
     },
   });
 
-  const { createAgent } = useAgents();
-  const { refreshAgents } = useAgentsContext();
-  const {
-    getSchemaAndUpdateConfig,
-    loading,
-    configurations,
-    toolConfigurations,
-    ragConfigurations,
-    agentsConfigurations,
-  } = useAgentConfig();
-  const { selectedTenant } = useTenantContext();
-  const [submitting, setSubmitting] = useState(false);
-
   const handleSubmit = async (data: {
     name: string;
     description: string;
@@ -76,6 +79,38 @@ function CreateAgentFormContent(props: {
       return;
     }
 
+    let mcpServersPayload: unknown[] | undefined;
+
+    if (hasMcpServers) {
+      if (selectedMcpServerIds.length > 0) {
+        // Fetch decrypted server snapshots for selected servers
+        const qs = selectedMcpServerIds.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
+        const snapshotRes = await fetch(`/api/mcp-servers/snapshot?${qs}`);
+        if (!snapshotRes.ok) {
+          toast.error("Failed to fetch MCP server configuration", {
+            description: "Please try again",
+            richColors: true,
+          });
+          return;
+        }
+        const snapshotData = await snapshotRes.json();
+        mcpServersPayload = snapshotData.servers ?? [];
+      } else {
+        // Explicit empty array — new agent has no MCP servers
+        mcpServersPayload = [];
+      }
+    }
+
+    const configPayload: Record<string, any> = {
+      ...config,
+      tenant: selectedTenant?.tenantName,
+    };
+
+    // Only include mcp_servers if the graph schema declares it
+    if (hasMcpServers) {
+      configPayload.mcp_servers = mcpServersPayload;
+    }
+
     setSubmitting(true);
     const newAgent = await createAgent(
       props.selectedDeployment.id,
@@ -83,10 +118,7 @@ function CreateAgentFormContent(props: {
       {
         name,
         description,
-        config: {
-          ...config,
-          tenant: selectedTenant?.tenantName,
-        },
+        config: configPayload,
       },
     );
     setSubmitting(false);
@@ -120,6 +152,9 @@ function CreateAgentFormContent(props: {
             toolConfigurations={toolConfigurations}
             ragConfigurations={ragConfigurations}
             agentsConfigurations={agentsConfigurations}
+            hasMcpServers={hasMcpServers}
+            selectedMcpServerIds={selectedMcpServerIds}
+            onMcpSelectionChange={setSelectedMcpServerIds}
           />
         </FormProvider>
       )}

@@ -23,6 +23,7 @@ import {
 import _ from "lodash";
 import { useFetchPreselectedTools } from "@/hooks/use-fetch-preselected-tools";
 import { Controller, useFormContext } from "react-hook-form";
+import { McpServerSelector } from "./mcp-server-selector";
 
 export function AgentFieldsFormLoading() {
   return (
@@ -46,6 +47,9 @@ interface AgentFieldsFormProps {
   agentId: string;
   ragConfigurations: ConfigurableFieldRAGMetadata[];
   agentsConfigurations: ConfigurableFieldAgentsMetadata[];
+  hasMcpServers?: boolean;
+  selectedMcpServerIds?: string[];
+  onMcpSelectionChange?: (ids: string[]) => void;
 }
 
 export function AgentFieldsForm({
@@ -54,6 +58,9 @@ export function AgentFieldsForm({
   agentId,
   ragConfigurations,
   agentsConfigurations,
+  hasMcpServers = false,
+  selectedMcpServerIds = [],
+  onMcpSelectionChange,
 }: AgentFieldsFormProps) {
   const form = useFormContext<{
     name: string;
@@ -301,6 +308,20 @@ export function AgentFieldsForm({
                     selectedProject={form.watch("config.project")}
                   />
                 )}
+              />
+            </div>
+          </>
+        )}
+        {hasMcpServers && onMcpSelectionChange && (
+          <>
+            <Separator />
+            <div className="flex w-full flex-col items-start justify-start gap-4">
+              <p className="text-lg font-semibold tracking-tight">
+                MCP Servers
+              </p>
+              <McpServerSelector
+                selectedServerIds={selectedMcpServerIds}
+                onSelectionChange={onMcpSelectionChange}
               />
             </div>
           </>

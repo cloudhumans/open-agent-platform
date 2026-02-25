@@ -6,10 +6,8 @@ import { useAuthContext } from "@/providers/Auth";
 import { useCallback } from "react";
 import { isSystemCreatedDefaultAssistant } from "@/lib/agent-utils";
 
-
 export function useAgents() {
   const { session } = useAuthContext();
-
 
   const getAgent = useCallback(
     async (

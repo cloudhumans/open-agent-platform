@@ -79,7 +79,8 @@ async function getAgents(
   const agentsPromise: Promise<Agent[]>[] = deployments.map(
     async (deployment) => {
       const client = createClient(deployment.id, accessToken);
-      const tenantId = selectedTenant?.id ?? user.metadata?.["custom:tenant_id"];
+      const tenantId =
+        selectedTenant?.id ?? user.metadata?.["custom:tenant_id"];
       const tenantName = selectedTenant?.tenantName;
 
       const queryPromises = [

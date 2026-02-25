@@ -6,14 +6,15 @@ import React, {
   useMemo,
   useEffect,
   useState,
-  useCallback,
+  useRef,
 } from "react";
 import { Tenant } from "@/types/tenant";
-import { loadTenantsFromEnv } from "@/lib/tenants";
+import { normalizeTenants } from "@/lib/tenants";
 import { useAuthContext } from "./Auth";
 
 type TenantContextValue = {
   tenants: Tenant[];
+  loading: boolean;
   selectedTenantKey: string;
   selectedTenantId: string;
   selectedTenant: Tenant | null;
@@ -22,9 +23,107 @@ type TenantContextValue = {
 
 const TenantContext = createContext<TenantContextValue | undefined>(undefined);
 
+const STORAGE_KEY = "oap-selected-tenant-key";
+const TENANTS_CACHE_TTL_MS = 5 * 60 * 1000;
+
+function readStorageKey(storage: Storage, key: string): string | null {
+  const raw = storage.getItem(key);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed === "string") return parsed;
+  } catch {
+    // not JSON, use raw
+  }
+  return raw;
+}
+
+function getStoredKey(): string | null {
+  if (typeof window === "undefined") return null;
+  return (
+    readStorageKey(window.sessionStorage, STORAGE_KEY) ??
+    readStorageKey(window.localStorage, STORAGE_KEY)
+  );
+}
+
 export function TenantProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthContext();
-  const allTenants = useMemo(() => loadTenantsFromEnv(), []);
+  const { user, session } = useAuthContext();
+  const [allTenants, setAllTenants] = useState<Tenant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const cacheRef = useRef<{
+    userId: string | null;
+    fetchedAt: number;
+    tenants: Tenant[];
+  }>({ userId: null, fetchedAt: 0, tenants: [] });
+
+  useEffect(() => {
+    if (!user) {
+      setAllTenants([]);
+      setLoading(false);
+      return;
+    }
+
+    const abortController = new AbortController();
+    setLoading(true);
+
+    const fetchTenants = async () => {
+      try {
+        const userId = user.id ?? null;
+        const now = Date.now();
+        if (
+          cacheRef.current.userId === userId &&
+          now - cacheRef.current.fetchedAt < TENANTS_CACHE_TTL_MS
+        ) {
+          setAllTenants(cacheRef.current.tenants);
+          setLoading(false);
+          return;
+        }
+
+        const headers: HeadersInit = {};
+        if (session?.accessToken) {
+          headers["Authorization"] = `Bearer ${session.accessToken}`;
+        }
+
+        const tenantsResponse = await fetch("/api/backoffice/tenants", {
+          signal: abortController.signal,
+          headers,
+        });
+
+        if (!tenantsResponse.ok) {
+          throw new Error(
+            `Failed to fetch tenants: ${tenantsResponse.statusText}`,
+          );
+        }
+
+        const responseBody = await tenantsResponse.json();
+
+        if (abortController.signal.aborted) return;
+
+        const normalizedTenants = normalizeTenants(responseBody);
+
+        setAllTenants(normalizedTenants);
+        setLoading(false);
+        cacheRef.current = {
+          userId,
+          fetchedAt: now,
+          tenants: normalizedTenants,
+        };
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        console.error("Failed to load tenants from backoffice", error);
+        setAllTenants([]);
+        setLoading(false);
+      }
+    };
+
+    fetchTenants();
+
+    return () => {
+      abortController.abort();
+    };
+  }, [user, session]);
 
   const tenants = useMemo(() => {
     if (!user) return [];
@@ -39,46 +138,17 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     return allTenants.filter((tenant) => tenant.tenantName === userTenantId);
   }, [user, allTenants]);
 
-  // Helper: read a storage value, handling legacy JSON-encoded strings
-  const readStorageKey = useCallback(
-    (storage: Storage, key: string): string | null => {
-      const raw = storage.getItem(key);
-      if (!raw) return null;
-      // Old useLocalStorage stored values via JSON.stringify, so a string "abc"
-      // was stored as '"abc"'. Try to parse it; if the result is a string, use it.
-      // Otherwise fall back to the raw value.
-      try {
-        const parsed = JSON.parse(raw);
-        if (typeof parsed === "string") return parsed;
-      } catch {
-        // not JSON, use raw
-      }
-      return raw;
-    },
-    [],
-  );
-
-  const getStoredKey = useCallback((): string | null => {
-    if (typeof window === "undefined") return null;
-    return (
-      readStorageKey(window.sessionStorage, "oap-selected-tenant-key") ??
-      readStorageKey(window.localStorage, "oap-selected-tenant-key")
-    );
-  }, [readStorageKey]);
-
   const [selectedTenantKey, setSelectedTenantKeyState] = useState<string>(
-    () => {
-      return getStoredKey() ?? "";
-    },
+    () => getStoredKey() ?? "",
   );
 
-  const setSelectedTenantKey = useCallback((key: string) => {
+  const setSelectedTenantKey = (key: string) => {
     setSelectedTenantKeyState(key);
     if (typeof window !== "undefined") {
-      window.sessionStorage.setItem("oap-selected-tenant-key", key);
-      window.localStorage.setItem("oap-selected-tenant-key", key);
+      window.sessionStorage.setItem(STORAGE_KEY, key);
+      window.localStorage.setItem(STORAGE_KEY, key);
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (!tenants.length) return;
@@ -97,7 +167,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     } else {
       setSelectedTenantKey(tenants[0].key);
     }
-  }, [tenants, selectedTenantKey, setSelectedTenantKey, getStoredKey]);
+  }, [tenants, selectedTenantKey]);
 
   const selectedTenant =
     tenants.find((tenant) => tenant.key === selectedTenantKey) ?? null;
@@ -105,6 +175,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     tenants,
+    loading,
     selectedTenantKey,
     selectedTenantId,
     selectedTenant,

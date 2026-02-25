@@ -281,7 +281,10 @@ export function ConfigField({
       )}
 
       {type === "claudia_project" && (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover
+          open={open}
+          onOpenChange={setOpen}
+        >
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -291,11 +294,14 @@ export function ConfigField({
             >
               {currentValue
                 ? claudiaProjects.find((project) => project === currentValue)
-                : (placeholder || "Select a project...")}
+                : placeholder || "Select a project..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0" align="start">
+          <PopoverContent
+            className="w-[300px] p-0"
+            align="start"
+          >
             <Command>
               <CommandInput placeholder="Search project..." />
               <CommandList>
@@ -313,7 +319,9 @@ export function ConfigField({
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          currentValue === project ? "opacity-100" : "opacity-0"
+                          currentValue === project
+                            ? "opacity-100"
+                            : "opacity-0",
                         )}
                       />
                       {project}
@@ -327,7 +335,10 @@ export function ConfigField({
       )}
 
       {type === "claudia_tag" && (
-        <Popover open={openTag} onOpenChange={setOpenTag}>
+        <Popover
+          open={openTag}
+          onOpenChange={setOpenTag}
+        >
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -339,12 +350,15 @@ export function ConfigField({
               {currentValue
                 ? availableTags.find((tag) => tag === currentValue)
                 : !dependencyValue
-                ? "Select a project first"
-                : (placeholder || "Select a tag...")}
+                  ? "Select a project first"
+                  : placeholder || "Select a tag..."}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0" align="start">
+          <PopoverContent
+            className="w-[300px] p-0"
+            align="start"
+          >
             <Command>
               <CommandInput placeholder="Search tag..." />
               <CommandList>
@@ -360,7 +374,7 @@ export function ConfigField({
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        !currentValue ? "opacity-100" : "opacity-0"
+                        !currentValue ? "opacity-100" : "opacity-0",
                       )}
                     />
                     No tag
@@ -377,7 +391,7 @@ export function ConfigField({
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          currentValue === tag ? "opacity-100" : "opacity-0"
+                          currentValue === tag ? "opacity-100" : "opacity-0",
                         )}
                       />
                       {tag}
@@ -680,7 +694,8 @@ export function ConfigFieldAgents({
     if (a.assistant_id === agentId) return false;
     if (selectedProject) {
       const agentProjectName =
-        (a.config?.configurable as Record<string, any>)?.project_name ?? undefined;
+        (a.config?.configurable as Record<string, any>)?.project_name ??
+        undefined;
       return agentProjectName === selectedProject;
     }
     return true;
@@ -728,12 +743,16 @@ export function ConfigFieldAgents({
           ?.description as string | undefined,
         project_name:
           existing?.project_name ??
-          (agents.find((a) => a.assistant_id === agent_id)?.config
-            ?.configurable as Record<string, any>)?.project_name,
+          (
+            agents.find((a) => a.assistant_id === agent_id)?.config
+              ?.configurable as Record<string, any>
+          )?.project_name,
         tag:
           existing?.tag ??
-          (agents.find((a) => a.assistant_id === agent_id)?.config
-            ?.configurable as Record<string, any>)?.tag,
+          (
+            agents.find((a) => a.assistant_id === agent_id)?.config
+              ?.configurable as Record<string, any>
+          )?.tag,
       };
     });
 

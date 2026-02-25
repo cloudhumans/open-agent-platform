@@ -137,8 +137,12 @@ export const ConfigurationSidebar = forwardRef<
     supportedConfigs,
   } = useAgentConfig();
   const { updateAgent, createAgent } = useAgents();
-  const claudiaConfigs = configurations.filter((c) => c.type === "claudia_project" || c.type === "claudia_tag");
-  const generalConfigs = configurations.filter((c) => c.type !== "claudia_project" && c.type !== "claudia_tag");
+  const claudiaConfigs = configurations.filter(
+    (c) => c.type === "claudia_project" || c.type === "claudia_tag",
+  );
+  const generalConfigs = configurations.filter(
+    (c) => c.type !== "claudia_project" && c.type !== "claudia_tag",
+  );
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [
@@ -327,7 +331,10 @@ export const ConfigurationSidebar = forwardRef<
                 className="m-0 p-4"
               >
                 {claudiaConfigs.length > 0 && (
-                  <ConfigSection title="Claudia Configuration" className="mb-6">
+                  <ConfigSection
+                    title="Claudia Configuration"
+                    className="mb-6"
+                  >
                     {loading || !agentId ? (
                       <div className="space-y-4">
                         <Skeleton className="h-8 w-full" />
@@ -349,7 +356,10 @@ export const ConfigurationSidebar = forwardRef<
                           max={c.max}
                           step={c.step}
                           agentId={agentId}
-                          dependencyValue={configsByAgentId[agentId]?.project_name ?? configsByAgentId[agentId]?.project}
+                          dependencyValue={
+                            configsByAgentId[agentId]?.project_name ??
+                            configsByAgentId[agentId]?.project
+                          }
                         />
                       ))
                     )}
@@ -357,7 +367,10 @@ export const ConfigurationSidebar = forwardRef<
                 )}
 
                 {generalConfigs.length > 0 && (
-                  <ConfigSection title="General Configuration" className={claudiaConfigs.length > 0 ? "pt-2 border-t" : ""}>
+                  <ConfigSection
+                    title="General Configuration"
+                    className={claudiaConfigs.length > 0 ? "border-t pt-2" : ""}
+                  >
                     {loading || !agentId ? (
                       <div className="space-y-4">
                         <Skeleton className="h-8 w-full" />
@@ -380,7 +393,10 @@ export const ConfigurationSidebar = forwardRef<
                           max={c.max}
                           step={c.step}
                           agentId={agentId}
-                          dependencyValue={configsByAgentId[agentId]?.project_name ?? configsByAgentId[agentId]?.project}
+                          dependencyValue={
+                            configsByAgentId[agentId]?.project_name ??
+                            configsByAgentId[agentId]?.project
+                          }
                         />
                       ))
                     )}

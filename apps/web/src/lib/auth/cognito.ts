@@ -44,27 +44,27 @@ export class CognitoAuthProvider implements AuthProvider {
   // Helper to format Cognito user to our User interface
   private async formatUser(cognitoUser: CognitoUser): Promise<User | null> {
     return new Promise((resolve) => {
-        cognitoUser.getUserAttributes((err, attributes) => {
-            if (err || !attributes) {
-                console.error("Error fetching attributes", err);
-                resolve(null);
-                return;
-            }
+      cognitoUser.getUserAttributes((err, attributes) => {
+        if (err || !attributes) {
+          console.error("Error fetching attributes", err);
+          resolve(null);
+          return;
+        }
 
-            const attrs: Record<string, string> = {};
-            attributes.forEach(attr => {
-                attrs[attr.getName()] = attr.getValue();
-            });
-
-            resolve({
-                id: cognitoUser.getUsername(),
-                email: attrs.email || null,
-                displayName: attrs.name || cognitoUser.getUsername(),
-                firstName: attrs.given_name || null,
-                lastName: attrs.family_name || null,
-                metadata: attrs
-            });
+        const attrs: Record<string, string> = {};
+        attributes.forEach((attr) => {
+          attrs[attr.getName()] = attr.getValue();
         });
+
+        resolve({
+          id: cognitoUser.getUsername(),
+          email: attrs.email || null,
+          displayName: attrs.name || cognitoUser.getUsername(),
+          firstName: attrs.given_name || null,
+          lastName: attrs.family_name || null,
+          metadata: attrs,
+        });
+      });
     });
   }
 
@@ -84,7 +84,7 @@ export class CognitoAuthProvider implements AuthProvider {
       error: AuthError | null;
     }>((resolve) => {
       const attributeList = [];
-      
+
       const emailAttribute = {
         Name: "email",
         Value: credentials.email,
@@ -92,9 +92,11 @@ export class CognitoAuthProvider implements AuthProvider {
       attributeList.push(new CognitoUserAttribute(emailAttribute));
 
       if (credentials.metadata) {
-          Object.entries(credentials.metadata).forEach(([key, value]) => {
-             attributeList.push(new CognitoUserAttribute({ Name: key, Value: String(value) }));
-          });
+        Object.entries(credentials.metadata).forEach(([key, value]) => {
+          attributeList.push(
+            new CognitoUserAttribute({ Name: key, Value: String(value) }),
+          );
+        });
       }
 
       this.userPool.signUp(
@@ -115,14 +117,16 @@ export class CognitoAuthProvider implements AuthProvider {
           // SignUp successful, but usually requires verification
           // We return success but session might be null until verified/logged in
           resolve({
-            user: result?.user ? { 
-                id: result.user.getUsername(), 
-                email: credentials.email 
-            } : null,
+            user: result?.user
+              ? {
+                  id: result.user.getUsername(),
+                  email: credentials.email,
+                }
+              : null,
             session: null,
             error: null,
           });
-        }
+        },
       );
     });
   }
@@ -149,7 +153,7 @@ export class CognitoAuthProvider implements AuthProvider {
           const accessToken = result.getAccessToken().getJwtToken();
           const idToken = result.getIdToken().getJwtToken();
           const refreshToken = result.getRefreshToken().getToken();
-          
+
           const session: Session = {
              user,
              accessToken, // Standard access token
@@ -178,13 +182,15 @@ export class CognitoAuthProvider implements AuthProvider {
   }
 
   async signInWithGoogle() {
-      // Cognito hosted UI handling would go here, 
-      // but simpler to return error for now or implement if using Federation
-      return {
-          user: null,
-          session: null,
-          error: { message: "Google Auth not implemented directly in Cognito class yet" }
-      };
+    // Cognito hosted UI handling would go here,
+    // but simpler to return error for now or implement if using Federation
+    return {
+      user: null,
+      session: null,
+      error: {
+        message: "Google Auth not implemented directly in Cognito class yet",
+      },
+    };
   }
 
   async signOut() {
@@ -208,7 +214,7 @@ export class CognitoAuthProvider implements AuthProvider {
         }
 
         const user = await this.formatUser(cognitoUser);
-        
+
         resolve({
             user,
             accessToken: session.getAccessToken().getJwtToken(),
@@ -221,28 +227,28 @@ export class CognitoAuthProvider implements AuthProvider {
   }
 
   async refreshSession() {
-      // Handled automatically by getSession usually, or implement specific refresh logic
-      return this.getSession();
+    // Handled automatically by getSession usually, or implement specific refresh logic
+    return this.getSession();
   }
 
   async getCurrentUser() {
-     const session = await this.getSession();
-     return session?.user || null;
+    const session = await this.getSession();
+    return session?.user || null;
   }
 
   async updateUser(attributes: Partial<User>) {
-      // Implement using cognitoUser.updateAttributes
-     return { user: null, error: { message: "Not implemented" } };
+    // Implement using cognitoUser.updateAttributes
+    return { user: null, error: { message: "Not implemented" } };
   }
 
   async resetPassword(email: string) {
-       // Implement using cognitoUser.forgotPassword
-       return { error: { message: "Not implemented" } };
+    // Implement using cognitoUser.forgotPassword
+    return { error: { message: "Not implemented" } };
   }
 
   async updatePassword(newPassword: string) {
-      // Implement using cognitoUser.changePassword
-      return { error: { message: "Not implemented" } };
+    // Implement using cognitoUser.changePassword
+    return { error: { message: "Not implemented" } };
   }
 
   onAuthStateChange(callback: AuthStateChangeCallback) {

@@ -22,8 +22,13 @@ import { Check, ChevronsUpDown } from "lucide-react";
 
 export function TenantSelector({ className }: { className?: string }) {
   const { isAuthenticated } = useAuthContext();
-  const { tenants, selectedTenantKey, setSelectedTenantKey, selectedTenant } =
-    useTenantContext();
+  const {
+    tenants,
+    loading,
+    selectedTenantKey,
+    setSelectedTenantKey,
+    selectedTenant,
+  } = useTenantContext();
   const [open, setOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -47,7 +52,7 @@ export function TenantSelector({ className }: { className?: string }) {
     return null;
   }
 
-  if (!tenants.length) {
+  if (loading || !tenants.length) {
     return (
       <div
         className={cn(
@@ -56,7 +61,9 @@ export function TenantSelector({ className }: { className?: string }) {
         )}
       >
         <span className="text-foreground font-medium">Tenant</span>
-        <span className="text-xs">No tenants configured</span>
+        <span className="text-xs">
+          {loading ? "Loading tenants..." : "No tenants configured"}
+        </span>
       </div>
     );
   }

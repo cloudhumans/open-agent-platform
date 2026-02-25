@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "turbo build:internal --filter=@open-agent-platform/web",
     "build:internal": "next build",
     "start": "next start",

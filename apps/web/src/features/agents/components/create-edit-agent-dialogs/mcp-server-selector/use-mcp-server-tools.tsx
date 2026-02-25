@@ -22,6 +22,7 @@ interface UseMcpServerToolsReturn {
  */
 export function useMcpServerTools(
   serverId: string | null,
+  tenant?: string,
 ): UseMcpServerToolsReturn {
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(false);
@@ -47,7 +48,10 @@ export function useMcpServerTools(
       setError(null);
 
       try {
-        const res = await fetch(`/api/mcp-servers/${serverId}/tools`);
+        const url = tenant
+          ? `/api/mcp-servers/${serverId}/tools?tenant=${encodeURIComponent(tenant)}`
+          : `/api/mcp-servers/${serverId}/tools`;
+        const res = await fetch(url);
         if (aborted) return;
 
         if (!res.ok) {
@@ -83,7 +87,7 @@ export function useMcpServerTools(
     return () => {
       aborted = true;
     };
-  }, [serverId, fetchCounter]);
+  }, [serverId, tenant, fetchCounter]);
 
   return { tools, loading, error, refetch };
 }

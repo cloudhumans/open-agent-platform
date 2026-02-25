@@ -8,6 +8,7 @@ import { getDefaultServers } from "@/lib/mcp-defaults";
 import McpServer from "@/models/mcp-server";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: NextRequest,
@@ -59,22 +60,45 @@ export async function GET(
     headers["x-api-key"] = credentials;
   }
 
+  // Forward tenant header when present
+  const tenant = _req.nextUrl.searchParams.get("tenant");
+  if (tenant) {
+    headers["x-tenant"] = tenant;
+  }
+
   const client = new Client({ name: "oap-tool-proxy", version: "1.0.0" });
+
+  const TIMEOUT_MS = 30_000;
+  const timeoutError = Symbol("timeout");
 
   try {
     const transport = new StreamableHTTPClientTransport(new URL(mcpUrl), {
-      requestInit: { headers },
+      requestInit: { headers, cache: "no-store" as RequestCache },
     });
 
-    await client.connect(transport);
-    const { tools } = await client.listTools();
+    const result = await Promise.race([
+      (async () => {
+        await client.connect(transport);
+        return client.listTools();
+      })(),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(timeoutError), TIMEOUT_MS),
+      ),
+    ]);
 
-    return Response.json({ tools });
-  } catch {
-    return Response.json(
-      { error: "Failed to fetch tools" },
-      { status: 502 },
-    );
+    return Response.json({ tools: result.tools });
+  } catch (err) {
+    if (err === timeoutError) {
+      console.error(`[mcp-tools] Timed out fetching tools from ${mcpUrl}`);
+      return Response.json(
+        { error: "MCP server timed out after 30 seconds" },
+        { status: 504 },
+      );
+    }
+    console.error(`[mcp-tools] Failed to fetch tools from ${mcpUrl}:`, err);
+    const message =
+      err instanceof Error ? err.message : "Failed to fetch tools";
+    return Response.json({ error: message }, { status: 502 });
   } finally {
     await client.close().catch(() => {});
   }

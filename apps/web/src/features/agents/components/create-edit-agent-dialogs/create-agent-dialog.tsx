@@ -21,6 +21,7 @@ import { getDeployments } from "@/lib/environment/deployments";
 import { GraphSelect } from "./graph-select";
 import { useAgentConfig } from "@/hooks/use-agent-config";
 import { FormProvider, useForm } from "react-hook-form";
+import { useMcpServers } from "@/features/settings/hooks/use-mcp-servers";
 
 interface CreateAgentDialogProps {
   agentId?: string;
@@ -47,9 +48,10 @@ function CreateAgentFormContent(props: {
     hasMcpServers,
   } = useAgentConfig();
   const { selectedTenant } = useTenantContext();
+  const { servers: availableServers } = useMcpServers();
   const [submitting, setSubmitting] = useState(false);
-  // New agents start with no MCP servers selected (AGNT-02)
-  const [selectedMcpServerIds, setSelectedMcpServerIds] = useState<string[]>([]);
+  // New agents start with no MCP tools selected
+  const [selectedToolsByServer, setSelectedToolsByServer] = useState<Record<string, string[]>>({});
 
   const form = useForm<{
     name: string;
@@ -82,9 +84,14 @@ function CreateAgentFormContent(props: {
     let mcpServersPayload: unknown[] | undefined;
 
     if (hasMcpServers) {
-      if (selectedMcpServerIds.length > 0) {
+      // Only include servers that have at least 1 tool selected
+      const serverIdsWithTools = Object.entries(selectedToolsByServer)
+        .filter(([, tools]) => tools.length > 0)
+        .map(([id]) => id);
+
+      if (serverIdsWithTools.length > 0) {
         // Fetch decrypted server snapshots for selected servers
-        const qs = selectedMcpServerIds.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
+        const qs = serverIdsWithTools.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
         const snapshotRes = await fetch(`/api/mcp-servers/snapshot?${qs}`);
         if (!snapshotRes.ok) {
           toast.error("Failed to fetch MCP server configuration", {
@@ -94,7 +101,15 @@ function CreateAgentFormContent(props: {
           return;
         }
         const snapshotData = await snapshotRes.json();
-        mcpServersPayload = snapshotData.servers ?? [];
+        // Augment each snapshot with its selected tools array
+        const servers = (snapshotData.servers ?? []) as Record<string, unknown>[];
+        mcpServersPayload = servers.map((snap) => {
+          const server = availableServers.find((s) => s.name === (snap as { name?: string }).name);
+          return {
+            ...snap,
+            tools: server ? (selectedToolsByServer[server.id] ?? []) : [],
+          };
+        });
       } else {
         // Explicit empty array — new agent has no MCP servers
         mcpServersPayload = [];
@@ -153,8 +168,9 @@ function CreateAgentFormContent(props: {
             ragConfigurations={ragConfigurations}
             agentsConfigurations={agentsConfigurations}
             hasMcpServers={hasMcpServers}
-            selectedMcpServerIds={selectedMcpServerIds}
-            onMcpSelectionChange={setSelectedMcpServerIds}
+            selectedToolsByServer={selectedToolsByServer}
+            onMcpToolSelectionChange={setSelectedToolsByServer}
+            tenant={selectedTenant?.tenantName}
           />
         </FormProvider>
       )}

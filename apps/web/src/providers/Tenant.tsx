@@ -171,7 +171,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
 
   const selectedTenant =
     tenants.find((tenant) => tenant.key === selectedTenantKey) ?? null;
-  const selectedTenantId = selectedTenant?.id ?? "";
+  const selectedTenantId = selectedTenant?.tenantName ?? "";
 
   const value = {
     tenants,

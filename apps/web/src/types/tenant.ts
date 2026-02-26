@@ -4,12 +4,16 @@ export type TenantCloudchatInstance = {
   accountName: string;
 };
 
+export type TenantEddieWorkspace = {
+  workspaceId: string;
+  instance: string;
+};
+
 export type Tenant = {
   key: string;
-  id: string;
   tenantName: string;
   cloudchatInstances: TenantCloudchatInstance[];
   connectorProjectIds: string[];
   claudiaProjectIds: string[];
-  eddieInstance: string;
+  eddieWorkspaces: TenantEddieWorkspace[];
 };

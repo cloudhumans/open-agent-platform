@@ -23,6 +23,7 @@ import { useAgentConfig } from "@/hooks/use-agent-config";
 import { FormProvider, useForm } from "react-hook-form";
 import { useMcpServers } from "@/features/settings/hooks/use-mcp-servers";
 import { useAuthContext } from "@/providers/Auth";
+import { toServerSlug, deduplicateSlugs } from "@/lib/mcp-slug";
 
 interface CreateAgentDialogProps {
   agentId?: string;
@@ -124,6 +125,15 @@ function CreateAgentFormContent(props: {
             tools: server ? (selectedToolsByServer[server.id] ?? []) : [],
           };
         });
+
+        // Prefix tool names with server slugs so claudia-agentic can filter with Set.has()
+        const slugs = deduplicateSlugs(
+          (mcpServersPayload as { name?: string }[]).map((s) => toServerSlug(s.name ?? ""))
+        );
+        mcpServersPayload = (mcpServersPayload as Record<string, unknown>[]).map((server, i) => ({
+          ...server,
+          tools: ((server.tools as string[]) ?? []).map((t) => `${slugs[i]}__${t}`),
+        }));
       } else {
         // Explicit empty array — new agent has no MCP servers
         mcpServersPayload = [];

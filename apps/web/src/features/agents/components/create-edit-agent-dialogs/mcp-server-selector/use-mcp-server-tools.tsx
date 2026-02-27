@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useAuthContext } from "@/providers/Auth";
+import { useTenantContext } from "@/providers/Tenant";
 
 export interface Tool {
   name: string;
@@ -24,6 +26,8 @@ export function useMcpServerTools(
   serverId: string | null,
   tenant?: string,
 ): UseMcpServerToolsReturn {
+  const { session } = useAuthContext();
+  const { selectedTenantId } = useTenantContext();
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +55,16 @@ export function useMcpServerTools(
         const url = tenant
           ? `/api/mcp-servers/${serverId}/tools?tenant=${encodeURIComponent(tenant)}`
           : `/api/mcp-servers/${serverId}/tools`;
-        const res = await fetch(url);
+
+        const headers: HeadersInit = {};
+        if (session?.accessToken) {
+          headers["Authorization"] = `Bearer ${session.accessToken}`;
+        }
+        if (selectedTenantId) {
+          headers["x-tenant-name"] = selectedTenantId;
+        }
+
+        const res = await fetch(url, { headers });
         if (aborted) return;
 
         if (!res.ok) {
@@ -87,7 +100,7 @@ export function useMcpServerTools(
     return () => {
       aborted = true;
     };
-  }, [serverId, tenant, fetchCounter]);
+  }, [serverId, tenant, fetchCounter, session?.accessToken, selectedTenantId]);
 
   return { tools, loading, error, refetch };
 }

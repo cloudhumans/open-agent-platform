@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
+import { useAuthContext } from "@/providers/Auth";
+import { useTenantContext } from "@/providers/Tenant";
 
 export interface McpServer {
   id: string;
@@ -27,15 +29,29 @@ interface UseMcpServersReturn {
 }
 
 export function useMcpServers(): UseMcpServersReturn {
+  const { session } = useAuthContext();
+  const { selectedTenantId } = useTenantContext();
   const [servers, setServers] = useState<McpServer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getAuthHeaders = useCallback((): HeadersInit => {
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (session?.accessToken) {
+      headers["Authorization"] = `Bearer ${session.accessToken}`;
+    }
+    if (selectedTenantId) {
+      headers["x-tenant-name"] = selectedTenantId;
+    }
+    return headers;
+  }, [session?.accessToken, selectedTenantId]);
+
   const fetchServers = useCallback(async () => {
+    if (!selectedTenantId) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/mcp-servers");
+      const res = await fetch("/api/mcp-servers", { headers: getAuthHeaders() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setServers(data.servers ?? []);
@@ -46,7 +62,7 @@ export function useMcpServers(): UseMcpServersReturn {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getAuthHeaders, selectedTenantId]);
 
   useEffect(() => {
     fetchServers();
@@ -57,7 +73,7 @@ export function useMcpServers(): UseMcpServersReturn {
       try {
         const res = await fetch("/api/mcp-servers", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: getAuthHeaders(),
           body: JSON.stringify(body),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -69,7 +85,7 @@ export function useMcpServers(): UseMcpServersReturn {
         toast.error("Failed to add server");
       }
     },
-    [],
+    [getAuthHeaders],
   );
 
   const updateServer = useCallback(
@@ -77,7 +93,7 @@ export function useMcpServers(): UseMcpServersReturn {
       try {
         const res = await fetch(`/api/mcp-servers/${id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: getAuthHeaders(),
           body: JSON.stringify(body),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -89,12 +105,15 @@ export function useMcpServers(): UseMcpServersReturn {
         toast.error("Failed to update server");
       }
     },
-    [],
+    [getAuthHeaders],
   );
 
   const deleteServer = useCallback(async (id: string) => {
     try {
-      const res = await fetch(`/api/mcp-servers/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/mcp-servers/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setServers((prev) => prev.filter((s) => s.id !== id));
       toast.success("Server deleted");
@@ -102,7 +121,7 @@ export function useMcpServers(): UseMcpServersReturn {
       console.error("[useMcpServers] Failed to delete:", err);
       toast.error("Failed to delete server");
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   const toggleServer = useCallback(async (id: string, enabled: boolean) => {
     // Optimistic update
@@ -112,7 +131,7 @@ export function useMcpServers(): UseMcpServersReturn {
     try {
       const res = await fetch(`/api/mcp-servers/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ enabled }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -124,7 +143,7 @@ export function useMcpServers(): UseMcpServersReturn {
       );
       toast.error("Failed to update server");
     }
-  }, []);
+  }, [getAuthHeaders]);
 
   return {
     servers,

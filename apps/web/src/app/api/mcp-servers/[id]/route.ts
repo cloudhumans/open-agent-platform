@@ -4,6 +4,7 @@ import { z } from "zod";
 import { connectDB } from "@/lib/mongodb";
 import McpServer from "@/models/mcp-server";
 import { encrypt, decrypt, maskCredential } from "@/lib/encryption";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 const DEFAULT_SERVER_IDS = ["default-typebot", "default-cloudhumans"];
 
@@ -51,6 +52,9 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) return auth.response;
+
   try {
     const { id } = await params;
 
@@ -100,10 +104,11 @@ export async function PUT(
           : null;
     }
 
-    const updated = await McpServer.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    }).lean();
+    const updated = await McpServer.findOneAndUpdate(
+      { _id: id, tenantName: auth.tenantName },
+      updateData,
+      { new: true, runValidators: true },
+    ).lean();
 
     if (!updated) {
       return Response.json({ error: "Server not found" }, { status: 404 });
@@ -136,9 +141,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) return auth.response;
+
   try {
     const { id } = await params;
 
@@ -162,7 +170,10 @@ export async function DELETE(
       );
     }
 
-    const deleted = await McpServer.findByIdAndDelete(id).lean();
+    const deleted = await McpServer.findOneAndDelete({
+      _id: id,
+      tenantName: auth.tenantName,
+    }).lean();
 
     if (!deleted) {
       return Response.json({ error: "Server not found" }, { status: 404 });

@@ -6,14 +6,18 @@ import { connectDB } from "@/lib/mongodb";
 import { decrypt } from "@/lib/encryption";
 import { getDefaultServers } from "@/lib/mcp-defaults";
 import McpServer from "@/models/mcp-server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
 
   let serverUrl: string;
@@ -36,7 +40,10 @@ export async function GET(
 
     await connectDB();
 
-    const doc = await McpServer.findById(id).lean();
+    const doc = await McpServer.findOne({
+      _id: id,
+      tenantName: auth.tenantName,
+    }).lean();
 
     if (!doc) {
       return Response.json({ error: "Server not found" }, { status: 404 });
@@ -61,7 +68,7 @@ export async function GET(
   }
 
   // Forward tenant header when present
-  const tenant = _req.nextUrl.searchParams.get("tenant");
+  const tenant = req.nextUrl.searchParams.get("tenant");
   if (tenant) {
     headers["x-tenant"] = tenant;
   }

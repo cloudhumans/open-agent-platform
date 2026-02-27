@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/mongodb";
 import McpServer from "@/models/mcp-server";
 import { getDefaultServers } from "@/lib/mcp-defaults";
 import { encrypt, decrypt, maskCredential } from "@/lib/encryption";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 const CreateMcpServerSchema = z
   .object({
@@ -35,7 +36,10 @@ const CreateMcpServerSchema = z
     }
   });
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) return auth.response;
+
   const defaults = getDefaultServers().map((server) => ({
     ...server,
     credentials: maskCredential(server.credentials),
@@ -55,7 +59,7 @@ export async function GET() {
 
   try {
     await connectDB();
-    const docs = await McpServer.find({}).lean();
+    const docs = await McpServer.find({ tenantName: auth.tenantName }).lean();
 
     for (const doc of docs) {
       userServers.push({
@@ -84,6 +88,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) return auth.response;
+
   try {
     const body = await req.json();
     const parsed = CreateMcpServerSchema.safeParse(body);
@@ -111,6 +118,7 @@ export async function POST(req: NextRequest) {
     const doc = await McpServer.create({
       ...parsed.data,
       credentials: encryptedCreds,
+      tenantName: auth.tenantName,
     });
 
     return Response.json(

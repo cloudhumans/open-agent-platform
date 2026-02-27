@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { decrypt } from "@/lib/encryption";
 import { getDefaultServers } from "@/lib/mcp-defaults";
 import McpServer from "@/models/mcp-server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,9 @@ interface ServerSnapshot {
 }
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (!auth.ok) return auth.response;
+
   const { searchParams } = new URL(req.url);
   const ids = searchParams.getAll("ids[]");
 
@@ -69,6 +73,7 @@ export async function GET(req: NextRequest) {
 
         const docs = await McpServer.find({
           _id: { $in: validIds },
+          tenantName: auth.tenantName,
         }).lean();
 
         for (const doc of docs) {

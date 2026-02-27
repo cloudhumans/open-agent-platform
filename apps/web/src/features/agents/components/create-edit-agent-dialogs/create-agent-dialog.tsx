@@ -22,6 +22,7 @@ import { GraphSelect } from "./graph-select";
 import { useAgentConfig } from "@/hooks/use-agent-config";
 import { FormProvider, useForm } from "react-hook-form";
 import { useMcpServers } from "@/features/settings/hooks/use-mcp-servers";
+import { useAuthContext } from "@/providers/Auth";
 
 interface CreateAgentDialogProps {
   agentId?: string;
@@ -47,7 +48,8 @@ function CreateAgentFormContent(props: {
     agentsConfigurations,
     hasMcpServers,
   } = useAgentConfig();
-  const { selectedTenant } = useTenantContext();
+  const { selectedTenant, selectedTenantId } = useTenantContext();
+  const { session } = useAuthContext();
   const { servers: availableServers } = useMcpServers();
   const [submitting, setSubmitting] = useState(false);
   // New agents start with no MCP tools selected
@@ -92,7 +94,16 @@ function CreateAgentFormContent(props: {
       if (serverIdsWithTools.length > 0) {
         // Fetch decrypted server snapshots for selected servers
         const qs = serverIdsWithTools.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
-        const snapshotRes = await fetch(`/api/mcp-servers/snapshot?${qs}`);
+        const snapshotHeaders: HeadersInit = {};
+        if (session?.accessToken) {
+          snapshotHeaders["Authorization"] = `Bearer ${session.accessToken}`;
+        }
+        if (selectedTenantId) {
+          snapshotHeaders["x-tenant-name"] = selectedTenantId;
+        }
+        const snapshotRes = await fetch(`/api/mcp-servers/snapshot?${qs}`, {
+          headers: snapshotHeaders,
+        });
         if (!snapshotRes.ok) {
           toast.error("Failed to fetch MCP server configuration", {
             description: "Please try again",

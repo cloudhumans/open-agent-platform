@@ -6,6 +6,7 @@ import McpServer from "@/models/mcp-server";
 import { getDefaultServers } from "@/lib/mcp-defaults";
 import { encrypt, decrypt, maskCredential } from "@/lib/encryption";
 import { requireAuth } from "@/lib/auth/require-auth";
+import { toServerSlug } from "@/lib/mcp-slug";
 
 const CreateMcpServerSchema = z
   .object({
@@ -48,6 +49,7 @@ export async function GET(req: NextRequest) {
   const userServers: Array<{
     id: string;
     name: string;
+    slug: string;
     url: string;
     authType: "none" | "bearer" | "apiKey";
     credentials: string | null;
@@ -65,6 +67,7 @@ export async function GET(req: NextRequest) {
       userServers.push({
         id: (doc._id as mongoose.Types.ObjectId).toString(),
         name: doc.name,
+        slug: doc.slug,
         url: doc.url,
         authType: doc.authType,
         credentials:
@@ -111,12 +114,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const slug = toServerSlug(parsed.data.name);
+    const defaultSlugs = getDefaultServers().map((s) => s.slug);
+    if (defaultSlugs.includes(slug)) {
+      return Response.json(
+        { error: `Slug "${slug}" conflicts with a default server` },
+        { status: 409 },
+      );
+    }
+
     const encryptedCreds = parsed.data.credentials
       ? encrypt(parsed.data.credentials)
       : null;
 
     const doc = await McpServer.create({
       ...parsed.data,
+      slug,
       credentials: encryptedCreds,
       tenantName: auth.tenantName,
     });
@@ -125,6 +138,7 @@ export async function POST(req: NextRequest) {
       {
         id: doc._id.toString(),
         name: doc.name,
+        slug: doc.slug,
         url: doc.url,
         authType: doc.authType,
         credentials:
@@ -138,7 +152,13 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 },
     );
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 11000) {
+      return Response.json(
+        { error: "A server with this name already exists" },
+        { status: 409 },
+      );
+    }
     console.error("[MCP] Failed to create server:", error);
     return Response.json(
       { error: "Failed to create server" },

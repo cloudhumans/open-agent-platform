@@ -22,7 +22,7 @@ import { hasStaleSupervisors } from "@/lib/agent-utils";
 import { StaleSupervisorsWarningDialog } from "./stale-supervisors-warning-dialog";
 import { useMcpServers } from "@/features/settings/hooks/use-mcp-servers";
 import { useAuthContext } from "@/providers/Auth";
-import { toServerSlug, deduplicateSlugs } from "@/lib/mcp-slug";
+import { toServerSlug } from "@/lib/mcp-slug";
 
 interface EditAgentDialogProps {
   agent: Agent;
@@ -84,16 +84,12 @@ function EditAgentDialogContent({
     initializedRef.current = true;
 
     const rawSnapshot = (agent.config?.configurable?.mcp_servers ?? []) as unknown;
-    const existingSnapshot: { id?: string; name?: string; tools?: string[] }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
+    const existingSnapshot: { id?: string; name?: string; slug?: string; tools?: string[] }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
     if (existingSnapshot.length > 0) {
-      // Compute slugs to strip prefixes from stored tool names
-      const snapshotSlugs = deduplicateSlugs(
-        existingSnapshot.map((s) => toServerSlug(s.name ?? ""))
-      );
       const toolsByServer: Record<string, string[]> = {};
-      for (let i = 0; i < existingSnapshot.length; i++) {
-        const snap = existingSnapshot[i];
-        const slug = snapshotSlugs[i];
+      for (const snap of existingSnapshot) {
+        // Use stored slug, fall back to computing from name for old configs
+        const slug = snap.slug ?? toServerSlug(snap.name ?? "");
         const prefix = `${slug}__`;
         // Match by id first, fall back to name (for snapshots saved before id was added)
         const server =
@@ -152,24 +148,18 @@ function EditAgentDialogContent({
         // Augment each snapshot with its selected tools array
         const servers = (snapshotData.servers ?? []) as Record<string, unknown>[];
         mcpServersPayload = servers.map((snap) => {
-          const snapTyped = snap as { id?: string; name?: string };
+          const snapTyped = snap as { id?: string; name?: string; slug?: string };
           const server =
             (snapTyped.id && availableServers.find((s) => s.id === snapTyped.id)) ||
             availableServers.find((s) => s.name === snapTyped.name);
+          const slug = snapTyped.slug ?? "";
           return {
             ...snap,
-            tools: server ? (selectedToolsByServer[server.id] ?? []) : [],
+            tools: (server ? (selectedToolsByServer[server.id] ?? []) : []).map(
+              (t) => `${slug}__${t}`,
+            ),
           };
         });
-
-        // Prefix tool names with server slugs so claudia-agentic can filter with Set.has()
-        const slugs = deduplicateSlugs(
-          (mcpServersPayload as { name?: string }[]).map((s) => toServerSlug(s.name ?? ""))
-        );
-        mcpServersPayload = (mcpServersPayload as Record<string, unknown>[]).map((server, i) => ({
-          ...server,
-          tools: ((server.tools as string[]) ?? []).map((t) => `${slugs[i]}__${t}`),
-        }));
       } else {
         // Explicit empty array — agent has no MCP servers assigned
         mcpServersPayload = [];

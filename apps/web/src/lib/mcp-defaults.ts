@@ -1,6 +1,7 @@
 export interface McpServerDefault {
   id: string;
   name: string;
+  slug: string;
   url: string;
   authType: "bearer";
   credentials: string | null;
@@ -17,6 +18,7 @@ export function getDefaultServers(): McpServerDefault[] {
     defaults.push({
       id: "default-typebot",
       name: "Typebot",
+      slug: "typebot",
       url: process.env.MCP_TYPEBOT_URL,
       authType: "bearer",
       credentials: process.env.MCP_TYPEBOT_BEARER_TOKEN ?? null,
@@ -31,6 +33,7 @@ export function getDefaultServers(): McpServerDefault[] {
     defaults.push({
       id: "default-cloudhumans",
       name: "CloudHumans",
+      slug: "cloudhumans",
       url: process.env.MCP_CLOUDHUMANS_URL,
       authType: "bearer",
       credentials: process.env.MCP_CLOUDHUMANS_BEARER_TOKEN ?? null,

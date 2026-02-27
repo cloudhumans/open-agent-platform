@@ -8,6 +8,7 @@ import { useTenantContext } from "@/providers/Tenant";
 export interface McpServer {
   id: string;
   name: string;
+  slug: string;
   url: string;
   authType: "none" | "bearer" | "apiKey";
   credentials: string | null;

@@ -11,6 +11,7 @@ export const runtime = "nodejs";
 interface ServerSnapshot {
   id: string;
   name: string;
+  slug: string;
   url: string;
   authType: "none" | "bearer" | "apiKey";
   credentials: string | null;
@@ -50,6 +51,7 @@ export async function GET(req: NextRequest) {
         results.push({
           id: server.id,
           name: server.name,
+          slug: server.slug,
           url: server.url,
           authType: server.authType,
           credentials: server.credentials,
@@ -85,6 +87,7 @@ export async function GET(req: NextRequest) {
           results.push({
             id: doc._id.toString(),
             name: doc.name,
+            slug: doc.slug,
             url: doc.url,
             authType: doc.authType,
             credentials: decrypted,

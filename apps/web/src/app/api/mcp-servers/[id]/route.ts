@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/mongodb";
 import McpServer from "@/models/mcp-server";
 import { encrypt, decrypt, maskCredential } from "@/lib/encryption";
 import { requireAuth } from "@/lib/auth/require-auth";
+import { toServerSlug } from "@/lib/mcp-slug";
 
 const DEFAULT_SERVER_IDS = ["default-typebot", "default-cloudhumans"];
 
@@ -90,7 +91,10 @@ export async function PUT(
 
     const updateData: Record<string, unknown> = {};
 
-    if (parsed.data.name !== undefined) updateData.name = parsed.data.name;
+    if (parsed.data.name !== undefined) {
+      updateData.name = parsed.data.name;
+      updateData.slug = toServerSlug(parsed.data.name);
+    }
     if (parsed.data.url !== undefined) updateData.url = parsed.data.url;
     if (parsed.data.authType !== undefined)
       updateData.authType = parsed.data.authType;
@@ -118,6 +122,7 @@ export async function PUT(
       {
         id: (updated._id as mongoose.Types.ObjectId).toString(),
         name: updated.name,
+        slug: updated.slug,
         url: updated.url,
         authType: updated.authType,
         credentials:
@@ -131,7 +136,13 @@ export async function PUT(
       },
       { status: 200 },
     );
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 11000) {
+      return Response.json(
+        { error: "A server with this name already exists" },
+        { status: 409 },
+      );
+    }
     console.error("[MCP] Failed to update server:", error);
     return Response.json(
       { error: "Failed to update server" },

@@ -22,7 +22,7 @@ import { hasStaleSupervisors } from "@/lib/agent-utils";
 import { StaleSupervisorsWarningDialog } from "./stale-supervisors-warning-dialog";
 import { useMcpServers } from "@/features/settings/hooks/use-mcp-servers";
 import { useAuthContext } from "@/providers/Auth";
-import { toServerSlug } from "@/lib/mcp-slug";
+
 
 interface EditAgentDialogProps {
   agent: Agent;
@@ -88,8 +88,7 @@ function EditAgentDialogContent({
     if (existingSnapshot.length > 0) {
       const toolsByServer: Record<string, string[]> = {};
       for (const snap of existingSnapshot) {
-        // Use stored slug, fall back to computing from name for old configs
-        const slug = snap.slug ?? toServerSlug(snap.name ?? "");
+        const slug = snap.slug!;
         const prefix = `${slug}__`;
         // Match by id first, fall back to name (for snapshots saved before id was added)
         const server =

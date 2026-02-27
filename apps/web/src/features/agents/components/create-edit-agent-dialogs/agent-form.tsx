@@ -23,6 +23,7 @@ import {
 import _ from "lodash";
 import { useFetchPreselectedTools } from "@/hooks/use-fetch-preselected-tools";
 import { Controller, useFormContext } from "react-hook-form";
+import { McpServerToolGroups } from "./mcp-server-selector/mcp-server-tool-groups";
 
 export function AgentFieldsFormLoading() {
   return (
@@ -46,6 +47,10 @@ interface AgentFieldsFormProps {
   agentId: string;
   ragConfigurations: ConfigurableFieldRAGMetadata[];
   agentsConfigurations: ConfigurableFieldAgentsMetadata[];
+  hasMcpServers?: boolean;
+  selectedToolsByServer?: Record<string, string[]>;
+  onMcpToolSelectionChange?: (selection: Record<string, string[]>) => void;
+  tenant?: string;
 }
 
 export function AgentFieldsForm({
@@ -54,6 +59,10 @@ export function AgentFieldsForm({
   agentId,
   ragConfigurations,
   agentsConfigurations,
+  hasMcpServers = false,
+  selectedToolsByServer = {},
+  onMcpToolSelectionChange,
+  tenant,
 }: AgentFieldsFormProps) {
   const form = useFormContext<{
     name: string;
@@ -190,7 +199,7 @@ export function AgentFieldsForm({
             </div>
           </>
         )}
-        {toolConfigurations.length > 0 && (
+        {(toolConfigurations.length > 0 || hasMcpServers) && (
           <>
             <Separator />
             <div className="flex w-full flex-col items-start justify-start gap-4">
@@ -204,62 +213,74 @@ export function AgentFieldsForm({
               />
               <div className="relative w-full flex-1 basis-[500px] rounded-md border-[1px] border-slate-200 px-4">
                 <div className="absolute inset-0 overflow-y-auto px-4">
-                  {toolConfigurations[0]?.label
-                    ? displayTools.map((c) => (
-                        <Controller
-                          key={`tool-${c.name}`}
-                          control={form.control}
-                          name={`config.${toolConfigurations[0].label}`}
-                          render={({ field: { value, onChange } }) => (
-                            <ConfigFieldTool
+                  {toolConfigurations.length > 0 && !hasMcpServers && (
+                    <>
+                      {toolConfigurations[0]?.label
+                        ? displayTools.map((c) => (
+                            <Controller
                               key={`tool-${c.name}`}
-                              id={c.name}
-                              label={c.name}
-                              description={c.description}
-                              agentId={agentId}
-                              toolId={toolConfigurations[0].label}
-                              className="border-b-[1px] py-4"
-                              value={value}
-                              setValue={onChange}
+                              control={form.control}
+                              name={`config.${toolConfigurations[0].label}`}
+                              render={({ field: { value, onChange } }) => (
+                                <ConfigFieldTool
+                                  key={`tool-${c.name}`}
+                                  id={c.name}
+                                  label={c.name}
+                                  description={c.description}
+                                  agentId={agentId}
+                                  toolId={toolConfigurations[0].label}
+                                  className="border-b-[1px] py-4"
+                                  value={value}
+                                  setValue={onChange}
+                                />
+                              )}
                             />
-                          )}
-                        />
-                      ))
-                    : null}
-                  {displayTools.length === 0 && toolSearchTerm && (
-                    <p className="my-4 w-full text-center text-sm text-slate-500">
-                      No tools found matching "{toolSearchTerm}".
-                    </p>
+                          ))
+                        : null}
+                      {displayTools.length === 0 && toolSearchTerm && (
+                        <p className="my-4 w-full text-center text-sm text-slate-500">
+                          No tools found matching &quot;{toolSearchTerm}&quot;.
+                        </p>
+                      )}
+                      {tools.length === 0 && !toolSearchTerm && (
+                        <p className="my-4 w-full text-center text-sm text-slate-500">
+                          No tools available for this agent.
+                        </p>
+                      )}
+                      {cursor && !toolSearchTerm && (
+                        <div className="flex justify-center py-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              try {
+                                setLoadingMore(true);
+                                const moreTool = await getTools(cursor);
+                                setTools((prevTools) => [
+                                  ...prevTools,
+                                  ...moreTool,
+                                ]);
+                              } catch (error) {
+                                console.error("Failed to load more tools:", error);
+                              } finally {
+                                setLoadingMore(false);
+                              }
+                            }}
+                            disabled={loadingMore || loading}
+                          >
+                            {loadingMore ? "Loading..." : "Load More Tools"}
+                          </Button>
+                        </div>
+                      )}
+                    </>
                   )}
-                  {tools.length === 0 && !toolSearchTerm && (
-                    <p className="my-4 w-full text-center text-sm text-slate-500">
-                      No tools available for this agent.
-                    </p>
-                  )}
-                  {cursor && !toolSearchTerm && (
-                    <div className="flex justify-center py-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={async () => {
-                          try {
-                            setLoadingMore(true);
-                            const moreTool = await getTools(cursor);
-                            setTools((prevTools) => [
-                              ...prevTools,
-                              ...moreTool,
-                            ]);
-                          } catch (error) {
-                            console.error("Failed to load more tools:", error);
-                          } finally {
-                            setLoadingMore(false);
-                          }
-                        }}
-                        disabled={loadingMore || loading}
-                      >
-                        {loadingMore ? "Loading..." : "Load More Tools"}
-                      </Button>
-                    </div>
+                  {hasMcpServers && onMcpToolSelectionChange && (
+                    <McpServerToolGroups
+                      selectedToolsByServer={selectedToolsByServer}
+                      onSelectionChange={onMcpToolSelectionChange}
+                      searchTerm={toolSearchTerm}
+                      tenant={tenant}
+                    />
                   )}
                 </div>
               </div>

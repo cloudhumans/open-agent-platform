@@ -21,6 +21,7 @@ import { getDeployments } from "@/lib/environment/deployments";
 import { GraphSelect } from "./graph-select";
 import { useAgentConfig } from "@/hooks/use-agent-config";
 import { FormProvider, useForm } from "react-hook-form";
+import { useMcpServers } from "@/features/settings/hooks/use-mcp-servers";
 
 interface CreateAgentDialogProps {
   agentId?: string;
@@ -35,6 +36,23 @@ function CreateAgentFormContent(props: {
   selectedDeployment: Deployment;
   onClose: () => void;
 }) {
+  const { createAgent } = useAgents();
+  const { refreshAgents } = useAgentsContext();
+  const {
+    getSchemaAndUpdateConfig,
+    loading,
+    configurations,
+    toolConfigurations,
+    ragConfigurations,
+    agentsConfigurations,
+    hasMcpServers,
+  } = useAgentConfig();
+  const { selectedTenant } = useTenantContext();
+  const { servers: availableServers } = useMcpServers();
+  const [submitting, setSubmitting] = useState(false);
+  // New agents start with no MCP tools selected
+  const [selectedToolsByServer, setSelectedToolsByServer] = useState<Record<string, string[]>>({});
+
   const form = useForm<{
     name: string;
     description: string;
@@ -50,19 +68,6 @@ function CreateAgentFormContent(props: {
     },
   });
 
-  const { createAgent } = useAgents();
-  const { refreshAgents } = useAgentsContext();
-  const {
-    getSchemaAndUpdateConfig,
-    loading,
-    configurations,
-    toolConfigurations,
-    ragConfigurations,
-    agentsConfigurations,
-  } = useAgentConfig();
-  const { selectedTenant } = useTenantContext();
-  const [submitting, setSubmitting] = useState(false);
-
   const handleSubmit = async (data: {
     name: string;
     description: string;
@@ -76,6 +81,51 @@ function CreateAgentFormContent(props: {
       return;
     }
 
+    let mcpServersPayload: unknown[] | undefined;
+
+    if (hasMcpServers) {
+      // Only include servers that have at least 1 tool selected
+      const serverIdsWithTools = Object.entries(selectedToolsByServer)
+        .filter(([, tools]) => tools.length > 0)
+        .map(([id]) => id);
+
+      if (serverIdsWithTools.length > 0) {
+        // Fetch decrypted server snapshots for selected servers
+        const qs = serverIdsWithTools.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
+        const snapshotRes = await fetch(`/api/mcp-servers/snapshot?${qs}`);
+        if (!snapshotRes.ok) {
+          toast.error("Failed to fetch MCP server configuration", {
+            description: "Please try again",
+            richColors: true,
+          });
+          return;
+        }
+        const snapshotData = await snapshotRes.json();
+        // Augment each snapshot with its selected tools array
+        const servers = (snapshotData.servers ?? []) as Record<string, unknown>[];
+        mcpServersPayload = servers.map((snap) => {
+          const server = availableServers.find((s) => s.name === (snap as { name?: string }).name);
+          return {
+            ...snap,
+            tools: server ? (selectedToolsByServer[server.id] ?? []) : [],
+          };
+        });
+      } else {
+        // Explicit empty array — new agent has no MCP servers
+        mcpServersPayload = [];
+      }
+    }
+
+    const configPayload: Record<string, any> = {
+      ...config,
+      tenant: selectedTenant?.tenantName,
+    };
+
+    // Only include mcp_servers if the graph schema declares it
+    if (hasMcpServers) {
+      configPayload.mcp_servers = mcpServersPayload;
+    }
+
     setSubmitting(true);
     const newAgent = await createAgent(
       props.selectedDeployment.id,
@@ -83,10 +133,7 @@ function CreateAgentFormContent(props: {
       {
         name,
         description,
-        config: {
-          ...config,
-          tenant: selectedTenant?.tenantName,
-        },
+        config: configPayload,
       },
     );
     setSubmitting(false);
@@ -120,6 +167,10 @@ function CreateAgentFormContent(props: {
             toolConfigurations={toolConfigurations}
             ragConfigurations={ragConfigurations}
             agentsConfigurations={agentsConfigurations}
+            hasMcpServers={hasMcpServers}
+            selectedToolsByServer={selectedToolsByServer}
+            onMcpToolSelectionChange={setSelectedToolsByServer}
+            tenant={selectedTenant?.tenantName}
           />
         </FormProvider>
       )}

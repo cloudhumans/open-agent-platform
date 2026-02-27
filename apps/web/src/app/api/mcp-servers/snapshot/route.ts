@@ -9,6 +9,7 @@ import { requireAuth } from "@/lib/auth/require-auth";
 export const runtime = "nodejs";
 
 interface ServerSnapshot {
+  id: string;
   name: string;
   url: string;
   authType: "none" | "bearer" | "apiKey";
@@ -47,6 +48,7 @@ export async function GET(req: NextRequest) {
       const server = defaults.find((s) => s.id === id);
       if (server) {
         results.push({
+          id: server.id,
           name: server.name,
           url: server.url,
           authType: server.authType,
@@ -81,6 +83,7 @@ export async function GET(req: NextRequest) {
             doc.credentials != null ? decrypt(doc.credentials) : null;
 
           results.push({
+            id: doc._id.toString(),
             name: doc.name,
             url: doc.url,
             authType: doc.authType,

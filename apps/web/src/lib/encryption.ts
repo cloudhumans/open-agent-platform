@@ -14,6 +14,11 @@ function getKey(): Buffer {
   const envVar = process.env.MCP_ENCRYPTION_KEY;
 
   if (!envVar) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "MCP_ENCRYPTION_KEY is required in production. Set a 64-char hex string (32 bytes).",
+      );
+    }
     console.warn(
       "[MCP] MCP_ENCRYPTION_KEY not set — using insecure dev fallback. Set this env var in production.",
     );

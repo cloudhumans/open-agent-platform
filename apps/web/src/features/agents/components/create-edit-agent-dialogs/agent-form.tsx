@@ -24,6 +24,7 @@ import _ from "lodash";
 import { useFetchPreselectedTools } from "@/hooks/use-fetch-preselected-tools";
 import { Controller, useFormContext } from "react-hook-form";
 import { McpServerToolGroups } from "./mcp-server-selector/mcp-server-tool-groups";
+import { McpServer } from "@/features/settings/hooks/use-mcp-servers";
 
 export function AgentFieldsFormLoading() {
   return (
@@ -48,6 +49,8 @@ interface AgentFieldsFormProps {
   ragConfigurations: ConfigurableFieldRAGMetadata[];
   agentsConfigurations: ConfigurableFieldAgentsMetadata[];
   hasMcpServers?: boolean;
+  mcpServers?: McpServer[];
+  mcpServersLoading?: boolean;
   selectedToolsByServer?: Record<string, string[]>;
   onMcpToolSelectionChange?: (selection: Record<string, string[]>) => void;
   tenant?: string;
@@ -60,6 +63,8 @@ export function AgentFieldsForm({
   ragConfigurations,
   agentsConfigurations,
   hasMcpServers = false,
+  mcpServers = [],
+  mcpServersLoading = false,
   selectedToolsByServer = {},
   onMcpToolSelectionChange,
   tenant,
@@ -276,6 +281,8 @@ export function AgentFieldsForm({
                   )}
                   {hasMcpServers && onMcpToolSelectionChange && (
                     <McpServerToolGroups
+                      servers={mcpServers}
+                      serversLoading={mcpServersLoading}
                       selectedToolsByServer={selectedToolsByServer}
                       onSelectionChange={onMcpToolSelectionChange}
                       searchTerm={toolSearchTerm}

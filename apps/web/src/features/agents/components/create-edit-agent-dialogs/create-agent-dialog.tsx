@@ -50,7 +50,7 @@ function CreateAgentFormContent(props: {
   } = useAgentConfig();
   const { selectedTenant, selectedTenantId } = useTenantContext();
   const { session } = useAuthContext();
-  const { servers: availableServers } = useMcpServers();
+  const { servers: availableServers, loading: serversLoading } = useMcpServers();
   const [submitting, setSubmitting] = useState(false);
   // New agents start with no MCP tools selected
   const [selectedToolsByServer, setSelectedToolsByServer] = useState<Record<string, string[]>>({});
@@ -115,7 +115,10 @@ function CreateAgentFormContent(props: {
         // Augment each snapshot with its selected tools array
         const servers = (snapshotData.servers ?? []) as Record<string, unknown>[];
         mcpServersPayload = servers.map((snap) => {
-          const server = availableServers.find((s) => s.name === (snap as { name?: string }).name);
+          const snapTyped = snap as { id?: string; name?: string };
+          const server =
+            (snapTyped.id && availableServers.find((s) => s.id === snapTyped.id)) ||
+            availableServers.find((s) => s.name === snapTyped.name);
           return {
             ...snap,
             tools: server ? (selectedToolsByServer[server.id] ?? []) : [],
@@ -179,6 +182,8 @@ function CreateAgentFormContent(props: {
             ragConfigurations={ragConfigurations}
             agentsConfigurations={agentsConfigurations}
             hasMcpServers={hasMcpServers}
+            mcpServers={availableServers}
+            mcpServersLoading={serversLoading}
             selectedToolsByServer={selectedToolsByServer}
             onMcpToolSelectionChange={setSelectedToolsByServer}
             tenant={selectedTenant?.tenantName}

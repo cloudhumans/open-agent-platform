@@ -56,7 +56,7 @@ function EditAgentDialogContent({
   const [selectedToolsByServer, setSelectedToolsByServer] = useState<Record<string, string[]>>({});
 
   // For pre-populating selected servers on edit: match existing snapshot names to current server IDs
-  const { servers: availableServers } = useMcpServers();
+  const { servers: availableServers, loading: serversLoading } = useMcpServers();
 
   const form = useForm<{
     name: string;
@@ -83,11 +83,14 @@ function EditAgentDialogContent({
     initializedRef.current = true;
 
     const rawSnapshot = (agent.config?.configurable?.mcp_servers ?? []) as unknown;
-    const existingSnapshot: { name?: string; tools?: string[] }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
+    const existingSnapshot: { id?: string; name?: string; tools?: string[] }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
     if (existingSnapshot.length > 0) {
       const toolsByServer: Record<string, string[]> = {};
       for (const snap of existingSnapshot) {
-        const server = availableServers.find((s) => s.name === snap.name);
+        // Match by id first, fall back to name (for snapshots saved before id was added)
+        const server =
+          (snap.id && availableServers.find((s) => s.id === snap.id)) ||
+          availableServers.find((s) => s.name === snap.name);
         if (server && Array.isArray(snap.tools) && snap.tools.length > 0) {
           toolsByServer[server.id] = snap.tools;
         }
@@ -139,7 +142,10 @@ function EditAgentDialogContent({
         // Augment each snapshot with its selected tools array
         const servers = (snapshotData.servers ?? []) as Record<string, unknown>[];
         mcpServersPayload = servers.map((snap) => {
-          const server = availableServers.find((s) => s.name === (snap as { name?: string }).name);
+          const snapTyped = snap as { id?: string; name?: string };
+          const server =
+            (snapTyped.id && availableServers.find((s) => s.id === snapTyped.id)) ||
+            availableServers.find((s) => s.name === snapTyped.name);
           return {
             ...snap,
             tools: server ? (selectedToolsByServer[server.id] ?? []) : [],
@@ -234,6 +240,8 @@ function EditAgentDialogContent({
               ragConfigurations={ragConfigurations}
               agentsConfigurations={agentsConfigurations}
               hasMcpServers={hasMcpServers}
+              mcpServers={availableServers}
+              mcpServersLoading={serversLoading}
               selectedToolsByServer={selectedToolsByServer}
               onMcpToolSelectionChange={setSelectedToolsByServer}
               tenant={selectedTenant?.tenantName}

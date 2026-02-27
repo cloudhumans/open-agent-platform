@@ -9,10 +9,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import {
-  useMcpServers,
-  McpServer,
-} from "@/features/settings/hooks/use-mcp-servers";
+import { McpServer } from "@/features/settings/hooks/use-mcp-servers";
 import { useMcpServerTools } from "./use-mcp-server-tools";
 import { ChevronDown } from "lucide-react";
 import _ from "lodash";
@@ -123,6 +120,8 @@ function ServerToolList({
 // ---------------------------------------------------------------------------
 
 export interface McpServerToolGroupsProps {
+  servers: McpServer[];
+  serversLoading: boolean;
   selectedToolsByServer: Record<string, string[]>;
   onSelectionChange: (selection: Record<string, string[]>) => void;
   searchTerm?: string;
@@ -130,12 +129,14 @@ export interface McpServerToolGroupsProps {
 }
 
 export function McpServerToolGroups({
+  servers: allServers,
+  serversLoading: loading,
   selectedToolsByServer,
   onSelectionChange,
   searchTerm,
   tenant,
 }: McpServerToolGroupsProps) {
-  const { servers, loading } = useMcpServers();
+  const servers = allServers.filter((s) => s.enabled);
 
   const handleToolToggle = (
     serverId: string,

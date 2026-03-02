@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Wrench, Bot, MessageCircle, Brain } from "lucide-react";
+import { Wrench, Bot, MessageCircle } from "lucide-react";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -36,11 +36,11 @@ const data = {
     //   url: "/inbox",
     //   icon: Inbox,
     // },
-    {
-      title: "RAG",
-      url: "/rag",
-      icon: Brain,
-    },
+    // {
+    //   title: "RAG",
+    //   url: "/rag",
+    //   icon: Brain,
+    // },
   ],
 };
 

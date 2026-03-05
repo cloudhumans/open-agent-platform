@@ -128,14 +128,16 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   const tenants = useMemo(() => {
     if (!user) return [];
 
-    if (user.metadata?.["custom:hub_role"] === "ADMIN") {
+    // @cloudhumans.com emails get full access to all tenants
+    if (user.email?.endsWith("@cloudhumans.com")) {
       return allTenants;
     }
 
-    const userTenantId = user.metadata?.["custom:tenant_id"];
-    if (!userTenantId) return [];
+    // Other users: filter by their cognito:groups
+    const userGroups: string[] = user.metadata?.["cognito:groups"] ?? [];
+    if (!userGroups.length) return [];
 
-    return allTenants.filter((tenant) => tenant.tenantName === userTenantId);
+    return allTenants.filter((tenant) => userGroups.includes(tenant.tenantName));
   }, [user, allTenants]);
 
   const [selectedTenantKey, setSelectedTenantKeyState] = useState<string>(

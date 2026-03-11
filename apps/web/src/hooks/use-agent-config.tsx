@@ -39,12 +39,14 @@ export function useAgentConfig() {
 
   const [supportedConfigs, setSupportedConfigs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasMcpServers, setHasMcpServers] = useState(false);
 
   const clearState = useCallback(() => {
     setConfigurations([]);
     setToolConfigurations([]);
     setRagConfigurations([]);
     setAgentsConfigurations([]);
+    setHasMcpServers(false);
     setLoading(false);
   }, []);
 
@@ -71,6 +73,13 @@ export function useAgentConfig() {
               (agent.metadata?.description as string | undefined) ?? "",
             config: {},
           };
+
+        // Detect whether the graph schema declares mcp_servers (type: "hidden").
+        // This field is filtered out of configFields but we still need to know it exists
+        // so we can show the MCP Servers section in the agent form.
+        const schemaHasMcpServers = !!schema?.properties?.["mcp_servers"];
+        setHasMcpServers(schemaHasMcpServers);
+
         const { configFields, toolConfig, ragConfig, agentsConfig } =
           extractConfigurationsFromAgent({
             agent,
@@ -142,6 +151,7 @@ export function useAgentConfig() {
     ragConfigurations,
     agentsConfigurations,
     supportedConfigs,
+    hasMcpServers,
 
     loading,
   };

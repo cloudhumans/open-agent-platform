@@ -12,7 +12,6 @@ export interface McpServer {
   url: string;
   authType: "none" | "bearer" | "apiKey";
   credentials: string | null;
-  enabled: boolean;
   isDefault: boolean;
   createdAt: string | null;
   updatedAt: string | null;
@@ -25,7 +24,6 @@ interface UseMcpServersReturn {
   addServer: (body: Omit<McpServer, "id" | "isDefault" | "createdAt" | "updatedAt">) => Promise<void>;
   updateServer: (id: string, body: Partial<Omit<McpServer, "id" | "isDefault" | "createdAt" | "updatedAt">>) => Promise<void>;
   deleteServer: (id: string) => Promise<void>;
-  toggleServer: (id: string, enabled: boolean) => Promise<void>;
   refetch: () => Promise<void>;
 }
 
@@ -124,28 +122,6 @@ export function useMcpServers(): UseMcpServersReturn {
     }
   }, [getAuthHeaders]);
 
-  const toggleServer = useCallback(async (id: string, enabled: boolean) => {
-    // Optimistic update
-    setServers((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, enabled } : s)),
-    );
-    try {
-      const res = await fetch(`/api/mcp-servers/${id}`, {
-        method: "PUT",
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ enabled }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    } catch (err) {
-      // Rollback on failure
-      console.error("[useMcpServers] Failed to toggle:", err);
-      setServers((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, enabled: !enabled } : s)),
-      );
-      toast.error("Failed to update server");
-    }
-  }, [getAuthHeaders]);
-
   return {
     servers,
     loading,
@@ -153,7 +129,6 @@ export function useMcpServers(): UseMcpServersReturn {
     addServer,
     updateServer,
     deleteServer,
-    toggleServer,
     refetch: fetchServers,
   };
 }

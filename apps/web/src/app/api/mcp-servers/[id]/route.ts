@@ -17,7 +17,6 @@ const UpdateMcpServerSchema = z
     url: z.string().url().optional(),
     authType: z.enum(["none", "bearer", "apiKey"]).optional(),
     credentials: z.string().min(1).nullable().optional(),
-    enabled: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.credentials != null && data.credentials.startsWith(MASKED_PREFIX)) {
@@ -98,8 +97,6 @@ export async function PUT(
     if (parsed.data.url !== undefined) updateData.url = parsed.data.url;
     if (parsed.data.authType !== undefined)
       updateData.authType = parsed.data.authType;
-    if (parsed.data.enabled !== undefined)
-      updateData.enabled = parsed.data.enabled;
 
     if (parsed.data.credentials !== undefined) {
       updateData.credentials =
@@ -129,7 +126,6 @@ export async function PUT(
           updated.credentials != null
             ? maskCredential(decrypt(updated.credentials))
             : null,
-        enabled: updated.enabled,
         isDefault: false,
         createdAt: updated.createdAt,
         updatedAt: updated.updatedAt,

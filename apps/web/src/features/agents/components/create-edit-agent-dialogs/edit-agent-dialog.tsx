@@ -86,6 +86,7 @@ function EditAgentDialogContent({
     const rawSnapshot = (agent.config?.configurable?.mcp_servers ?? []) as unknown;
     const existingSnapshot: { id?: string; name?: string; slug?: string; tools?: string[] }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
     if (existingSnapshot.length > 0) {
+      // New format: mcp_servers array with slug-prefixed tool names
       const toolsByServer: Record<string, string[]> = {};
       for (const snap of existingSnapshot) {
         const slug = snap.slug!;
@@ -102,6 +103,19 @@ function EditAgentDialogContent({
       }
       if (Object.keys(toolsByServer).length > 0) {
         setSelectedToolsByServer(toolsByServer);
+      }
+    } else if (!Array.isArray(rawSnapshot)) {
+      // Legacy format (mcp_servers absent, not empty array): single mcp_config with url + unprefixed tool names
+      const legacyConfig = agent.config?.configurable?.mcp_config as
+        | { url?: string; tools?: string[] }
+        | undefined;
+      if (legacyConfig?.url && Array.isArray(legacyConfig.tools) && legacyConfig.tools.length > 0) {
+        const normalizeUrl = (u: string) => (u.endsWith("/mcp") ? u : `${u}/mcp`);
+        const legacyUrl = normalizeUrl(legacyConfig.url);
+        const server = availableServers.find((s) => normalizeUrl(s.url) === legacyUrl);
+        if (server) {
+          setSelectedToolsByServer({ [server.id]: legacyConfig.tools });
+        }
       }
     }
   }, [hasMcpServers, availableServers, agent.config?.configurable?.mcp_servers]);
@@ -173,6 +187,8 @@ function EditAgentDialogContent({
     // Only include mcp_servers if the graph schema declares it
     if (hasMcpServers) {
       configPayload.mcp_servers = mcpServersPayload;
+      // Remove legacy mcp_config so the agent fully migrates to the new format
+      delete configPayload.mcp_config;
     }
 
     const updatedAgent = await updateAgent(

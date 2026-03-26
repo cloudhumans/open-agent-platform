@@ -136,7 +136,7 @@ export function McpServerToolGroups({
   searchTerm,
   tenant,
 }: McpServerToolGroupsProps) {
-  const servers = allServers.filter((s) => s.enabled);
+  const servers = allServers;
 
   const handleToolToggle = (
     serverId: string,

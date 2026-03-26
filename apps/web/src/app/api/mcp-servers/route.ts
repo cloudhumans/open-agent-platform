@@ -14,7 +14,6 @@ const CreateMcpServerSchema = z
     url: z.string().url(),
     authType: z.enum(["none", "bearer", "apiKey"]),
     credentials: z.string().min(1).nullable().optional(),
-    enabled: z.boolean().default(true),
   })
   .superRefine((data, ctx) => {
     if (data.authType === "bearer" || data.authType === "apiKey") {
@@ -53,7 +52,6 @@ export async function GET(req: NextRequest) {
     url: string;
     authType: "none" | "bearer" | "apiKey";
     credentials: string | null;
-    enabled: boolean;
     isDefault: false;
     createdAt: Date;
     updatedAt: Date;
@@ -74,7 +72,6 @@ export async function GET(req: NextRequest) {
           doc.credentials != null
             ? maskCredential(decrypt(doc.credentials))
             : null,
-        enabled: doc.enabled,
         isDefault: false,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
@@ -145,7 +142,6 @@ export async function POST(req: NextRequest) {
           doc.credentials != null
             ? maskCredential(decrypt(doc.credentials))
             : null,
-        enabled: doc.enabled,
         isDefault: false,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,

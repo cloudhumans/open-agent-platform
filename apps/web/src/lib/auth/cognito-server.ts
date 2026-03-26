@@ -1,4 +1,5 @@
 import { CognitoJwtVerifier } from "aws-jwt-verify";
+import { CognitoAccessTokenPayload } from "aws-jwt-verify/jwt-model";
 
 let verifier: ReturnType<typeof CognitoJwtVerifier.create> | null = null;
 
@@ -25,12 +26,14 @@ function getVerifier() {
 /**
  * Verify a Cognito access token against the JWKS endpoint.
  * Validates issuer, signature, expiration, token_use, and client_id.
+ * Returns the decoded payload on success, or null on failure.
  */
-export async function verifyCognitoToken(token: string): Promise<boolean> {
+export async function verifyCognitoToken(
+  token: string,
+): Promise<CognitoAccessTokenPayload | null> {
   try {
-    await getVerifier().verify(token);
-    return true;
+    return await getVerifier().verify(token);
   } catch {
-    return false;
+    return null;
   }
 }

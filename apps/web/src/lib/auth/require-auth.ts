@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { verifyCognitoToken } from "./cognito-server";
 
 type AuthResult =
-  | { ok: true; tenantName: string }
+  | { ok: true; tenantName: string; groups: string[] }
   | { ok: false; response: Response };
 
 /**
@@ -22,8 +22,8 @@ export async function requireAuth(req: NextRequest): Promise<AuthResult> {
   }
 
   const token = authHeader.slice(7);
-  const valid = await verifyCognitoToken(token);
-  if (!valid) {
+  const payload = await verifyCognitoToken(token);
+  if (!payload) {
     return {
       ok: false,
       response: Response.json(
@@ -44,5 +44,19 @@ export async function requireAuth(req: NextRequest): Promise<AuthResult> {
     };
   }
 
-  return { ok: true, tenantName };
+  const groups: string[] = (payload as any)["cognito:groups"] ?? [];
+  const username: string = (payload as any).username ?? "";
+  const isCloudHumans = username.endsWith("@cloudhumans.com");
+
+  if (!isCloudHumans && !groups.includes(tenantName)) {
+    return {
+      ok: false,
+      response: Response.json(
+        { error: "Forbidden", message: "User does not belong to this tenant" },
+        { status: 403 },
+      ),
+    };
+  }
+
+  return { ok: true, tenantName, groups };
 }

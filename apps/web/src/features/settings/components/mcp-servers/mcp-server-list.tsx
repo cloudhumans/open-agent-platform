@@ -11,7 +11,6 @@ import type { McpServer } from "../../hooks/use-mcp-servers";
 interface McpServerListProps {
   servers: McpServer[];
   loading: boolean;
-  onToggle: (id: string, enabled: boolean) => void;
   renderActions?: (server: McpServer) => React.ReactNode;
   onAdd?: (body: Record<string, unknown>) => Promise<void>;
 }
@@ -19,7 +18,6 @@ interface McpServerListProps {
 export function McpServerList({
   servers,
   loading,
-  onToggle,
   renderActions,
   onAdd,
 }: McpServerListProps): React.ReactNode {
@@ -68,7 +66,6 @@ export function McpServerList({
             <McpServerRow
               key={server.id}
               server={server}
-              onToggle={onToggle}
               actions={renderActions?.(server)}
             />
           ))}

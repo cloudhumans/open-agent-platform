@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
-import { decrypt } from "@/lib/encryption";
+import { encrypt } from "@/lib/encryption";
 import { getDefaultServers } from "@/lib/mcp-defaults";
 import McpServer from "@/models/mcp-server";
 import { requireAuth } from "@/lib/auth/require-auth";
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
           slug: server.slug,
           url: server.url,
           authType: server.authType,
-          credentials: server.credentials,
+          credentials: server.credentials ? encrypt(server.credentials) : null,
         });
       }
     }
@@ -81,16 +81,13 @@ export async function GET(req: NextRequest) {
         }).lean();
 
         for (const doc of docs) {
-          const decrypted =
-            doc.credentials != null ? decrypt(doc.credentials) : null;
-
           results.push({
             id: doc._id.toString(),
             name: doc.name,
             slug: doc.slug,
             url: doc.url,
             authType: doc.authType,
-            credentials: decrypted,
+            credentials: doc.credentials,  // already encrypted in MongoDB
           });
         }
       }

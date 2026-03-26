@@ -17,7 +17,6 @@ export default function SettingsInterface(): React.ReactNode {
   const {
     servers,
     loading: mcpLoading,
-    toggleServer,
     addServer,
     updateServer,
     deleteServer,
@@ -107,7 +106,6 @@ export default function SettingsInterface(): React.ReactNode {
         <McpServerList
           servers={servers}
           loading={mcpLoading}
-          onToggle={toggleServer}
           onAdd={addServer}
           renderActions={(server) =>
             !server.isDefault ? (

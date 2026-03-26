@@ -154,6 +154,16 @@ export class CognitoAuthProvider implements AuthProvider {
           const idToken = result.getIdToken().getJwtToken();
           const refreshToken = result.getRefreshToken().getToken();
 
+          // Merge cognito:groups from ID token payload into user metadata
+          // (getUserAttributes doesn't return token-level claims like groups)
+          const idTokenPayload = result.getIdToken().payload;
+          if (user && idTokenPayload["cognito:groups"]) {
+            user.metadata = {
+              ...user.metadata,
+              "cognito:groups": idTokenPayload["cognito:groups"],
+            };
+          }
+
           const session: Session = {
              user,
              accessToken, // Standard access token
@@ -214,6 +224,15 @@ export class CognitoAuthProvider implements AuthProvider {
         }
 
         const user = await this.formatUser(cognitoUser);
+
+        // Merge cognito:groups from ID token payload into user metadata
+        const idTokenPayload = session.getIdToken().payload;
+        if (user && idTokenPayload["cognito:groups"]) {
+          user.metadata = {
+            ...user.metadata,
+            "cognito:groups": idTokenPayload["cognito:groups"],
+          };
+        }
 
         resolve({
             user,

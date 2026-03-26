@@ -6,6 +6,38 @@ type AuthResult =
   | { ok: false; response: Response };
 
 /**
+ * Fetch user email from Cognito using the access token.
+ * Calls the Cognito GetUser API directly (no AWS SDK needed).
+ */
+async function getCognitoEmail(accessToken: string): Promise<string | null> {
+  const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
+  if (!userPoolId) return null;
+
+  const region = userPoolId.split("_")[0];
+  try {
+    const res = await fetch(
+      `https://cognito-idp.${region}.amazonaws.com/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-amz-json-1.1",
+          "X-Amz-Target": "AWSCognitoIdentityProviderService.GetUser",
+        },
+        body: JSON.stringify({ AccessToken: accessToken }),
+      },
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const emailAttr = (data.UserAttributes ?? []).find(
+      (a: { Name: string }) => a.Name === "email",
+    );
+    return emailAttr?.Value ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Validate Cognito JWT from Authorization header and extract x-tenant-name.
  * Returns the tenantName on success, or a pre-built error Response on failure.
  */
@@ -45,18 +77,25 @@ export async function requireAuth(req: NextRequest): Promise<AuthResult> {
   }
 
   const groups: string[] = (payload as any)["cognito:groups"] ?? [];
-  const username: string = (payload as any).username ?? "";
-  const isCloudHumans = username.endsWith("@cloudhumans.com");
+  const customProjects: string = (payload as any)["custom:projects"] ?? "";
+  const allowedProjects = customProjects.split(",").map((p: string) => p.trim()).filter(Boolean);
 
-  if (!isCloudHumans && !groups.includes(tenantName)) {
-    return {
-      ok: false,
-      response: Response.json(
-        { error: "Forbidden", message: "User does not belong to this tenant" },
-        { status: 403 },
-      ),
-    };
+  // Check token claims first (fast path)
+  if (groups.includes(tenantName) || allowedProjects.includes(tenantName)) {
+    return { ok: true, tenantName, groups };
   }
 
-  return { ok: true, tenantName, groups };
+  // Fetch email from Cognito to check for @cloudhumans.com (admin bypass)
+  const email = await getCognitoEmail(token);
+  if (email?.endsWith("@cloudhumans.com")) {
+    return { ok: true, tenantName, groups };
+  }
+
+  return {
+    ok: false,
+    response: Response.json(
+      { error: "Forbidden", message: "User does not belong to this tenant" },
+      { status: 403 },
+    ),
+  };
 }

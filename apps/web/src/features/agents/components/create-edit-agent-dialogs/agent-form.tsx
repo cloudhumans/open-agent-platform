@@ -241,12 +241,12 @@ export function AgentFieldsForm({
                           ))
                         : null}
                       {displayTools.length === 0 && toolSearchTerm && (
-                        <p className="my-4 w-full text-center text-sm text-slate-500">
+                        <p className="my-4 w-full text-center text-sm text-muted-foreground">
                           No tools found matching &quot;{toolSearchTerm}&quot;.
                         </p>
                       )}
                       {tools.length === 0 && !toolSearchTerm && (
-                        <p className="my-4 w-full text-center text-sm text-slate-500">
+                        <p className="my-4 w-full text-center text-sm text-muted-foreground">
                           No tools available for this agent.
                         </p>
                       )}

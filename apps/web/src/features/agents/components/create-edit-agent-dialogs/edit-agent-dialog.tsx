@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useAgents } from "@/hooks/use-agents";
 import { useAgentConfig } from "@/hooks/use-agent-config";
 import { Bot, LoaderCircle, Trash, X } from "lucide-react";
@@ -236,23 +236,25 @@ function EditAgentDialogContent({
   };
 
   return (
-    <AlertDialogContent className="h-auto max-h-[90vh] overflow-auto sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
+    <DialogContent className="h-auto max-h-[90vh] overflow-auto sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
       <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <AlertDialogHeader>
+        <DialogHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex flex-col gap-1.5">
-              <AlertDialogTitle>Edit Agent</AlertDialogTitle>
-              <AlertDialogDescription>
+              <DialogTitle>Edit Agent</DialogTitle>
+              <DialogDescription>
                 Edit the agent for &apos;
                 <span className="font-medium">{agent.graph_id}</span>&apos;
                 graph.
-              </AlertDialogDescription>
+              </DialogDescription>
             </div>
-            <AlertDialogCancel size="icon">
-              <X className="size-4" />
-            </AlertDialogCancel>
+            <DialogClose asChild>
+              <Button variant="ghost" size="icon" aria-label="Close dialog">
+                <X className="size-4" />
+              </Button>
+            </DialogClose>
           </div>
-        </AlertDialogHeader>
+        </DialogHeader>
         {loading ? (
           <AgentFieldsFormLoading />
         ) : (
@@ -271,7 +273,7 @@ function EditAgentDialogContent({
             />
           </FormProvider>
         )}
-        <AlertDialogFooter>
+        <DialogFooter>
           <Button
             onClick={handleDelete}
             className="flex w-full items-center justify-center gap-1"
@@ -299,9 +301,9 @@ function EditAgentDialogContent({
               {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
             </span>
           </Button>
-        </AlertDialogFooter>
+        </DialogFooter>
       </form>
-    </AlertDialogContent>
+    </DialogContent>
   );
 }
 
@@ -323,7 +325,7 @@ export function EditAgentDialog({
 
   return (
     <>
-      <AlertDialog
+      <Dialog
         open={open}
         onOpenChange={onOpenChange}
       >
@@ -333,7 +335,7 @@ export function EditAgentDialog({
           onClose={() => onOpenChange(false)}
           onStaleSupervisors={() => setShowStaleWarning(true)}
         />
-      </AlertDialog>
+      </Dialog>
       <StaleSupervisorsWarningDialog
         open={showStaleWarning}
         onOpenChange={setShowStaleWarning}

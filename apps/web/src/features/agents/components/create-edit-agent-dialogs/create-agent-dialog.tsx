@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useAgents } from "@/hooks/use-agents";
 import { Bot, LoaderCircle, X } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -192,7 +192,7 @@ function CreateAgentFormContent(props: {
           />
         </FormProvider>
       )}
-      <AlertDialogFooter>
+      <DialogFooter>
         <Button
           onClick={(e) => {
             e.preventDefault();
@@ -211,7 +211,7 @@ function CreateAgentFormContent(props: {
           {submitting ? <LoaderCircle className="animate-spin" /> : <Bot />}
           <span>{submitting ? "Creating..." : "Create Agent"}</span>
         </Button>
-      </AlertDialogFooter>
+      </DialogFooter>
     </form>
   );
 }
@@ -270,26 +270,28 @@ export function CreateAgentDialog({
   }, [open, setOpenCounter]);
 
   return (
-    <AlertDialog
+    <Dialog
       open={open}
       onOpenChange={onOpenChange}
     >
-      <AlertDialogContent className="h-auto max-h-[90vh] overflow-auto sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
-        <AlertDialogHeader>
+      <DialogContent className="h-auto max-h-[90vh] overflow-auto sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
+        <DialogHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex flex-col gap-1.5">
-              <AlertDialogTitle>Create Agent</AlertDialogTitle>
-              <AlertDialogDescription>
+              <DialogTitle>Create Agent</DialogTitle>
+              <DialogDescription>
                 Create a new agent for &apos;
                 <span className="font-medium">{selectedGraph?.graph_id}</span>
                 &apos; graph.
-              </AlertDialogDescription>
+              </DialogDescription>
             </div>
-            <AlertDialogCancel size="icon">
-              <X className="size-4" />
-            </AlertDialogCancel>
+            <DialogClose asChild>
+              <Button variant="ghost" size="icon" aria-label="Close dialog">
+                <X className="size-4" />
+              </Button>
+            </DialogClose>
           </div>
-        </AlertDialogHeader>
+        </DialogHeader>
 
         {!agentId && !graphId && !deploymentId && (
           <div className="flex flex-col items-start justify-start gap-2">
@@ -313,7 +315,7 @@ export function CreateAgentDialog({
             onClose={() => onOpenChange(false)}
           />
         ) : null}
-      </AlertDialogContent>
-    </AlertDialog>
+      </DialogContent>
+    </Dialog>
   );
 }

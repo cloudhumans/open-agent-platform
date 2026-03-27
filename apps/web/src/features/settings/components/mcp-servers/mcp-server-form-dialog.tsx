@@ -8,6 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import type { McpServer } from "../../hooks/use-mcp-servers";
 
 interface McpServerFormDialogProps {
@@ -97,7 +99,10 @@ export function McpServerFormDialog({
       await onSave(body);
       setOpen(false);
     } catch {
-      // Keep dialog open on error
+      toast.error("Failed to save MCP server", {
+        description: "Please try again",
+        richColors: true,
+      });
     } finally {
       setSaving(false);
     }
@@ -108,16 +113,9 @@ export function McpServerFormDialog({
       open={open}
       onOpenChange={setOpen}
     >
-      {/* Render trigger as-is wrapped in a span to avoid nesting issues */}
-      <span
-        role="button"
-        tabIndex={0}
-        onClick={() => setOpen(true)}
-        onKeyDown={(e) => e.key === "Enter" && setOpen(true)}
-        style={{ display: "contents" }}
-      >
+      <DialogTrigger asChild>
         {trigger}
-      </span>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>

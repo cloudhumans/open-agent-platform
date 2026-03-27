@@ -435,7 +435,7 @@ export function Thread() {
             </>
           }
           footer={
-            <div className="sticky bottom-0 flex flex-col items-center gap-8 bg-white">
+            <div className="sticky bottom-0 flex flex-col items-center gap-8 bg-background">
               {!hasMessages && !threadId && (
                 <div className="flex items-center gap-3">
                   <LangGraphLogoSVG className="h-8 flex-shrink-0" />
@@ -465,6 +465,7 @@ export function Thread() {
                     onRemove={removeBlock}
                   />
                   <textarea
+                    aria-label="Message input"
                     name="input"
                     defaultValue={
                       isAgentCreator && !threadId && !hasMessages
@@ -504,7 +505,7 @@ export function Thread() {
                             />
                             <Label
                               htmlFor="render-tool-calls"
-                              className="text-sm text-gray-600"
+                              className="text-sm text-muted-foreground"
                             >
                               Hide Tool Calls
                             </Label>
@@ -518,8 +519,8 @@ export function Thread() {
                           htmlFor="file-input"
                           className="flex cursor-pointer"
                         >
-                          <Plus className="size-5 text-gray-600" />
-                          <span className="text-sm text-gray-600">
+                          <Plus className="size-5 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
                             Upload PDF or Image
                           </span>
                         </Label>

@@ -83,7 +83,7 @@ function EditAgentDialogContent({
 
     initializedRef.current = true;
 
-    const rawSnapshot = (agent.config?.configurable?.mcp_servers ?? []) as unknown;
+    const rawSnapshot = agent.config?.configurable?.mcp_servers as unknown;
     const existingSnapshot: { id?: string; name?: string; slug?: string; tools?: string[] }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
     if (existingSnapshot.length > 0) {
       // New format: mcp_servers array with slug-prefixed tool names

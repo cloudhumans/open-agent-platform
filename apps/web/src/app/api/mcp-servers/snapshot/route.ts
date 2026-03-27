@@ -13,8 +13,20 @@ interface ServerSnapshot {
   name: string;
   slug: string;
   url: string;
-  authType: "none" | "bearer" | "apiKey";
+  auth_type: "none" | "bearer" | "api_key";
   credentials: string | null;
+}
+
+/**
+ * Map OAP's internal authType values to the snake_case contract expected by
+ * claudia-agentic (auth_type field with "api_key" instead of "apiKey").
+ */
+function toSnapshotAuthType(
+  internal: string,
+): ServerSnapshot["auth_type"] {
+  if (internal === "apiKey") return "api_key";
+  if (internal === "bearer") return "bearer";
+  return "none";
 }
 
 export async function GET(req: NextRequest) {
@@ -53,7 +65,7 @@ export async function GET(req: NextRequest) {
           name: server.name,
           slug: server.slug,
           url: server.url,
-          authType: server.authType,
+          auth_type: toSnapshotAuthType(server.authType),
           credentials: server.credentials ? encrypt(server.credentials) : null,
         });
       }
@@ -86,7 +98,7 @@ export async function GET(req: NextRequest) {
             name: doc.name,
             slug: doc.slug,
             url: doc.url,
-            authType: doc.authType,
+            auth_type: toSnapshotAuthType(doc.authType),
             credentials: doc.credentials,  // already encrypted in MongoDB
           });
         }

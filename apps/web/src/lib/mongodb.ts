@@ -24,7 +24,6 @@ export async function connectDB(): Promise<void> {
 
   if (!global.__mongoose.promise) {
     global.__mongoose.promise = mongoose.connect(MONGODB_URI, {
-      dbName: "claudia",
       bufferCommands: false,
     });
   }

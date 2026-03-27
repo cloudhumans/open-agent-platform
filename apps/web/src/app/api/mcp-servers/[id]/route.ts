@@ -143,7 +143,7 @@ export async function PUT(
   } catch (error: any) {
     if (error?.code === 11000) {
       return Response.json(
-        { error: "A server with this name already exists" },
+        { error: "A server with this slug already exists (names that normalize to the same slug conflict)" },
         { status: 409 },
       );
     }

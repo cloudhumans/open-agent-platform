@@ -89,15 +89,15 @@ function EditAgentDialogContent({
       // New format: mcp_servers array with slug-prefixed tool names
       const toolsByServer: Record<string, string[]> = {};
       for (const snap of existingSnapshot) {
-        const slug = snap.slug!;
-        const prefix = `${slug}__`;
         // Match by id first, fall back to name (for snapshots saved before id was added)
         const server =
           (snap.id && availableServers.find((s) => s.id === snap.id)) ||
           availableServers.find((s) => s.name === snap.name);
+        const slug = snap.slug ?? server?.slug ?? "";
+        const prefix = slug ? `${slug}__` : "";
         if (server && Array.isArray(snap.tools) && snap.tools.length > 0) {
           toolsByServer[server.id] = snap.tools.map((t) =>
-            t.startsWith(prefix) ? t.slice(prefix.length) : t
+            prefix && t.startsWith(prefix) ? t.slice(prefix.length) : t
           );
         }
       }

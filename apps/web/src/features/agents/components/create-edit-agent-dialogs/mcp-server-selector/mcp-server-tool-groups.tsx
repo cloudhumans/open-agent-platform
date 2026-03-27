@@ -10,17 +10,20 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { McpServer } from "@/features/settings/hooks/use-mcp-servers";
-import { useMcpServerTools } from "./use-mcp-server-tools";
+import { Tool, useMcpServerTools } from "./use-mcp-server-tools";
 import { ChevronDown } from "lucide-react";
 import _ from "lodash";
 
 // ---------------------------------------------------------------------------
 // ServerToolList
-// Fetches and renders toggle rows for a single server's tools.
+// Renders toggle rows for a single server's tools (tools fetched by parent).
 // ---------------------------------------------------------------------------
 
 interface ServerToolListProps {
   server: McpServer;
+  tools: Tool[];
+  loading: boolean;
+  error: string | null;
   selectedTools: string[];
   onToolToggle: (serverId: string, toolName: string, checked: boolean) => void;
   onSelectAll: (serverId: string, toolNames: string[], checked: boolean) => void;
@@ -29,13 +32,14 @@ interface ServerToolListProps {
 
 function ServerToolList({
   server,
+  tools,
+  loading,
+  error,
   selectedTools,
   onToolToggle,
   onSelectAll,
   searchTerm,
 }: ServerToolListProps) {
-  const { tools, loading, error } = useMcpServerTools(server.id);
-
   if (loading) {
     return (
       <div className="flex flex-col gap-3 py-2">
@@ -205,14 +209,12 @@ export function McpServerToolGroups({
     <div className="flex flex-col gap-2 w-full">
       {servers.map((server: McpServer) => {
         const selectedTools = selectedToolsByServer[server.id] ?? [];
-        const selectedCount = selectedTools.length;
 
         return (
           <ServerGroup
             key={server.id}
             server={server}
             selectedTools={selectedTools}
-            selectedCount={selectedCount}
             onToolToggle={handleToolToggle}
             onSelectAll={handleSelectAll}
             searchTerm={searchTerm}
@@ -225,14 +227,13 @@ export function McpServerToolGroups({
 
 // ---------------------------------------------------------------------------
 // ServerGroup
-// A single collapsible server group — separated so tool fetching only happens
-// when the group is present (always), but rendering is controlled by collapsible.
+// A single collapsible server group. Tool fetching is lifted here so the
+// badge count reflects only tools that actually exist on the server.
 // ---------------------------------------------------------------------------
 
 interface ServerGroupProps {
   server: McpServer;
   selectedTools: string[];
-  selectedCount: number;
   onToolToggle: (serverId: string, toolName: string, checked: boolean) => void;
   onSelectAll: (serverId: string, toolNames: string[], checked: boolean) => void;
   searchTerm?: string;
@@ -241,15 +242,22 @@ interface ServerGroupProps {
 function ServerGroup({
   server,
   selectedTools,
-  selectedCount,
   onToolToggle,
   onSelectAll,
   searchTerm,
 }: ServerGroupProps) {
+  const { tools, loading, error } = useMcpServerTools(server.id);
+
+  // Count only tools that actually exist on the server
+  const selectedCount =
+    tools.length > 0
+      ? selectedTools.filter((t) => tools.some((st) => st.name === t)).length
+      : selectedTools.length; // fallback while loading
+
   return (
-    <Collapsible>
-      <CollapsibleTrigger className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left hover:bg-muted/50 transition-colors [&[data-state=open]>svg.chevron]:rotate-180">
-        <ChevronDown className="chevron size-4 shrink-0 transition-transform" />
+    <Collapsible defaultOpen={server.isDefault}>
+      <CollapsibleTrigger className="flex w-full items-center gap-2 rounded-md border border-transparent px-2 py-2 text-left cursor-pointer hover:bg-muted/50 hover:border-border transition-colors [&[data-state=open]>svg.chevron]:rotate-180">
+        <ChevronDown className="chevron size-4 shrink-0 text-muted-foreground transition-transform" />
         <span className="text-sm font-semibold">{server.name}</span>
         {selectedCount > 0 && (
           <Badge variant="secondary" className="ml-auto text-xs">
@@ -265,6 +273,9 @@ function ServerGroup({
       <CollapsibleContent className="pl-6">
         <ServerToolList
           server={server}
+          tools={tools}
+          loading={loading}
+          error={error}
           selectedTools={selectedTools}
           onToolToggle={onToolToggle}
           onSelectAll={onSelectAll}

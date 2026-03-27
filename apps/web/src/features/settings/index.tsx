@@ -6,11 +6,22 @@ import { Separator } from "@/components/ui/separator";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useMcpServers } from "./hooks/use-mcp-servers";
+import { McpServerList } from "./components/mcp-servers/mcp-server-list";
+import { McpServerActions } from "./components/mcp-servers/mcp-server-actions";
 
 /**
  * The Settings interface component containing API Keys configuration.
  */
 export default function SettingsInterface(): React.ReactNode {
+  const {
+    servers,
+    loading: mcpLoading,
+    addServer,
+    updateServer,
+    deleteServer,
+  } = useMcpServers();
+
   // Use localStorage hooks for each API key
   const [openaiApiKey, setOpenaiApiKey] = useLocalStorage<string>(
     "lg:settings:openaiApiKey",
@@ -87,6 +98,25 @@ export default function SettingsInterface(): React.ReactNode {
             />
           </div>
         </div>
+      </div>
+
+      <Separator />
+      <div className="flex w-full flex-col gap-4">
+        <h2 className="text-base font-semibold">MCP Servers</h2>
+        <McpServerList
+          servers={servers}
+          loading={mcpLoading}
+          onAdd={addServer}
+          renderActions={(server) =>
+            !server.isDefault ? (
+              <McpServerActions
+                server={server}
+                onEdit={updateServer}
+                onDelete={deleteServer}
+              />
+            ) : null
+          }
+        />
       </div>
     </div>
   );

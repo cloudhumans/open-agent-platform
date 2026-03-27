@@ -32,7 +32,7 @@ export async function verifyCognitoToken(
   token: string,
 ): Promise<CognitoAccessTokenPayload | null> {
   try {
-    return await getVerifier().verify(token);
+    return await getVerifier().verify(token) as CognitoAccessTokenPayload;
   } catch {
     return null;
   }

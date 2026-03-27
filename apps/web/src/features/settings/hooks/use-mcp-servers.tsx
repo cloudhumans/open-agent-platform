@@ -21,8 +21,8 @@ interface UseMcpServersReturn {
   servers: McpServer[];
   loading: boolean;
   error: string | null;
-  addServer: (body: Omit<McpServer, "id" | "isDefault" | "createdAt" | "updatedAt">) => Promise<void>;
-  updateServer: (id: string, body: Partial<Omit<McpServer, "id" | "isDefault" | "createdAt" | "updatedAt">>) => Promise<void>;
+  addServer: (body: Record<string, unknown>) => Promise<void>;
+  updateServer: (id: string, body: Record<string, unknown>) => Promise<void>;
   deleteServer: (id: string) => Promise<void>;
   refetch: () => Promise<void>;
 }
@@ -73,7 +73,7 @@ export function useMcpServers(): UseMcpServersReturn {
   }, [fetchServers]);
 
   const addServer = useCallback(
-    async (body: Omit<McpServer, "id" | "isDefault" | "createdAt" | "updatedAt">) => {
+    async (body: Record<string, unknown>) => {
       try {
         const res = await fetch("/api/mcp-servers", {
           method: "POST",
@@ -93,7 +93,7 @@ export function useMcpServers(): UseMcpServersReturn {
   );
 
   const updateServer = useCallback(
-    async (id: string, body: Partial<Omit<McpServer, "id" | "isDefault" | "createdAt" | "updatedAt">>) => {
+    async (id: string, body: Record<string, unknown>) => {
       try {
         const res = await fetch(`/api/mcp-servers/${id}`, {
           method: "PUT",

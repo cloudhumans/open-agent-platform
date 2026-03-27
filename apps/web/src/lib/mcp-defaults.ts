@@ -16,7 +16,7 @@ export function getDefaultServers(): McpServerDefault[] {
   if (process.env.MCP_TYPEBOT_URL) {
     defaults.push({
       id: "default-typebot",
-      name: "Typebot",
+      name: "Eddie",
       slug: "typebot",
       url: process.env.MCP_TYPEBOT_URL,
       authType: "bearer",

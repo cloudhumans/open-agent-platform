@@ -40,6 +40,10 @@ export async function GET(
 
     await connectDB();
 
+    if (mongoose.connection.readyState !== 1) {
+      return Response.json({ error: "Database not available" }, { status: 503 });
+    }
+
     const doc = await McpServer.findOne({
       _id: id,
       tenantName: auth.tenantName,
@@ -67,10 +71,9 @@ export async function GET(
     headers["x-api-key"] = credentials;
   }
 
-  // Forward tenant header when present
-  const tenant = req.nextUrl.searchParams.get("tenant");
-  if (tenant) {
-    headers["x-tenant"] = tenant;
+  // Forward tenant header from authenticated user
+  if (auth.tenantName) {
+    headers["x-tenant"] = auth.tenantName;
   }
 
   const client = new Client({ name: "oap-tool-proxy", version: "1.0.0" });

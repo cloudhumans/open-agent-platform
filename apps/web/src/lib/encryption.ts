@@ -10,7 +10,11 @@ const KEY_LENGTH = 32;
 
 const FALLBACK_KEY = "dev-fallback-key-32-bytes-padded";
 
+let _cachedKey: Buffer | null = null;
+
 function getKey(): Buffer {
+  if (_cachedKey) return _cachedKey;
+
   const envVar = process.env.MCP_ENCRYPTION_KEY;
 
   if (!envVar) {
@@ -22,9 +26,11 @@ function getKey(): Buffer {
     console.warn(
       "[MCP] MCP_ENCRYPTION_KEY not set — using insecure dev fallback. Set this env var in production.",
     );
-    return Buffer.from(
+    const key = Buffer.from(
       FALLBACK_KEY.padEnd(KEY_LENGTH, "0").slice(0, KEY_LENGTH),
     );
+    _cachedKey = key;
+    return key;
   }
 
   const key = Buffer.from(envVar, "hex");
@@ -34,6 +40,7 @@ function getKey(): Buffer {
     );
   }
 
+  _cachedKey = key;
   return key;
 }
 

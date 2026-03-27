@@ -6,6 +6,7 @@ import McpServer from "@/models/mcp-server";
 import { encrypt, decrypt, maskCredential } from "@/lib/encryption";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { toServerSlug } from "@/lib/mcp-slug";
+import { getDefaultServers } from "@/lib/mcp-defaults";
 
 const DEFAULT_SERVER_IDS = ["default-typebot", "default-cloudhumans"];
 
@@ -92,7 +93,15 @@ export async function PUT(
 
     if (parsed.data.name !== undefined) {
       updateData.name = parsed.data.name;
-      updateData.slug = toServerSlug(parsed.data.name);
+      const slug = toServerSlug(parsed.data.name);
+      const defaultSlugs = getDefaultServers().map((s) => s.slug);
+      if (defaultSlugs.includes(slug)) {
+        return Response.json(
+          { error: `Slug "${slug}" conflicts with a default server` },
+          { status: 409 },
+        );
+      }
+      updateData.slug = slug;
     }
     if (parsed.data.url !== undefined) updateData.url = parsed.data.url;
     if (parsed.data.authType !== undefined)

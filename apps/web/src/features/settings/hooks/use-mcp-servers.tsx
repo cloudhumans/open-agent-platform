@@ -46,7 +46,12 @@ export function useMcpServers(): UseMcpServersReturn {
   }, [session?.accessToken, selectedTenantId]);
 
   const fetchServers = useCallback(async () => {
-    if (!selectedTenantId) return;
+    if (!selectedTenantId) {
+      setLoading(false);
+      setServers([]);
+      setError(null);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {

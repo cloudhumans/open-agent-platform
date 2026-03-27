@@ -86,7 +86,7 @@ export async function requireAuth(req: NextRequest): Promise<AuthResult> {
   }
 
   // Fetch email from Cognito to check for @cloudhumans.com (admin bypass)
-  const email = await getCognitoEmail(token);
+  const email = (await getCognitoEmail(token))?.toLowerCase().trim() ?? null;
   if (email?.endsWith("@cloudhumans.com")) {
     return { ok: true, tenantName, groups };
   }

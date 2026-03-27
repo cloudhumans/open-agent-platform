@@ -62,16 +62,21 @@ export async function GET(req: NextRequest) {
     const docs = await McpServer.find({ tenantName: auth.tenantName }).lean();
 
     for (const doc of docs) {
+      let maskedCreds: string | null = null;
+      if (doc.credentials != null) {
+        try {
+          maskedCreds = maskCredential(decrypt(doc.credentials));
+        } catch (err) {
+          console.warn("[MCP] Failed to decrypt credentials for server:", doc._id?.toString(), err);
+        }
+      }
       userServers.push({
         id: (doc._id as mongoose.Types.ObjectId).toString(),
         name: doc.name,
         slug: doc.slug,
         url: doc.url,
         authType: doc.authType,
-        credentials:
-          doc.credentials != null
-            ? maskCredential(decrypt(doc.credentials))
-            : null,
+        credentials: maskedCreds,
         isDefault: false,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,

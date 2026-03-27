@@ -71,16 +71,26 @@ export function McpServerFormDialog({
     const body: Record<string, unknown> = {
       name: name.trim(),
       url: url.trim(),
-      authType,
     };
 
     if (authType === "none") {
+      body.authType = "none";
       body.credentials = null;
-    } else if (credentials !== "") {
-      // Pitfall 1: only include credentials if user actually typed something
-      body.credentials = credentials;
+    } else if (!isEditMode) {
+      // Create mode: always send authType and credentials
+      body.authType = authType;
+      if (credentials !== "") {
+        body.credentials = credentials;
+      }
+    } else {
+      // Edit mode: only send auth fields when something changed
+      if (credentials !== "") {
+        body.authType = authType;
+        body.credentials = credentials;
+      } else if (authType !== server?.authType) {
+        body.authType = authType;
+      }
     }
-    // In edit mode with empty credentials: omit credentials entirely
 
     setSaving(true);
     try {

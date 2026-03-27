@@ -28,14 +28,13 @@ const UpdateMcpServerSchema = z
           "Credentials must be submitted in full — masked values are not accepted",
       });
     }
-    if (data.authType === "bearer" || data.authType === "apiKey") {
-      if (!data.credentials) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["credentials"],
-          message: `credentials is required when authType is "${data.authType}"`,
-        });
-      }
+    // Only validate credentials when explicitly provided alongside an auth type that requires them
+    if ((data.authType === "bearer" || data.authType === "apiKey") && data.credentials === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["credentials"],
+        message: `credentials cannot be null when authType is "${data.authType}"`,
+      });
     }
     if (data.authType === "none") {
       if (data.credentials != null) {

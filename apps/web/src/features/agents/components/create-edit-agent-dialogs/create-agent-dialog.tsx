@@ -92,7 +92,7 @@ function CreateAgentFormContent(props: {
         .map(([id]) => id);
 
       if (serverIdsWithTools.length > 0) {
-        // Fetch decrypted server snapshots for selected servers
+        // Fetch server snapshots (credentials remain encrypted)
         const qs = serverIdsWithTools.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
         const snapshotHeaders: HeadersInit = {};
         if (session?.accessToken) {
@@ -189,7 +189,6 @@ function CreateAgentFormContent(props: {
             mcpServersLoading={serversLoading}
             selectedToolsByServer={selectedToolsByServer}
             onMcpToolSelectionChange={setSelectedToolsByServer}
-            tenant={selectedTenant?.tenantName}
           />
         </FormProvider>
       )}

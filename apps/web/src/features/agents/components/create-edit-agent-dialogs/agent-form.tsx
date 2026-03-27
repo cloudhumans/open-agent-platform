@@ -53,7 +53,6 @@ interface AgentFieldsFormProps {
   mcpServersLoading?: boolean;
   selectedToolsByServer?: Record<string, string[]>;
   onMcpToolSelectionChange?: (selection: Record<string, string[]>) => void;
-  tenant?: string;
 }
 
 export function AgentFieldsForm({
@@ -67,7 +66,6 @@ export function AgentFieldsForm({
   mcpServersLoading = false,
   selectedToolsByServer = {},
   onMcpToolSelectionChange,
-  tenant,
 }: AgentFieldsFormProps) {
   const form = useFormContext<{
     name: string;
@@ -286,7 +284,6 @@ export function AgentFieldsForm({
                       selectedToolsByServer={selectedToolsByServer}
                       onSelectionChange={onMcpToolSelectionChange}
                       searchTerm={toolSearchTerm}
-                      tenant={tenant}
                     />
                   )}
                 </div>

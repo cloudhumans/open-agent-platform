@@ -25,7 +25,6 @@ interface ServerToolListProps {
   onToolToggle: (serverId: string, toolName: string, checked: boolean) => void;
   onSelectAll: (serverId: string, toolNames: string[], checked: boolean) => void;
   searchTerm?: string;
-  tenant?: string;
 }
 
 function ServerToolList({
@@ -34,9 +33,8 @@ function ServerToolList({
   onToolToggle,
   onSelectAll,
   searchTerm,
-  tenant,
 }: ServerToolListProps) {
-  const { tools, loading, error } = useMcpServerTools(server.id, tenant);
+  const { tools, loading, error } = useMcpServerTools(server.id);
 
   if (loading) {
     return (
@@ -143,7 +141,6 @@ export interface McpServerToolGroupsProps {
   selectedToolsByServer: Record<string, string[]>;
   onSelectionChange: (selection: Record<string, string[]>) => void;
   searchTerm?: string;
-  tenant?: string;
 }
 
 export function McpServerToolGroups({
@@ -152,7 +149,6 @@ export function McpServerToolGroups({
   selectedToolsByServer,
   onSelectionChange,
   searchTerm,
-  tenant,
 }: McpServerToolGroupsProps) {
   const servers = allServers;
 
@@ -220,7 +216,6 @@ export function McpServerToolGroups({
             onToolToggle={handleToolToggle}
             onSelectAll={handleSelectAll}
             searchTerm={searchTerm}
-            tenant={tenant}
           />
         );
       })}
@@ -241,7 +236,6 @@ interface ServerGroupProps {
   onToolToggle: (serverId: string, toolName: string, checked: boolean) => void;
   onSelectAll: (serverId: string, toolNames: string[], checked: boolean) => void;
   searchTerm?: string;
-  tenant?: string;
 }
 
 function ServerGroup({
@@ -251,7 +245,6 @@ function ServerGroup({
   onToolToggle,
   onSelectAll,
   searchTerm,
-  tenant,
 }: ServerGroupProps) {
   return (
     <Collapsible>
@@ -276,7 +269,6 @@ function ServerGroup({
           onToolToggle={onToolToggle}
           onSelectAll={onSelectAll}
           searchTerm={searchTerm}
-          tenant={tenant}
         />
       </CollapsibleContent>
     </Collapsible>

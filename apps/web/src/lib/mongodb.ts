@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 declare global {
-  var __mongoose: { conn: typeof mongoose } | undefined;
+  var __mongoose: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } | undefined;
 }
 
 export async function connectDB(): Promise<void> {
@@ -18,10 +18,16 @@ export async function connectDB(): Promise<void> {
     return;
   }
 
-  const conn = await mongoose.connect(MONGODB_URI, {
-    dbName: "claudia",
-    bufferCommands: false,
-  });
+  if (!global.__mongoose) {
+    global.__mongoose = { conn: null, promise: null };
+  }
 
-  global.__mongoose = { conn };
+  if (!global.__mongoose.promise) {
+    global.__mongoose.promise = mongoose.connect(MONGODB_URI, {
+      dbName: "claudia",
+      bufferCommands: false,
+    });
+  }
+
+  global.__mongoose.conn = await global.__mongoose.promise;
 }

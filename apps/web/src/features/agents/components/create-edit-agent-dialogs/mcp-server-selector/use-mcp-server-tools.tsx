@@ -24,7 +24,6 @@ interface UseMcpServerToolsReturn {
  */
 export function useMcpServerTools(
   serverId: string | null,
-  tenant?: string,
 ): UseMcpServerToolsReturn {
   const { session } = useAuthContext();
   const { selectedTenantId } = useTenantContext();
@@ -52,9 +51,7 @@ export function useMcpServerTools(
       setError(null);
 
       try {
-        const url = tenant
-          ? `/api/mcp-servers/${serverId}/tools?tenant=${encodeURIComponent(tenant)}`
-          : `/api/mcp-servers/${serverId}/tools`;
+        const url = `/api/mcp-servers/${serverId}/tools`;
 
         const headers: HeadersInit = {};
         if (session?.accessToken) {
@@ -100,7 +97,7 @@ export function useMcpServerTools(
     return () => {
       aborted = true;
     };
-  }, [serverId, tenant, fetchCounter, session?.accessToken, selectedTenantId]);
+  }, [serverId, fetchCounter, session?.accessToken, selectedTenantId]);
 
   return { tools, loading, error, refetch };
 }

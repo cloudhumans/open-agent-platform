@@ -198,15 +198,27 @@ function NewThreadButton(props: { hasMessages: boolean }) {
   );
 }
 
+const agentCreatorId = process.env.NEXT_PUBLIC_AGENT_CREATOR_ID;
+
 export function Thread() {
   const [agentId] = useQueryState("agentId");
   const [deploymentId] = useQueryState("deploymentId");
   const [threadId] = useQueryState("threadId");
+  const isAgentCreator = agentId === agentCreatorId;
   const [hideToolCalls, setHideToolCalls] = useQueryState(
     "hideToolCalls",
     parseAsBoolean.withDefault(false),
   );
-  const [hasInput, setHasInput] = useState(false);
+
+  useEffect(() => {
+    if (isAgentCreator && !hideToolCalls) {
+      setHideToolCalls(true);
+    }
+  }, [isAgentCreator, hideToolCalls, setHideToolCalls]);
+
+  const [hasInput, setHasInput] = useState(
+    isAgentCreator && !threadId,
+  );
   const {
     contentBlocks,
     setContentBlocks,
@@ -443,6 +455,11 @@ export function Thread() {
                   />
                   <textarea
                     name="input"
+                    defaultValue={
+                      isAgentCreator && !threadId && !hasMessages
+                        ? "Quero criar um fluxo agêntico"
+                        : undefined
+                    }
                     onChange={(e) => setHasInput(!!e.target.value.trim())}
                     onPaste={handlePaste}
                     onKeyDown={(e) => {
@@ -464,37 +481,47 @@ export function Thread() {
                   <div className="flex items-center gap-6 p-2 pt-4">
                     <div className="flex items-center gap-6">
                       <div className="flex items-center gap-2 space-x-2">
-                        <NewThreadButton hasMessages={hasMessages} />
-                        <Switch
-                          id="render-tool-calls"
-                          checked={hideToolCalls ?? false}
-                          onCheckedChange={setHideToolCalls}
-                        />
-                        <Label
-                          htmlFor="render-tool-calls"
-                          className="text-sm text-gray-600"
-                        >
-                          Hide Tool Calls
-                        </Label>
+                        {!isAgentCreator && (
+                          <NewThreadButton hasMessages={hasMessages} />
+                        )}
+                        {!isAgentCreator && (
+                          <>
+                            <Switch
+                              id="render-tool-calls"
+                              checked={hideToolCalls ?? false}
+                              onCheckedChange={setHideToolCalls}
+                            />
+                            <Label
+                              htmlFor="render-tool-calls"
+                              className="text-sm text-gray-600"
+                            >
+                              Hide Tool Calls
+                            </Label>
+                          </>
+                        )}
                       </div>
                     </div>
-                    <Label
-                      htmlFor="file-input"
-                      className="flex cursor-pointer"
-                    >
-                      <Plus className="size-5 text-gray-600" />
-                      <span className="text-sm text-gray-600">
-                        Upload PDF or Image
-                      </span>
-                    </Label>
-                    <input
-                      id="file-input"
-                      type="file"
-                      onChange={handleFileUpload}
-                      multiple
-                      accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
-                      className="hidden"
-                    />
+                    {!isAgentCreator && (
+                      <>
+                        <Label
+                          htmlFor="file-input"
+                          className="flex cursor-pointer"
+                        >
+                          <Plus className="size-5 text-gray-600" />
+                          <span className="text-sm text-gray-600">
+                            Upload PDF or Image
+                          </span>
+                        </Label>
+                        <input
+                          id="file-input"
+                          type="file"
+                          onChange={handleFileUpload}
+                          multiple
+                          accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
+                          className="hidden"
+                        />
+                      </>
+                    )}
                     {stream.isLoading ? (
                       <Button
                         key="stop"

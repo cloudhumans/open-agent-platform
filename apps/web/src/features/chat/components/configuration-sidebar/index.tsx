@@ -168,7 +168,10 @@ export const ConfigurationSidebar = forwardRef<
     true,
   );
 
+  const agentCreatorId = process.env.NEXT_PUBLIC_AGENT_CREATOR_ID;
+
   useEffect(() => {
+    if (agentId === agentCreatorId) return;
     if (
       !agentId ||
       !deploymentId ||

@@ -21,6 +21,7 @@ docker build --no-cache -f apps/web/Dockerfile -t open-agent-platform:${IMAGE_TA
   --build-arg NEXT_PUBLIC_MCP_AUTH_REQUIRED="true" \
   --build-arg NEXT_PUBLIC_TYPEBOT_BASE_URL="http://eddie.us-east-1.prd.cloudhumans.io" \
   --build-arg NEXT_PUBLIC_CLAUDIA_API_URL="https://claudia-api.us-east-1.prd.cloudhumans.io/api" \
+  --build-arg MOCK_BACKOFFICE="false" \
   .
 
 echo "🏷️  Tagging image..."

@@ -35,6 +35,7 @@ import { ensureToolCallsHaveResponses } from "@/features/chat/utils/tool-respons
 import { DO_NOT_RENDER_ID_PREFIX } from "@/constants";
 import { useConfigStore } from "../../hooks/use-config-store";
 import { useAuthContext } from "@/providers/Auth";
+import { useTenantContext } from "@/providers/Tenant";
 import { AgentsCombobox } from "@/components/ui/agents-combobox";
 import { useAgentsContext } from "@/providers/Agents";
 import { requiresApiKeysButNotSet } from "@/lib/agent-utils";
@@ -204,6 +205,7 @@ export function Thread() {
   const [agentId] = useQueryState("agentId");
   const [deploymentId] = useQueryState("deploymentId");
   const [threadId] = useQueryState("threadId");
+  const [project] = useQueryState("project");
   const isAgentCreator = agentId === agentCreatorId;
   const [hideToolCalls, setHideToolCalls] = useQueryState(
     "hideToolCalls",
@@ -233,6 +235,7 @@ export function Thread() {
   const hasApiKeys = useHasApiKeys();
 
   const { session } = useAuthContext();
+  const { selectedTenantId } = useTenantContext();
 
   const stream = useStreamContext();
   const messages = stream.messages;
@@ -318,6 +321,10 @@ export function Thread() {
         },
         metadata: {
           supabaseAccessToken: session?.accessToken,
+          ...(isAgentCreator && {
+            tenant_id: selectedTenantId,
+            project,
+          }),
         },
         streamSubgraphs: true,
         streamResumable: true,
@@ -349,6 +356,10 @@ export function Thread() {
       optimisticValues,
       metadata: {
         supabaseAccessToken: session?.accessToken,
+        ...(isAgentCreator && {
+          tenant_id: selectedTenantId,
+          project,
+        }),
       },
       streamSubgraphs: true,
       streamResumable: true,

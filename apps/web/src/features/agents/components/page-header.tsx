@@ -39,11 +39,11 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
   const projects = selectedTenant?.claudiaProjectIds ?? [];
 
   const handleConfirm = () => {
-    if (!selectedProject) return;
+    if (!agentCreatorId || !agentCreatorDeploymentId || !selectedProject) return;
     setOpen(false);
     const params = new URLSearchParams({
-      agentId: agentCreatorId!,
-      deploymentId: agentCreatorDeploymentId!,
+      agentId: agentCreatorId,
+      deploymentId: agentCreatorDeploymentId,
       project: selectedProject,
     });
     router.push(`/?${params.toString()}`);

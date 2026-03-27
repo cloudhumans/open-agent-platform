@@ -9,6 +9,7 @@ import { useQueryState } from "nuqs";
 import { useConfigStore } from "@/features/chat/hooks/use-config-store";
 import { useAuthContext } from "@/providers/Auth";
 import { useTenantContext } from "@/providers/Tenant";
+import { useIsAgentCreator } from "@/hooks/use-is-agent-creator";
 import { MultimodalPreview } from "./MultimodalPreview";
 import { isBase64ContentBlock } from "@/lib/multimodal-utils";
 
@@ -49,8 +50,7 @@ export function HumanMessage({
   const { selectedTenantId } = useTenantContext();
   const [agentId] = useQueryState("agentId");
   const [project] = useQueryState("project");
-  const isAgentCreator =
-    agentId === process.env.NEXT_PUBLIC_AGENT_CREATOR_ID;
+  const isAgentCreator = useIsAgentCreator();
 
   const thread = useStreamContext();
   const meta = thread.getMessagesMetadata(message);

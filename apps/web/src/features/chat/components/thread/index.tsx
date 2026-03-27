@@ -36,6 +36,7 @@ import { DO_NOT_RENDER_ID_PREFIX } from "@/constants";
 import { useConfigStore } from "../../hooks/use-config-store";
 import { useAuthContext } from "@/providers/Auth";
 import { useTenantContext } from "@/providers/Tenant";
+import { useIsAgentCreator } from "@/hooks/use-is-agent-creator";
 import { AgentsCombobox } from "@/components/ui/agents-combobox";
 import { useAgentsContext } from "@/providers/Agents";
 import { requiresApiKeysButNotSet } from "@/lib/agent-utils";
@@ -199,14 +200,12 @@ function NewThreadButton(props: { hasMessages: boolean }) {
   );
 }
 
-const agentCreatorId = process.env.NEXT_PUBLIC_AGENT_CREATOR_ID;
-
 export function Thread() {
   const [agentId] = useQueryState("agentId");
   const [deploymentId] = useQueryState("deploymentId");
   const [threadId] = useQueryState("threadId");
   const [project] = useQueryState("project");
-  const isAgentCreator = agentId === agentCreatorId;
+  const isAgentCreator = useIsAgentCreator();
   const [hideToolCalls, setHideToolCalls] = useQueryState(
     "hideToolCalls",
     parseAsBoolean.withDefault(false),

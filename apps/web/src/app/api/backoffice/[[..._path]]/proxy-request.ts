@@ -43,7 +43,7 @@ async function isAuthenticated(req: NextRequest): Promise<boolean> {
   }
 
   const token = authHeader.slice(7);
-  return verifyCognitoToken(token);
+  return !!(await verifyCognitoToken(token));
 }
 
 async function getBackofficeToken(): Promise<string | null> {

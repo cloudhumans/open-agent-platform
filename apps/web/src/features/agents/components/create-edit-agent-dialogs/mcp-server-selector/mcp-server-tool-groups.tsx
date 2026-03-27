@@ -23,6 +23,7 @@ interface ServerToolListProps {
   server: McpServer;
   selectedTools: string[];
   onToolToggle: (serverId: string, toolName: string, checked: boolean) => void;
+  onSelectAll: (serverId: string, toolNames: string[], checked: boolean) => void;
   searchTerm?: string;
   tenant?: string;
 }
@@ -31,6 +32,7 @@ function ServerToolList({
   server,
   selectedTools,
   onToolToggle,
+  onSelectAll,
   searchTerm,
   tenant,
 }: ServerToolListProps) {
@@ -80,8 +82,24 @@ function ServerToolList({
     );
   }
 
+  const allNames = filteredTools.map((t) => t.name);
+  const allSelected = allNames.length > 0 && allNames.every((n) => selectedTools.includes(n));
+
+  const handleToggleAll = (checked: boolean) => {
+    onSelectAll(server.id, allNames, checked);
+  };
+
   return (
     <div className="flex flex-col">
+      <div className="flex items-center justify-between border-b-[1px] py-3">
+        <Label className="text-sm font-medium text-muted-foreground">
+          {allSelected ? "Deselect all" : "Select all"} ({allNames.length})
+        </Label>
+        <Switch
+          checked={allSelected}
+          onCheckedChange={handleToggleAll}
+        />
+      </div>
       {filteredTools.map((tool) => {
         const checked = selectedTools.includes(tool.name);
         const id = `mcp-tool-${server.id}-${tool.name}`;
@@ -154,6 +172,22 @@ export function McpServerToolGroups({
     });
   };
 
+  const handleSelectAll = (
+    serverId: string,
+    toolNames: string[],
+    checked: boolean,
+  ) => {
+    const current = selectedToolsByServer[serverId] ?? [];
+    const updated = checked
+      ? Array.from(new Set([...current, ...toolNames]))
+      : current.filter((t) => !toolNames.includes(t));
+
+    onSelectionChange({
+      ...selectedToolsByServer,
+      [serverId]: updated,
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col gap-3 w-full">
@@ -184,6 +218,7 @@ export function McpServerToolGroups({
             selectedTools={selectedTools}
             selectedCount={selectedCount}
             onToolToggle={handleToolToggle}
+            onSelectAll={handleSelectAll}
             searchTerm={searchTerm}
             tenant={tenant}
           />
@@ -204,6 +239,7 @@ interface ServerGroupProps {
   selectedTools: string[];
   selectedCount: number;
   onToolToggle: (serverId: string, toolName: string, checked: boolean) => void;
+  onSelectAll: (serverId: string, toolNames: string[], checked: boolean) => void;
   searchTerm?: string;
   tenant?: string;
 }
@@ -213,6 +249,7 @@ function ServerGroup({
   selectedTools,
   selectedCount,
   onToolToggle,
+  onSelectAll,
   searchTerm,
   tenant,
 }: ServerGroupProps) {
@@ -237,6 +274,7 @@ function ServerGroup({
           server={server}
           selectedTools={selectedTools}
           onToolToggle={onToolToggle}
+          onSelectAll={onSelectAll}
           searchTerm={searchTerm}
           tenant={tenant}
         />

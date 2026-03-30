@@ -87,11 +87,13 @@ export function HumanMessage({
         },
         metadata: {
           supabaseAccessToken: session?.accessToken,
-          ...(isAgentCreator && {
+        },
+        ...(isAgentCreator && {
+          context: {
             tenant_id: selectedTenantId,
             project,
-          }),
-        },
+          },
+        }),
         streamSubgraphs: true,
         streamResumable: true,
       },

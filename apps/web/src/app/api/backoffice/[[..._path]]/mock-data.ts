@@ -22,6 +22,21 @@ const MOCK_TENANTS = [
     ],
   },
   {
+    tenantName: "cloudhumans",
+    cloudChatAccounts: [],
+    connectorProjects: ["claudia"],
+    claudiaProjects: [
+      "claudia",
+      "claudiafaq",
+      "claudiatestewin",
+    ],
+    eddieWorkspaces: [
+      { _id: "cm22gh7lp0004s6k37lkufua1", name: "claudia", instance: "INSTANCE_1" },
+      { _id: "clz1qagc2000813rcsrjbpdri", name: "claudiafaq", instance: "INSTANCE_1" },
+      { _id: "cm16z7mj2001cx2i9noylbxkb", name: "claudiatestewin", instance: "INSTANCE_1" },
+    ],
+  },
+  {
     tenantName: "get-agentic-done",
     cloudChatAccounts: [],
     connectorProjects: [],

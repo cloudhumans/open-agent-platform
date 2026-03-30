@@ -17,8 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sparkles } from "lucide-react";
+import { PlusCircle, Sparkles } from "lucide-react";
 import { useTenantContext } from "@/providers/Tenant";
+import { CreateAgentDialog } from "./create-edit-agent-dialogs/create-agent-dialog";
 
 interface PageHeaderProps {
   title: string;
@@ -32,6 +33,7 @@ const agentCreatorDeploymentId =
 
 export function PageHeader({ title, description, action }: PageHeaderProps) {
   const [open, setOpen] = useState(false);
+  const [showCreateAgentDialog, setShowCreateAgentDialog] = useState(false);
   const [selectedProject, setSelectedProject] = useState<string>("");
   const { selectedTenant } = useTenantContext();
   const router = useRouter();
@@ -63,7 +65,7 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
         )}
       </div>
       {action ||
-        (agentCreatorId && agentCreatorDeploymentId && (
+        (agentCreatorId && agentCreatorDeploymentId ? (
           <>
             <Button onClick={() => setOpen(true)}>
               <Sparkles className="mr-2 h-4 w-4" />
@@ -115,6 +117,17 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
                 )}
               </DialogContent>
             </Dialog>
+          </>
+        ) : (
+          <>
+            <Button onClick={() => setShowCreateAgentDialog(true)}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Create Agent
+            </Button>
+            <CreateAgentDialog
+              open={showCreateAgentDialog}
+              onOpenChange={setShowCreateAgentDialog}
+            />
           </>
         ))}
     </div>

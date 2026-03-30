@@ -1,21 +1,26 @@
 ---
-title: 'Stream Metadata'
-description: 'Metadata passed from the OAP frontend to your agent on every stream invocation'
+title: 'Stream Metadata & Context'
+description: 'Metadata and context passed from the OAP frontend to your agent on every stream invocation'
 ---
 
-# Stream Metadata
+# Stream Metadata & Context
 
-When the Open Agent Platform frontend invokes your agent via `stream.submit()`, it sends a `metadata` object alongside the messages and config. Your agent can read this metadata at runtime to make context-aware decisions.
+When the Open Agent Platform frontend invokes your agent via `stream.submit()`, it sends `metadata` and optionally `context` alongside the messages and config. Your agent can read these at runtime to make context-aware decisions.
 
-## Metadata Fields
+## Fields
 
-Every stream invocation includes the following metadata:
+### Metadata (always sent)
 
-| Field | Type | Always Sent | Description |
-|-------|------|-------------|-------------|
-| `supabaseAccessToken` | `string \| undefined` | Yes | The authenticated user's access token (from Cognito/Supabase session). Use this to make authenticated calls to downstream services on behalf of the user. |
-| `tenant_id` | `string \| undefined` | No | The selected tenant identifier. Only sent when the agent is the **Agent Creator** (`agentId === NEXT_PUBLIC_AGENT_CREATOR_ID`). |
-| `project` | `string \| undefined` | No | The selected project within the tenant. Only sent when the agent is the **Agent Creator**. Passed via query string from the project selection modal. |
+| Field | Type | Description |
+|-------|------|-------------|
+| `supabaseAccessToken` | `string \| undefined` | The authenticated user's access token (from Cognito/Supabase session). Use this to make authenticated calls to downstream services on behalf of the user. |
+
+### Context (Agent Creator only)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `tenant_id` | `string` | The selected tenant identifier. Sent as `context` when the agent is the **Agent Creator** (`agentId === NEXT_PUBLIC_AGENT_CREATOR_ID`). |
+| `project` | `string` | The selected project within the tenant. Sent as `context` when the agent is the **Agent Creator**. Passed via query string from the project selection modal. |
 
 ## When Each Field Is Sent
 
@@ -29,15 +34,20 @@ metadata: {
 
 ### Agent Creator mode only
 
-When the user clicks **"Get Agentic Done"** from the agents page, selects a project, and starts a chat, the frontend adds tenant and project context:
+When the user clicks **"Get Agentic Done"** from the agents page, selects a project, and starts a chat, the frontend sends tenant and project as **context** (not metadata):
 
 ```typescript
-metadata: {
-  supabaseAccessToken: "eyJhbGciOiJSUzI1NiIs...",
+// Agent Creator — no config.configurable, only context
+context: {
   tenant_id: "printi",
   project: "printicomercial"
+},
+metadata: {
+  supabaseAccessToken: "eyJhbGciOiJSUzI1NiIs..."
 }
 ```
+
+Context values arrive in `runtime.context` on the LangGraph server and are automatically forwarded to child agents (react agents) via the existing context propagation mechanism.
 
 ## Data Flow
 
@@ -47,7 +57,7 @@ The Agent Creator flow works as follows:
 2. **Project selection modal** shows the tenant's available projects (from `claudiaProjectIds`)
 3. **Frontend navigates** to `/?agentId=<AGENT_CREATOR_ID>&deploymentId=<AGENT_CREATOR_DEPLOYMENT_ID>&project=<selected_project>`
 4. **Thread component** reads `agentId`, `deploymentId`, and `project` from query params
-5. **On every `stream.submit()`**, `tenant_id` and `project` are included in the metadata object
+5. **On every `stream.submit()`**, `tenant_id` and `project` are sent as `context`
 
 ### Example Tenant Data
 
@@ -76,7 +86,7 @@ In this example:
 - `tenant_id` would be `"printi"` or `"get-agentic-done"`
 - `project` would be one of the values from `claudiaProjects`, e.g. `"printicomercial"`
 
-## Accessing Metadata in Your Agent
+## Accessing Context in Your Agent
 
 ### Python (LangGraph)
 
@@ -84,12 +94,15 @@ In this example:
 from langchain_core.runnables import RunnableConfig
 
 def my_node(state: State, config: RunnableConfig):
+    # Metadata (always available)
     metadata = config.get("metadata", {})
-    tenant_id = metadata.get("tenant_id")
-    project = metadata.get("project")
     access_token = metadata.get("supabaseAccessToken")
 
-    # Use tenant/project context for your agent logic
+    # Context (Agent Creator mode — arrives via runtime.context)
+    context = config.get("context", {})
+    tenant_id = context.get("tenant_id")
+    project = context.get("project")
+
     if tenant_id and project:
         # Agent Creator mode - you know which tenant/project to operate on
         pass
@@ -101,12 +114,12 @@ def my_node(state: State, config: RunnableConfig):
 import { RunnableConfig } from "@langchain/core/runnables";
 
 function myNode(state: State, config: RunnableConfig) {
-  const metadata = config.metadata ?? {};
-  const tenantId = metadata.tenant_id;
-  const project = metadata.project;
-  const accessToken = metadata.supabaseAccessToken;
+  // Metadata
+  const accessToken = config.metadata?.supabaseAccessToken;
 
-  // Use tenant/project context for your agent logic
+  // Context (Agent Creator mode)
+  const tenantId = config.context?.tenant_id;
+  const project = config.context?.project;
 }
 ```
 

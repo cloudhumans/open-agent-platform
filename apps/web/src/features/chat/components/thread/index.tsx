@@ -312,18 +312,22 @@ export function Thread() {
             newHumanMessage,
           ],
         }),
-        config: {
-          configurable: {
-            ...getAgentConfig(agentId),
-            apiKeys,
+        ...(!isAgentCreator && {
+          config: {
+            configurable: {
+              ...getAgentConfig(agentId),
+              apiKeys,
+            },
           },
-        },
-        metadata: {
-          supabaseAccessToken: session?.accessToken,
-          ...(isAgentCreator && {
+        }),
+        ...(isAgentCreator && {
+          context: {
             tenant_id: selectedTenantId,
             project,
-          }),
+          },
+        }),
+        metadata: {
+          supabaseAccessToken: session?.accessToken,
         },
         streamSubgraphs: true,
         streamResumable: true,
@@ -346,19 +350,23 @@ export function Thread() {
     stream.submit(undefined, {
       checkpoint: parentCheckpoint,
       streamMode: ["values"],
-      config: {
-        configurable: {
-          ...getAgentConfig(agentId),
-          apiKeys,
+      ...(!isAgentCreator && {
+        config: {
+          configurable: {
+            ...getAgentConfig(agentId),
+            apiKeys,
+          },
         },
-      },
+      }),
+      ...(isAgentCreator && {
+        context: {
+          tenant_id: selectedTenantId,
+          project,
+        },
+      }),
       optimisticValues,
       metadata: {
         supabaseAccessToken: session?.accessToken,
-        ...(isAgentCreator && {
-          tenant_id: selectedTenantId,
-          project,
-        }),
       },
       streamSubgraphs: true,
       streamResumable: true,

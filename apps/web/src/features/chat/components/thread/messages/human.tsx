@@ -83,17 +83,17 @@ export function HumanMessage({
           };
         },
         config: {
-          configurable: getAgentConfig(agentId),
+          configurable: {
+            ...getAgentConfig(agentId),
+            ...(isAgentCreator && {
+              tenant_id: selectedTenantId,
+              project,
+            }),
+          },
         },
         metadata: {
           supabaseAccessToken: session?.accessToken,
         },
-        ...(isAgentCreator && {
-          context: {
-            tenant_id: selectedTenantId,
-            project,
-          },
-        }),
         streamSubgraphs: true,
         streamResumable: true,
       },

@@ -316,17 +316,15 @@ export function Thread() {
           configurable: {
             ...getAgentConfig(agentId),
             apiKeys,
+            ...(isAgentCreator && {
+              tenant_id: selectedTenantId,
+              project,
+            }),
           },
         },
         metadata: {
           supabaseAccessToken: session?.accessToken,
         },
-        ...(isAgentCreator && {
-          context: {
-            tenant_id: selectedTenantId,
-            project,
-          },
-        }),
         streamSubgraphs: true,
         streamResumable: true,
       },
@@ -352,18 +350,16 @@ export function Thread() {
         configurable: {
           ...getAgentConfig(agentId),
           apiKeys,
+          ...(isAgentCreator && {
+            tenant_id: selectedTenantId,
+            project,
+          }),
         },
       },
       optimisticValues,
       metadata: {
         supabaseAccessToken: session?.accessToken,
       },
-      ...(isAgentCreator && {
-        context: {
-          tenant_id: selectedTenantId,
-          project,
-        },
-      }),
       streamSubgraphs: true,
       streamResumable: true,
     });

@@ -93,4 +93,22 @@ If these variables are not set, the "Create Agent" button will not be displayed.
 
 ## Running Locally
 
+### Prerequisites
+
+Start a local MongoDB instance (required for MCP server management):
+
+```bash
+docker compose up -d
+```
+
+This starts MongoDB on port `27017` with persistent storage. Then set in your `.env`:
+
+```env
+MONGODB_URI="mongodb://localhost:27017/open-agent-platform"
+```
+
+### Start the dev server
+
+```bash
 yarn dev --filter=@open-agent-platform/web
+```

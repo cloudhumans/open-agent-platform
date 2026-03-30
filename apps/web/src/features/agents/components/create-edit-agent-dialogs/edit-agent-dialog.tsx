@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAgents } from "@/hooks/use-agents";
 import { useAgentConfig } from "@/hooks/use-agent-config";
-import { Bot, LoaderCircle, Trash, X } from "lucide-react";
+import { Bot, LoaderCircle, Trash } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAgentsContext } from "@/providers/Agents";
@@ -239,20 +238,13 @@ function EditAgentDialogContent({
     <DialogContent className="h-auto max-h-[90vh] overflow-auto sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <DialogHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex flex-col gap-1.5">
-              <DialogTitle>Edit Agent</DialogTitle>
-              <DialogDescription>
-                Edit the agent for &apos;
-                <span className="font-medium">{agent.graph_id}</span>&apos;
-                graph.
-              </DialogDescription>
-            </div>
-            <DialogClose asChild>
-              <Button variant="ghost" size="icon" aria-label="Close dialog">
-                <X className="size-4" />
-              </Button>
-            </DialogClose>
+          <div className="flex flex-col gap-1.5">
+            <DialogTitle>Edit Agent</DialogTitle>
+            <DialogDescription>
+              Edit the agent for &apos;
+              <span className="font-medium">{agent.graph_id}</span>&apos;
+              graph.
+            </DialogDescription>
           </div>
         </DialogHeader>
         {loading ? (

@@ -13,6 +13,7 @@ import {
 import { useConfigStore } from "@/features/chat/hooks/use-config-store";
 import { Agent } from "@/types/agent";
 import { useQueryState } from "nuqs";
+import { useAuthContext } from "@/providers/Auth";
 
 /**
  * A custom hook for managing and accessing the configurable
@@ -20,6 +21,7 @@ import { useQueryState } from "nuqs";
  */
 export function useAgentConfig() {
   const { getAgentConfigSchema } = useAgents();
+  const { user } = useAuthContext();
   const [chatWithCollectionId, setChatWithCollectionId] = useQueryState(
     "chatWithCollectionId",
   );
@@ -84,6 +86,7 @@ export function useAgentConfig() {
           extractConfigurationsFromAgent({
             agent,
             schema,
+            userEmail: user?.email,
           });
 
         const agentId = agent.assistant_id;
@@ -139,7 +142,7 @@ export function useAgentConfig() {
         setLoading(false);
       }
     },
-    [clearState, getAgentConfigSchema],
+    [clearState, getAgentConfigSchema, user?.email],
   );
 
   return {

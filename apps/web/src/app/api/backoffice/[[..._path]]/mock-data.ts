@@ -15,25 +15,49 @@ const MOCK_TENANTS = [
       "printicomercialdemo",
     ],
     eddieWorkspaces: [
-      { _id: "clyhj8lqr001kyz4mj0yd0ra8", name: "printi", instance: "INSTANCE_1" },
-      { _id: "cm2nesnan001mt1wq31w0bdyw", name: "printicomercial", instance: "INSTANCE_1" },
-      { _id: "cm1z20599000024dxdzectwvl", name: "printisuporte", instance: "INSTANCE_1" },
-      { _id: "cmig9ueqo2ts1th9db9hsqo4w", name: "printicomercialdemo", instance: "INSTANCE_1" },
+      {
+        _id: "clyhj8lqr001kyz4mj0yd0ra8",
+        name: "printi",
+        instance: "INSTANCE_1",
+      },
+      {
+        _id: "cm2nesnan001mt1wq31w0bdyw",
+        name: "printicomercial",
+        instance: "INSTANCE_1",
+      },
+      {
+        _id: "cm1z20599000024dxdzectwvl",
+        name: "printisuporte",
+        instance: "INSTANCE_1",
+      },
+      {
+        _id: "cmig9ueqo2ts1th9db9hsqo4w",
+        name: "printicomercialdemo",
+        instance: "INSTANCE_1",
+      },
     ],
   },
   {
     tenantName: "cloudhumans",
     cloudChatAccounts: [],
     connectorProjects: ["claudia"],
-    claudiaProjects: [
-      "claudia",
-      "claudiafaq",
-      "claudiatestewin",
-    ],
+    claudiaProjects: ["claudia", "claudiafaq", "claudiatestewin"],
     eddieWorkspaces: [
-      { _id: "cm22gh7lp0004s6k37lkufua1", name: "claudia", instance: "INSTANCE_1" },
-      { _id: "clz1qagc2000813rcsrjbpdri", name: "claudiafaq", instance: "INSTANCE_1" },
-      { _id: "cm16z7mj2001cx2i9noylbxkb", name: "claudiatestewin", instance: "INSTANCE_1" },
+      {
+        _id: "cm22gh7lp0004s6k37lkufua1",
+        name: "claudia",
+        instance: "INSTANCE_1",
+      },
+      {
+        _id: "clz1qagc2000813rcsrjbpdri",
+        name: "claudiafaq",
+        instance: "INSTANCE_1",
+      },
+      {
+        _id: "cm16z7mj2001cx2i9noylbxkb",
+        name: "claudiatestewin",
+        instance: "INSTANCE_1",
+      },
     ],
   },
   {

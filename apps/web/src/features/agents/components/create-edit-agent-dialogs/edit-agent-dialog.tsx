@@ -22,7 +22,6 @@ import { StaleSupervisorsWarningDialog } from "./stale-supervisors-warning-dialo
 import { useMcpServers } from "@/features/settings/hooks/use-mcp-servers";
 import { useAuthContext } from "@/providers/Auth";
 
-
 interface EditAgentDialogProps {
   agent: Agent;
   open: boolean;
@@ -53,10 +52,13 @@ function EditAgentDialogContent({
   const { selectedTenant, selectedTenantId } = useTenantContext();
   const { session } = useAuthContext();
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
-  const [selectedToolsByServer, setSelectedToolsByServer] = useState<Record<string, string[]>>({});
+  const [selectedToolsByServer, setSelectedToolsByServer] = useState<
+    Record<string, string[]>
+  >({});
 
   // For pre-populating selected servers on edit: match existing snapshot names to current server IDs
-  const { servers: availableServers, loading: serversLoading } = useMcpServers();
+  const { servers: availableServers, loading: serversLoading } =
+    useMcpServers();
 
   const form = useForm<{
     name: string;
@@ -83,7 +85,12 @@ function EditAgentDialogContent({
     initializedRef.current = true;
 
     const rawSnapshot = agent.config?.configurable?.mcp_servers as unknown;
-    const existingSnapshot: { id?: string; name?: string; slug?: string; tools?: string[] }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
+    const existingSnapshot: {
+      id?: string;
+      name?: string;
+      slug?: string;
+      tools?: string[];
+    }[] = Array.isArray(rawSnapshot) ? rawSnapshot : [];
     if (existingSnapshot.length > 0) {
       // New format: mcp_servers array with slug-prefixed tool names
       const toolsByServer: Record<string, string[]> = {};
@@ -96,7 +103,7 @@ function EditAgentDialogContent({
         const prefix = slug ? `${slug}__` : "";
         if (server && Array.isArray(snap.tools) && snap.tools.length > 0) {
           toolsByServer[server.id] = snap.tools.map((t) =>
-            prefix && t.startsWith(prefix) ? t.slice(prefix.length) : t
+            prefix && t.startsWith(prefix) ? t.slice(prefix.length) : t,
           );
         }
       }
@@ -108,16 +115,27 @@ function EditAgentDialogContent({
       const legacyConfig = agent.config?.configurable?.mcp_config as
         | { url?: string; tools?: string[] }
         | undefined;
-      if (legacyConfig?.url && Array.isArray(legacyConfig.tools) && legacyConfig.tools.length > 0) {
-        const normalizeUrl = (u: string) => (u.endsWith("/mcp") ? u : `${u}/mcp`);
+      if (
+        legacyConfig?.url &&
+        Array.isArray(legacyConfig.tools) &&
+        legacyConfig.tools.length > 0
+      ) {
+        const normalizeUrl = (u: string) =>
+          u.endsWith("/mcp") ? u : `${u}/mcp`;
         const legacyUrl = normalizeUrl(legacyConfig.url);
-        const server = availableServers.find((s) => normalizeUrl(s.url) === legacyUrl);
+        const server = availableServers.find(
+          (s) => normalizeUrl(s.url) === legacyUrl,
+        );
         if (server) {
           setSelectedToolsByServer({ [server.id]: legacyConfig.tools });
         }
       }
     }
-  }, [hasMcpServers, availableServers, agent.config?.configurable?.mcp_servers]);
+  }, [
+    hasMcpServers,
+    availableServers,
+    agent.config?.configurable?.mcp_servers,
+  ]);
 
   const handleSubmit = async (data: {
     name: string;
@@ -139,7 +157,9 @@ function EditAgentDialogContent({
 
       if (serverIdsWithTools.length > 0) {
         // Fetch server snapshots (credentials remain encrypted)
-        const qs = serverIdsWithTools.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
+        const qs = serverIdsWithTools
+          .map((id) => `ids[]=${encodeURIComponent(id)}`)
+          .join("&");
         const snapshotHeaders: HeadersInit = {};
         if (session?.accessToken) {
           snapshotHeaders["Authorization"] = `Bearer ${session.accessToken}`;
@@ -158,11 +178,19 @@ function EditAgentDialogContent({
         }
         const snapshotData = await snapshotRes.json();
         // Augment each snapshot with its selected tools array
-        const servers = (snapshotData.servers ?? []) as Record<string, unknown>[];
+        const servers = (snapshotData.servers ?? []) as Record<
+          string,
+          unknown
+        >[];
         mcpServersPayload = servers.map((snap) => {
-          const snapTyped = snap as { id?: string; name?: string; slug?: string };
+          const snapTyped = snap as {
+            id?: string;
+            name?: string;
+            slug?: string;
+          };
           const server =
-            (snapTyped.id && availableServers.find((s) => s.id === snapTyped.id)) ||
+            (snapTyped.id &&
+              availableServers.find((s) => s.id === snapTyped.id)) ||
             availableServers.find((s) => s.name === snapTyped.name);
           const slug = snapTyped.slug ?? "";
           return {
@@ -242,8 +270,7 @@ function EditAgentDialogContent({
             <DialogTitle>Edit Agent</DialogTitle>
             <DialogDescription>
               Edit the agent for &apos;
-              <span className="font-medium">{agent.graph_id}</span>&apos;
-              graph.
+              <span className="font-medium">{agent.graph_id}</span>&apos; graph.
             </DialogDescription>
           </div>
         </DialogHeader>

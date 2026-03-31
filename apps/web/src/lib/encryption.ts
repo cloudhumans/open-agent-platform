@@ -1,8 +1,4 @@
-import {
-  randomBytes,
-  createCipheriv,
-  createDecipheriv,
-} from "node:crypto";
+import { randomBytes, createCipheriv, createDecipheriv } from "node:crypto";
 
 const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 12; // 96-bit IV for GCM
@@ -64,7 +60,9 @@ export function decrypt(stored: string): string {
   const parts = stored.split(":");
 
   if (parts.length !== 3) {
-    throw new Error("Invalid encrypted value format. Expected iv:authTag:ciphertext.");
+    throw new Error(
+      "Invalid encrypted value format. Expected iv:authTag:ciphertext.",
+    );
   }
 
   const [ivHex, authTagHex, ciphertextHex] = parts;

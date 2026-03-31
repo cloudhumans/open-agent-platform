@@ -137,7 +137,9 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     const userGroups: string[] = user.metadata?.["cognito:groups"] ?? [];
     if (!userGroups.length) return [];
 
-    return allTenants.filter((tenant) => userGroups.includes(tenant.tenantName));
+    return allTenants.filter((tenant) =>
+      userGroups.includes(tenant.tenantName),
+    );
   }, [user, allTenants]);
 
   const [selectedTenantKey, setSelectedTenantKeyState] = useState<string>(

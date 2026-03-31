@@ -57,7 +57,10 @@ async function getBackofficeToken(): Promise<string | null> {
     return null;
   }
 
-  if (!OAP_BACKEND_COGNITO_APP_CLIENT_ID || !OAP_BACKEND_COGNITO_APP_CLIENT_SECRET) {
+  if (
+    !OAP_BACKEND_COGNITO_APP_CLIENT_ID ||
+    !OAP_BACKEND_COGNITO_APP_CLIENT_SECRET
+  ) {
     console.error(
       "OAP_BACKEND_COGNITO_APP_CLIENT_ID or OAP_BACKEND_COGNITO_APP_CLIENT_SECRET is not configured. " +
         "Server-to-server token retrieval requires these env vars.",
@@ -187,7 +190,9 @@ export async function proxyRequest(req: NextRequest): Promise<Response> {
     const response = await fetch(targetUrl, fetchOptions);
 
     if (!response.ok) {
-      console.error(`Backoffice API returned ${response.status} for ${targetUrl}`);
+      console.error(
+        `Backoffice API returned ${response.status} for ${targetUrl}`,
+      );
       return new Response(
         JSON.stringify({
           message: "Upstream backoffice API error",

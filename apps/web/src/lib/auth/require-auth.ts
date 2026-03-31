@@ -15,17 +15,14 @@ async function getCognitoEmail(accessToken: string): Promise<string | null> {
 
   const region = userPoolId.split("_")[0];
   try {
-    const res = await fetch(
-      `https://cognito-idp.${region}.amazonaws.com/`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-amz-json-1.1",
-          "X-Amz-Target": "AWSCognitoIdentityProviderService.GetUser",
-        },
-        body: JSON.stringify({ AccessToken: accessToken }),
+    const res = await fetch(`https://cognito-idp.${region}.amazonaws.com/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-amz-json-1.1",
+        "X-Amz-Target": "AWSCognitoIdentityProviderService.GetUser",
       },
-    );
+      body: JSON.stringify({ AccessToken: accessToken }),
+    });
     if (!res.ok) return null;
     const data = await res.json();
     const emailAttr = (data.UserAttributes ?? []).find(
@@ -78,7 +75,10 @@ export async function requireAuth(req: NextRequest): Promise<AuthResult> {
 
   const groups: string[] = (payload as any)["cognito:groups"] ?? [];
   const customProjects: string = (payload as any)["custom:projects"] ?? "";
-  const allowedProjects = customProjects.split(",").map((p: string) => p.trim()).filter(Boolean);
+  const allowedProjects = customProjects
+    .split(",")
+    .map((p: string) => p.trim())
+    .filter(Boolean);
 
   // Check token claims first (fast path)
   if (groups.includes(tenantName) || allowedProjects.includes(tenantName)) {

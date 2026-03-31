@@ -20,7 +20,10 @@ const UpdateMcpServerSchema = z
     credentials: z.string().min(1).nullable().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.credentials != null && data.credentials.startsWith(MASKED_PREFIX)) {
+    if (
+      data.credentials != null &&
+      data.credentials.startsWith(MASKED_PREFIX)
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["credentials"],
@@ -29,7 +32,10 @@ const UpdateMcpServerSchema = z
       });
     }
     // Only validate credentials when explicitly provided alongside an auth type that requires them
-    if ((data.authType === "bearer" || data.authType === "apiKey") && data.credentials === null) {
+    if (
+      (data.authType === "bearer" || data.authType === "apiKey") &&
+      data.credentials === null
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["credentials"],
@@ -73,10 +79,7 @@ export async function PUT(
     const parsed = UpdateMcpServerSchema.safeParse(body);
 
     if (!parsed.success) {
-      return Response.json(
-        { error: parsed.error.flatten() },
-        { status: 422 },
-      );
+      return Response.json({ error: parsed.error.flatten() }, { status: 422 });
     }
 
     await connectDB();
@@ -143,15 +146,15 @@ export async function PUT(
   } catch (error: any) {
     if (error?.code === 11000) {
       return Response.json(
-        { error: "A server with this slug already exists (names that normalize to the same slug conflict)" },
+        {
+          error:
+            "A server with this slug already exists (names that normalize to the same slug conflict)",
+        },
         { status: 409 },
       );
     }
     console.error("[MCP] Failed to update server:", error);
-    return Response.json(
-      { error: "Failed to update server" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Failed to update server" }, { status: 500 });
   }
 }
 
@@ -197,9 +200,6 @@ export async function DELETE(
     return Response.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("[MCP] Failed to delete server:", error);
-    return Response.json(
-      { error: "Failed to delete server" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Failed to delete server" }, { status: 500 });
   }
 }

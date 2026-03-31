@@ -26,7 +26,11 @@ interface ServerToolListProps {
   error: string | null;
   selectedTools: string[];
   onToolToggle: (serverId: string, toolName: string, checked: boolean) => void;
-  onSelectAll: (serverId: string, toolNames: string[], checked: boolean) => void;
+  onSelectAll: (
+    serverId: string,
+    toolNames: string[],
+    checked: boolean,
+  ) => void;
   searchTerm?: string;
 }
 
@@ -44,8 +48,11 @@ function ServerToolList({
     return (
       <div className="flex flex-col gap-3 py-2">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="flex items-center justify-between">
-            <div className="flex flex-col gap-1 flex-1">
+          <div
+            key={i}
+            className="flex items-center justify-between"
+          >
+            <div className="flex flex-1 flex-col gap-1">
               <Skeleton className="h-4 w-[40%]" />
               <Skeleton className="h-3 w-[60%]" />
             </div>
@@ -58,7 +65,7 @@ function ServerToolList({
 
   if (error) {
     return (
-      <p className="py-2 text-sm text-destructive">
+      <p className="text-destructive py-2 text-sm">
         Server unreachable — tools cannot be loaded.
       </p>
     );
@@ -78,14 +85,15 @@ function ServerToolList({
 
   if (tools.length === 0) {
     return (
-      <p className="py-2 text-sm text-muted-foreground">
+      <p className="text-muted-foreground py-2 text-sm">
         No tools available on this server.
       </p>
     );
   }
 
   const allNames = filteredTools.map((t) => t.name);
-  const allSelected = allNames.length > 0 && allNames.every((n) => selectedTools.includes(n));
+  const allSelected =
+    allNames.length > 0 && allNames.every((n) => selectedTools.includes(n));
 
   const handleToggleAll = (checked: boolean) => {
     onSelectAll(server.id, allNames, checked);
@@ -94,7 +102,7 @@ function ServerToolList({
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between border-b-[1px] py-3">
-        <Label className="text-sm font-medium text-muted-foreground">
+        <Label className="text-muted-foreground text-sm font-medium">
           {allSelected ? "Deselect all" : "Select all"} ({allNames.length})
         </Label>
         <Switch
@@ -111,7 +119,10 @@ function ServerToolList({
             className="w-full space-y-2 border-b-[1px] py-4"
           >
             <div className="flex items-center justify-between">
-              <Label htmlFor={id} className="text-sm font-medium">
+              <Label
+                htmlFor={id}
+                className="text-sm font-medium"
+              >
                 {_.startCase(tool.name)}
               </Label>
               <Switch
@@ -123,7 +134,7 @@ function ServerToolList({
               />
             </div>
             {tool.description && (
-              <p className="text-xs whitespace-pre-line text-muted-foreground">
+              <p className="text-muted-foreground text-xs whitespace-pre-line">
                 {tool.description}
               </p>
             )}
@@ -190,9 +201,12 @@ export function McpServerToolGroups({
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-3 w-full">
+      <div className="flex w-full flex-col gap-3">
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-3">
+          <div
+            key={i}
+            className="flex items-center gap-3"
+          >
             <Skeleton className="h-5 w-5 rounded" />
             <Skeleton className="h-4 w-[50%]" />
           </div>
@@ -206,7 +220,7 @@ export function McpServerToolGroups({
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex w-full flex-col gap-2">
       {servers.map((server: McpServer) => {
         const selectedTools = selectedToolsByServer[server.id] ?? [];
 
@@ -235,7 +249,11 @@ interface ServerGroupProps {
   server: McpServer;
   selectedTools: string[];
   onToolToggle: (serverId: string, toolName: string, checked: boolean) => void;
-  onSelectAll: (serverId: string, toolNames: string[], checked: boolean) => void;
+  onSelectAll: (
+    serverId: string,
+    toolNames: string[],
+    checked: boolean,
+  ) => void;
   searchTerm?: string;
 }
 
@@ -256,16 +274,22 @@ function ServerGroup({
 
   return (
     <Collapsible defaultOpen={server.isDefault}>
-      <CollapsibleTrigger className="flex w-full items-center gap-2 rounded-md border border-transparent px-2 py-2 text-left cursor-pointer hover:bg-muted/50 hover:border-border transition-colors [&[data-state=open]>svg.chevron]:rotate-180">
-        <ChevronDown className="chevron size-4 shrink-0 text-muted-foreground transition-transform" />
+      <CollapsibleTrigger className="hover:bg-muted/50 hover:border-border flex w-full cursor-pointer items-center gap-2 rounded-md border border-transparent px-2 py-2 text-left transition-colors [&[data-state=open]>svg.chevron]:rotate-180">
+        <ChevronDown className="chevron text-muted-foreground size-4 shrink-0 transition-transform" />
         <span className="text-sm font-semibold">{server.name}</span>
         {selectedCount > 0 && (
-          <Badge variant="secondary" className="ml-auto text-xs">
+          <Badge
+            variant="secondary"
+            className="ml-auto text-xs"
+          >
             {selectedCount} selected
           </Badge>
         )}
         {server.isDefault && (
-          <Badge variant="outline" className={selectedCount > 0 ? "" : "ml-auto"}>
+          <Badge
+            variant="outline"
+            className={selectedCount > 0 ? "" : "ml-auto"}
+          >
             Default
           </Badge>
         )}

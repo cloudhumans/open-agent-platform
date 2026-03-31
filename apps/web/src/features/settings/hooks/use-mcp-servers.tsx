@@ -55,7 +55,9 @@ export function useMcpServers(): UseMcpServersReturn {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/mcp-servers", { headers: getAuthHeaders() });
+      const res = await fetch("/api/mcp-servers", {
+        headers: getAuthHeaders(),
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setServers(data.servers ?? []);
@@ -112,20 +114,23 @@ export function useMcpServers(): UseMcpServersReturn {
     [getAuthHeaders],
   );
 
-  const deleteServer = useCallback(async (id: string) => {
-    try {
-      const res = await fetch(`/api/mcp-servers/${id}`, {
-        method: "DELETE",
-        headers: getAuthHeaders(),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setServers((prev) => prev.filter((s) => s.id !== id));
-      toast.success("Server deleted");
-    } catch (err) {
-      console.error("[useMcpServers] Failed to delete:", err);
-      toast.error("Failed to delete server");
-    }
-  }, [getAuthHeaders]);
+  const deleteServer = useCallback(
+    async (id: string) => {
+      try {
+        const res = await fetch(`/api/mcp-servers/${id}`, {
+          method: "DELETE",
+          headers: getAuthHeaders(),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        setServers((prev) => prev.filter((s) => s.id !== id));
+        toast.success("Server deleted");
+      } catch (err) {
+        console.error("[useMcpServers] Failed to delete:", err);
+        toast.error("Failed to delete server");
+      }
+    },
+    [getAuthHeaders],
+  );
 
   return {
     servers,

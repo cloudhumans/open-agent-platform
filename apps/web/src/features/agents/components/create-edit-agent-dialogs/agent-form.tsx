@@ -241,12 +241,12 @@ export function AgentFieldsForm({
                           ))
                         : null}
                       {displayTools.length === 0 && toolSearchTerm && (
-                        <p className="my-4 w-full text-center text-sm text-muted-foreground">
+                        <p className="text-muted-foreground my-4 w-full text-center text-sm">
                           No tools found matching &quot;{toolSearchTerm}&quot;.
                         </p>
                       )}
                       {tools.length === 0 && !toolSearchTerm && (
-                        <p className="my-4 w-full text-center text-sm text-muted-foreground">
+                        <p className="text-muted-foreground my-4 w-full text-center text-sm">
                           No tools available for this agent.
                         </p>
                       )}
@@ -264,7 +264,10 @@ export function AgentFieldsForm({
                                   ...moreTool,
                                 ]);
                               } catch (error) {
-                                console.error("Failed to load more tools:", error);
+                                console.error(
+                                  "Failed to load more tools:",
+                                  error,
+                                );
                               } finally {
                                 setLoadingMore(false);
                               }

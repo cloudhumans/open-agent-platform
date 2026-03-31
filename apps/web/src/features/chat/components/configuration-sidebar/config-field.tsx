@@ -764,8 +764,6 @@ export function ConfigFieldAgents({
     store.updateConfig(actualAgentId, label, newDefaults);
   };
 
-
-
   return (
     <div className={cn("w-full space-y-2", className)}>
       <AgentsCombobox

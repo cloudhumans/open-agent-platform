@@ -113,9 +113,7 @@ export function McpServerFormDialog({
       open={open}
       onOpenChange={setOpen}
     >
-      <DialogTrigger asChild>
-        {trigger}
-      </DialogTrigger>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>

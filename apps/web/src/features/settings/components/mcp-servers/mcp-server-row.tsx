@@ -14,13 +14,16 @@ export function McpServerRow({
   actions,
 }: McpServerRowProps): React.ReactNode {
   return (
-    <div className="flex items-center justify-between rounded-md p-2 hover:bg-muted/50">
+    <div className="hover:bg-muted/50 flex items-center justify-between rounded-md p-2">
       {/* Left: name + badge + URL */}
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">{server.name}</span>
           {server.isDefault && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge
+              variant="secondary"
+              className="text-xs"
+            >
               Default
             </Badge>
           )}
@@ -29,9 +32,7 @@ export function McpServerRow({
       </div>
 
       {/* Right: actions slot */}
-      <div className="flex items-center gap-2">
-        {actions}
-      </div>
+      <div className="flex items-center gap-2">{actions}</div>
     </div>
   );
 }

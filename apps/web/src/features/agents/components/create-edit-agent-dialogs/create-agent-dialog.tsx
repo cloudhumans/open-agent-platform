@@ -49,10 +49,13 @@ function CreateAgentFormContent(props: {
   } = useAgentConfig();
   const { selectedTenant, selectedTenantId } = useTenantContext();
   const { session } = useAuthContext();
-  const { servers: availableServers, loading: serversLoading } = useMcpServers();
+  const { servers: availableServers, loading: serversLoading } =
+    useMcpServers();
   const [submitting, setSubmitting] = useState(false);
   // New agents start with no MCP tools selected
-  const [selectedToolsByServer, setSelectedToolsByServer] = useState<Record<string, string[]>>({});
+  const [selectedToolsByServer, setSelectedToolsByServer] = useState<
+    Record<string, string[]>
+  >({});
 
   const form = useForm<{
     name: string;
@@ -92,7 +95,9 @@ function CreateAgentFormContent(props: {
 
       if (serverIdsWithTools.length > 0) {
         // Fetch server snapshots (credentials remain encrypted)
-        const qs = serverIdsWithTools.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
+        const qs = serverIdsWithTools
+          .map((id) => `ids[]=${encodeURIComponent(id)}`)
+          .join("&");
         const snapshotHeaders: HeadersInit = {};
         if (session?.accessToken) {
           snapshotHeaders["Authorization"] = `Bearer ${session.accessToken}`;
@@ -112,11 +117,19 @@ function CreateAgentFormContent(props: {
         }
         const snapshotData = await snapshotRes.json();
         // Augment each snapshot with its selected tools array
-        const servers = (snapshotData.servers ?? []) as Record<string, unknown>[];
+        const servers = (snapshotData.servers ?? []) as Record<
+          string,
+          unknown
+        >[];
         mcpServersPayload = servers.map((snap) => {
-          const snapTyped = snap as { id?: string; name?: string; slug?: string };
+          const snapTyped = snap as {
+            id?: string;
+            name?: string;
+            slug?: string;
+          };
           const server =
-            (snapTyped.id && availableServers.find((s) => s.id === snapTyped.id)) ||
+            (snapTyped.id &&
+              availableServers.find((s) => s.id === snapTyped.id)) ||
             availableServers.find((s) => s.name === snapTyped.name);
           const slug = snapTyped.slug ?? "";
           return {

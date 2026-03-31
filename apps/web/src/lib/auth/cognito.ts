@@ -165,11 +165,11 @@ export class CognitoAuthProvider implements AuthProvider {
           }
 
           const session: Session = {
-             user,
-             accessToken, // Standard access token
-             idToken,
-             refreshToken,
-             expiresAt: result.getAccessToken().getExpiration(),
+            user,
+            accessToken, // Standard access token
+            idToken,
+            refreshToken,
+            expiresAt: result.getAccessToken().getExpiration(),
           };
 
           this.notifyListeners(session);
@@ -235,11 +235,11 @@ export class CognitoAuthProvider implements AuthProvider {
         }
 
         resolve({
-            user,
-            accessToken: session.getAccessToken().getJwtToken(),
-            idToken: session.getIdToken().getJwtToken(),
-            refreshToken: session.getRefreshToken().getToken(),
-            expiresAt: session.getAccessToken().getExpiration()
+          user,
+          accessToken: session.getAccessToken().getJwtToken(),
+          idToken: session.getIdToken().getJwtToken(),
+          refreshToken: session.getRefreshToken().getToken(),
+          expiresAt: session.getAccessToken().getExpiration(),
         });
       });
     });

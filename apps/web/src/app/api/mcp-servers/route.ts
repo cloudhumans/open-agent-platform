@@ -30,7 +30,8 @@ const CreateMcpServerSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["credentials"],
-          message: "credentials must be null or omitted when authType is \"none\"",
+          message:
+            'credentials must be null or omitted when authType is "none"',
         });
       }
     }
@@ -67,7 +68,11 @@ export async function GET(req: NextRequest) {
         try {
           maskedCreds = maskCredential(decrypt(doc.credentials));
         } catch (err) {
-          console.warn("[MCP] Failed to decrypt credentials for server:", doc._id?.toString(), err);
+          console.warn(
+            "[MCP] Failed to decrypt credentials for server:",
+            doc._id?.toString(),
+            err,
+          );
         }
       }
       userServers.push({
@@ -83,10 +88,7 @@ export async function GET(req: NextRequest) {
       });
     }
   } catch (error) {
-    console.warn(
-      "[MCP] MongoDB unavailable, returning defaults only:",
-      error,
-    );
+    console.warn("[MCP] MongoDB unavailable, returning defaults only:", error);
   }
 
   return Response.json({ servers: [...defaults, ...userServers] });
@@ -101,10 +103,7 @@ export async function POST(req: NextRequest) {
     const parsed = CreateMcpServerSchema.safeParse(body);
 
     if (!parsed.success) {
-      return Response.json(
-        { error: parsed.error.flatten() },
-        { status: 422 },
-      );
+      return Response.json({ error: parsed.error.flatten() }, { status: 422 });
     }
 
     await connectDB();
@@ -161,9 +160,6 @@ export async function POST(req: NextRequest) {
       );
     }
     console.error("[MCP] Failed to create server:", error);
-    return Response.json(
-      { error: "Failed to create server" },
-      { status: 500 },
-    );
+    return Response.json({ error: "Failed to create server" }, { status: 500 });
   }
 }

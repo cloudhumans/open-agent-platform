@@ -217,9 +217,7 @@ export function Thread() {
     }
   }, [isAgentCreator, hideToolCalls, setHideToolCalls]);
 
-  const [hasInput, setHasInput] = useState(
-    isAgentCreator && !threadId,
-  );
+  const [hasInput, setHasInput] = useState(isAgentCreator && !threadId);
   const {
     contentBlocks,
     setContentBlocks,
@@ -442,7 +440,7 @@ export function Thread() {
             </>
           }
           footer={
-            <div className="sticky bottom-0 flex flex-col items-center gap-8 bg-background">
+            <div className="bg-background sticky bottom-0 flex flex-col items-center gap-8">
               {!hasMessages && !threadId && (
                 <div className="flex items-center gap-3">
                   <LangGraphLogoSVG className="h-8 flex-shrink-0" />
@@ -512,7 +510,7 @@ export function Thread() {
                             />
                             <Label
                               htmlFor="render-tool-calls"
-                              className="text-sm text-muted-foreground"
+                              className="text-muted-foreground text-sm"
                             >
                               Hide Tool Calls
                             </Label>
@@ -526,8 +524,8 @@ export function Thread() {
                           htmlFor="file-input"
                           className="flex cursor-pointer"
                         >
-                          <Plus className="size-5 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">
+                          <Plus className="text-muted-foreground size-5" />
+                          <span className="text-muted-foreground text-sm">
                             Upload PDF or Image
                           </span>
                         </Label>

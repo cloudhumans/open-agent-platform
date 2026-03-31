@@ -41,7 +41,8 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
   const projects = selectedTenant?.claudiaProjectIds ?? [];
 
   const handleConfirm = () => {
-    if (!agentCreatorId || !agentCreatorDeploymentId || !selectedProject) return;
+    if (!agentCreatorId || !agentCreatorDeploymentId || !selectedProject)
+      return;
     setOpen(false);
     const params = new URLSearchParams({
       agentId: agentCreatorId,
@@ -72,7 +73,10 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
               Get Agentic Done
             </Button>
 
-            <Dialog open={open} onOpenChange={handleOpenChange}>
+            <Dialog
+              open={open}
+              onOpenChange={handleOpenChange}
+            >
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Select a project</DialogTitle>
@@ -96,7 +100,10 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
                       </SelectTrigger>
                       <SelectContent>
                         {projects.map((project) => (
-                          <SelectItem key={project} value={project}>
+                          <SelectItem
+                            key={project}
+                            value={project}
+                          >
                             {project}
                           </SelectItem>
                         ))}

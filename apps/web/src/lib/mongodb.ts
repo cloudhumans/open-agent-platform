@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 
 declare global {
-  var __mongoose: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } | undefined;
+  var __mongoose:
+    | { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null }
+    | undefined;
 }
 
 export async function connectDB(): Promise<void> {

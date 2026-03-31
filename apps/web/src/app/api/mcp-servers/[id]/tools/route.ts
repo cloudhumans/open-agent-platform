@@ -41,7 +41,10 @@ export async function GET(
     await connectDB();
 
     if (mongoose.connection.readyState !== 1) {
-      return Response.json({ error: "Database not available" }, { status: 503 });
+      return Response.json(
+        { error: "Database not available" },
+        { status: 503 },
+      );
     }
 
     const doc = await McpServer.findOne({
@@ -59,9 +62,7 @@ export async function GET(
   }
 
   // Build MCP URL — ensure it ends with /mcp
-  const mcpUrl = serverUrl.endsWith("/mcp")
-    ? serverUrl
-    : `${serverUrl}/mcp`;
+  const mcpUrl = serverUrl.endsWith("/mcp") ? serverUrl : `${serverUrl}/mcp`;
 
   // Build auth headers
   const headers: Record<string, string> = {};

@@ -1,0 +1,62 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_CI_EKS_PRODUCTION_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_CI_EKS_PRODUCTION_SECRET }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: "585814034319.dkr.ecr.us-east-1.amazonaws.com"
+          ECR_REPOSITORY: "open-agent-platform"
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build --no-cache -f apps/web/Dockerfile \
+            --build-arg NEXT_PUBLIC_DEPLOYMENTS='${{ secrets.NEXT_PUBLIC_DEPLOYMENTS }}' \
+            --build-arg NEXT_PUBLIC_COGNITO_CLIENT_ID='${{ secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID }}' \
+            --build-arg NEXT_PUBLIC_COGNITO_USER_POOL_ID='${{ secrets.NEXT_PUBLIC_COGNITO_USER_POOL_ID }}' \
+            --build-arg NEXT_PUBLIC_BASE_API_URL='${{ secrets.NEXT_PUBLIC_BASE_API_URL }}' \
+            --build-arg NEXT_PUBLIC_USE_LANGSMITH_AUTH='${{ secrets.NEXT_PUBLIC_USE_LANGSMITH_AUTH }}' \
+            --build-arg NEXT_PUBLIC_GOOGLE_AUTH_DISABLED='${{ secrets.NEXT_PUBLIC_GOOGLE_AUTH_DISABLED }}' \
+            --build-arg NEXT_PUBLIC_MCP_SERVER_URL='${{ secrets.NEXT_PUBLIC_MCP_SERVER_URL }}' \
+            --build-arg NEXT_PUBLIC_MCP_AUTH_REQUIRED='${{ secrets.NEXT_PUBLIC_MCP_AUTH_REQUIRED }}' \
+            --build-arg NEXT_PUBLIC_TYPEBOT_BASE_URL='${{ secrets.NEXT_PUBLIC_TYPEBOT_BASE_URL }}' \
+            --build-arg NEXT_PUBLIC_CLAUDIA_API_URL='${{ secrets.NEXT_PUBLIC_CLAUDIA_API_URL }}' \
+            --build-arg NEXT_PUBLIC_AGENT_CREATOR_ID='${{ secrets.NEXT_PUBLIC_AGENT_CREATOR_ID }}' \
+            --build-arg NEXT_PUBLIC_AGENT_CREATOR_DEPLOYMENT_ID='${{ secrets.NEXT_PUBLIC_AGENT_CREATOR_DEPLOYMENT_ID }}' \
+            --build-arg MOCK_BACKOFFICE='false' \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/v1.23.6/bin/linux/amd64/kubectl" && chmod u+x kubectl
+
+      - name: Deploy to production
+        run: |
+          aws eks --region us-east-1 update-kubeconfig --name kubernetes-production
+          ./kubectl rollout restart deployment/open-agent-platform -n open-agent-platform
+          ./kubectl rollout status deployment/open-agent-platform -n open-agent-platform

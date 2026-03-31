@@ -123,7 +123,7 @@ function ServerToolList({
               />
             </div>
             {tool.description && (
-              <p className="text-xs whitespace-pre-line text-gray-500">
+              <p className="text-xs whitespace-pre-line text-muted-foreground">
                 {tool.description}
               </p>
             )}

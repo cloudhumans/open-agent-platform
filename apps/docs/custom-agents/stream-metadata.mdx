@@ -1,0 +1,133 @@
+---
+title: 'Stream Metadata & Context'
+description: 'Metadata and context passed from the OAP frontend to your agent on every stream invocation'
+---
+
+# Stream Metadata & Context
+
+When the Open Agent Platform frontend invokes your agent via `stream.submit()`, it sends `metadata` and optionally `context` alongside the messages and config. Your agent can read these at runtime to make context-aware decisions.
+
+## Fields
+
+### Metadata (always sent)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `supabaseAccessToken` | `string \| undefined` | The authenticated user's access token (from Cognito/Supabase session). Use this to make authenticated calls to downstream services on behalf of the user. |
+
+### Context (Agent Creator only)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `tenant_id` | `string` | The selected tenant identifier. Sent as `context` when the agent is the **Agent Creator** (`agentId === NEXT_PUBLIC_AGENT_CREATOR_ID`). |
+| `project` | `string` | The selected project within the tenant. Sent as `context` when the agent is the **Agent Creator**. Passed via query string from the project selection modal. |
+
+## When Each Field Is Sent
+
+### Always (all agents)
+
+```typescript
+metadata: {
+  supabaseAccessToken: "eyJhbGciOiJSUzI1NiIs..."
+}
+```
+
+### Agent Creator mode only
+
+When the user clicks **"Get Agentic Done"** from the agents page, selects a project, and starts a chat, the frontend sends tenant and project as **context** (not metadata):
+
+```typescript
+// Agent Creator — no config.configurable, only context
+context: {
+  tenant_id: "printi",
+  project: "printicomercial"
+},
+metadata: {
+  supabaseAccessToken: "eyJhbGciOiJSUzI1NiIs..."
+}
+```
+
+Context values arrive in `runtime.context` on the LangGraph server and are automatically forwarded to child agents (react agents) via the existing context propagation mechanism.
+
+## Data Flow
+
+The Agent Creator flow works as follows:
+
+1. **User clicks "Get Agentic Done"** on the agents page header
+2. **Project selection modal** shows the tenant's available projects (from `claudiaProjectIds`)
+3. **Frontend navigates** to `/?agentId=<AGENT_CREATOR_ID>&deploymentId=<AGENT_CREATOR_DEPLOYMENT_ID>&project=<selected_project>`
+4. **Thread component** reads `agentId`, `deploymentId`, and `project` from query params
+5. **On every `stream.submit()`**, `tenant_id` and `project` are sent as `context`
+
+### Example Tenant Data
+
+To help understand the values your agent will receive, here are example tenants:
+
+```json
+[
+  {
+    "tenantName": "printi",
+    "claudiaProjects": [
+      "printi",
+      "printicomercial",
+      "printisuporte",
+      "evento_scrapper_printi_produtos",
+      "printicomercialdemo"
+    ]
+  },
+  {
+    "tenantName": "get-agentic-done",
+    "claudiaProjects": ["gad"]
+  }
+]
+```
+
+In this example:
+- `tenant_id` would be `"printi"` or `"get-agentic-done"`
+- `project` would be one of the values from `claudiaProjects`, e.g. `"printicomercial"`
+
+## Accessing Context in Your Agent
+
+### Python (LangGraph)
+
+```python
+from langchain_core.runnables import RunnableConfig
+
+def my_node(state: State, config: RunnableConfig):
+    # Metadata (always available)
+    metadata = config.get("metadata", {})
+    access_token = metadata.get("supabaseAccessToken")
+
+    # Context (Agent Creator mode — arrives via runtime.context)
+    context = config.get("context", {})
+    tenant_id = context.get("tenant_id")
+    project = context.get("project")
+
+    if tenant_id and project:
+        # Agent Creator mode - you know which tenant/project to operate on
+        pass
+```
+
+### TypeScript (LangGraph)
+
+```typescript
+import { RunnableConfig } from "@langchain/core/runnables";
+
+function myNode(state: State, config: RunnableConfig) {
+  // Metadata
+  const accessToken = config.metadata?.supabaseAccessToken;
+
+  // Context (Agent Creator mode)
+  const tenantId = config.context?.tenant_id;
+  const project = config.context?.project;
+}
+```
+
+## Agent Creator UI Behavior
+
+When the frontend detects that the current agent is the Agent Creator, it also adjusts the UI:
+
+- **Tool calls are hidden** (`hideToolCalls` is forced to `true`)
+- **Textarea is pre-populated** with a default message
+- **New thread**, **file upload**, and **hide tool calls toggle** controls are hidden
+- The chat operates in a simplified, conversational mode focused on agent creation

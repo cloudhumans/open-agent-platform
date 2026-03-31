@@ -31,6 +31,7 @@ import { useSearchTools } from "@/hooks/use-search-tools";
 import { useFetchPreselectedTools } from "@/hooks/use-fetch-preselected-tools";
 import { useAgentConfig } from "@/hooks/use-agent-config";
 import { useAgentsContext } from "@/providers/Agents";
+import { useIsAgentCreator } from "@/hooks/use-is-agent-creator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -168,7 +169,10 @@ export const ConfigurationSidebar = forwardRef<
     true,
   );
 
+  const isAgentCreator = useIsAgentCreator();
+
   useEffect(() => {
+    if (isAgentCreator) return;
     if (
       !agentId ||
       !deploymentId ||

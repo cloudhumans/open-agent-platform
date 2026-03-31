@@ -33,6 +33,7 @@ export function McpServerActions({
           variant="ghost"
           size="icon"
           className="h-6 w-6"
+          aria-label="Server actions"
         >
           <MoreVertical className="h-4 w-4" />
         </Button>

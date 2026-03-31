@@ -66,6 +66,49 @@ First, ensure you're using the latest version of LangGraph. If running locally, 
 
 If it's still not working, confirm your `x_oap_ui_config` metadata has the proper fields set.
 
+## Environment Variables
+
+### Mock Backoffice (`MOCK_BACKOFFICE`)
+
+When set to `"true"`, the backoffice API proxy route returns mock data instead of forwarding requests to the real backoffice service. This is useful for local development when you don't have the backoffice backend running.
+
+```env
+MOCK_BACKOFFICE="true"
+```
+
+The mock provides sample tenant and deployment data so you can develop and test the UI without depending on the external backoffice service.
+
+### Agent Creator (`NEXT_PUBLIC_AGENT_CREATOR_ID`, `NEXT_PUBLIC_AGENT_CREATOR_DEPLOYMENT_ID`)
+
+These variables enable a conversational agent creation flow. When both are set, the "Create Agent" button on the `/agents` page navigates users to a chat session with a specialized agent that guides them through creating new tools, agents, and react agents — all through conversation instead of a traditional form.
+
+```env
+NEXT_PUBLIC_AGENT_CREATOR_ID="<your-agent-creator-assistant-id>"
+NEXT_PUBLIC_AGENT_CREATOR_DEPLOYMENT_ID="<your-deployment-id>"
+```
+
+When chatting with the Agent Creator, the interface is simplified: the agent selector dropdown and the "Hide Tool Calls" toggle are hidden, providing a focused experience.
+
+If these variables are not set, the "Create Agent" button will not be displayed.
+
 ## Running Locally
 
+### Prerequisites
+
+Start a local MongoDB instance (required for MCP server management):
+
+```bash
+docker compose up -d
+```
+
+This starts MongoDB on port `27017` with persistent storage. Then set in your `.env`:
+
+```env
+MONGODB_URI="mongodb://localhost:27017/open-agent-platform"
+```
+
+### Start the dev server
+
+```bash
 yarn dev --filter=@open-agent-platform/web
+```

@@ -35,6 +35,8 @@ import { ensureToolCallsHaveResponses } from "@/features/chat/utils/tool-respons
 import { DO_NOT_RENDER_ID_PREFIX } from "@/constants";
 import { useConfigStore } from "../../hooks/use-config-store";
 import { useAuthContext } from "@/providers/Auth";
+import { useTenantContext } from "@/providers/Tenant";
+import { useIsAgentCreator } from "@/hooks/use-is-agent-creator";
 import { AgentsCombobox } from "@/components/ui/agents-combobox";
 import { useAgentsContext } from "@/providers/Agents";
 import { requiresApiKeysButNotSet } from "@/lib/agent-utils";
@@ -202,11 +204,22 @@ export function Thread() {
   const [agentId] = useQueryState("agentId");
   const [deploymentId] = useQueryState("deploymentId");
   const [threadId] = useQueryState("threadId");
+  const [project] = useQueryState("project");
+  const isAgentCreator = useIsAgentCreator();
   const [hideToolCalls, setHideToolCalls] = useQueryState(
     "hideToolCalls",
     parseAsBoolean.withDefault(false),
   );
-  const [hasInput, setHasInput] = useState(false);
+
+  useEffect(() => {
+    if (isAgentCreator && !hideToolCalls) {
+      setHideToolCalls(true);
+    }
+  }, [isAgentCreator, hideToolCalls, setHideToolCalls]);
+
+  const [hasInput, setHasInput] = useState(
+    isAgentCreator && !threadId,
+  );
   const {
     contentBlocks,
     setContentBlocks,
@@ -221,6 +234,7 @@ export function Thread() {
   const hasApiKeys = useHasApiKeys();
 
   const { session } = useAuthContext();
+  const { selectedTenantId } = useTenantContext();
 
   const stream = useStreamContext();
   const messages = stream.messages;
@@ -298,12 +312,20 @@ export function Thread() {
             newHumanMessage,
           ],
         }),
-        config: {
-          configurable: {
-            ...getAgentConfig(agentId),
-            apiKeys,
+        ...(!isAgentCreator && {
+          config: {
+            configurable: {
+              ...getAgentConfig(agentId),
+              apiKeys,
+            },
           },
-        },
+        }),
+        ...(isAgentCreator && {
+          context: {
+            tenant_id: selectedTenantId,
+            project,
+          },
+        }),
         metadata: {
           supabaseAccessToken: session?.accessToken,
         },
@@ -328,12 +350,20 @@ export function Thread() {
     stream.submit(undefined, {
       checkpoint: parentCheckpoint,
       streamMode: ["values"],
-      config: {
-        configurable: {
-          ...getAgentConfig(agentId),
-          apiKeys,
+      ...(!isAgentCreator && {
+        config: {
+          configurable: {
+            ...getAgentConfig(agentId),
+            apiKeys,
+          },
         },
-      },
+      }),
+      ...(isAgentCreator && {
+        context: {
+          tenant_id: selectedTenantId,
+          project,
+        },
+      }),
       optimisticValues,
       metadata: {
         supabaseAccessToken: session?.accessToken,
@@ -412,7 +442,7 @@ export function Thread() {
             </>
           }
           footer={
-            <div className="sticky bottom-0 flex flex-col items-center gap-8 bg-white">
+            <div className="sticky bottom-0 flex flex-col items-center gap-8 bg-background">
               {!hasMessages && !threadId && (
                 <div className="flex items-center gap-3">
                   <LangGraphLogoSVG className="h-8 flex-shrink-0" />
@@ -442,7 +472,13 @@ export function Thread() {
                     onRemove={removeBlock}
                   />
                   <textarea
+                    aria-label="Message input"
                     name="input"
+                    defaultValue={
+                      isAgentCreator && !threadId && !hasMessages
+                        ? "Quero criar um fluxo agêntico"
+                        : undefined
+                    }
                     onChange={(e) => setHasInput(!!e.target.value.trim())}
                     onPaste={handlePaste}
                     onKeyDown={(e) => {
@@ -464,37 +500,47 @@ export function Thread() {
                   <div className="flex items-center gap-6 p-2 pt-4">
                     <div className="flex items-center gap-6">
                       <div className="flex items-center gap-2 space-x-2">
-                        <NewThreadButton hasMessages={hasMessages} />
-                        <Switch
-                          id="render-tool-calls"
-                          checked={hideToolCalls ?? false}
-                          onCheckedChange={setHideToolCalls}
-                        />
-                        <Label
-                          htmlFor="render-tool-calls"
-                          className="text-sm text-gray-600"
-                        >
-                          Hide Tool Calls
-                        </Label>
+                        {!isAgentCreator && (
+                          <NewThreadButton hasMessages={hasMessages} />
+                        )}
+                        {!isAgentCreator && (
+                          <>
+                            <Switch
+                              id="render-tool-calls"
+                              checked={hideToolCalls ?? false}
+                              onCheckedChange={setHideToolCalls}
+                            />
+                            <Label
+                              htmlFor="render-tool-calls"
+                              className="text-sm text-muted-foreground"
+                            >
+                              Hide Tool Calls
+                            </Label>
+                          </>
+                        )}
                       </div>
                     </div>
-                    <Label
-                      htmlFor="file-input"
-                      className="flex cursor-pointer"
-                    >
-                      <Plus className="size-5 text-gray-600" />
-                      <span className="text-sm text-gray-600">
-                        Upload PDF or Image
-                      </span>
-                    </Label>
-                    <input
-                      id="file-input"
-                      type="file"
-                      onChange={handleFileUpload}
-                      multiple
-                      accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
-                      className="hidden"
-                    />
+                    {!isAgentCreator && (
+                      <>
+                        <Label
+                          htmlFor="file-input"
+                          className="flex cursor-pointer"
+                        >
+                          <Plus className="size-5 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">
+                            Upload PDF or Image
+                          </span>
+                        </Label>
+                        <input
+                          id="file-input"
+                          type="file"
+                          onChange={handleFileUpload}
+                          multiple
+                          accept="image/jpeg,image/png,image/gif,image/webp,application/pdf"
+                          className="hidden"
+                        />
+                      </>
+                    )}
                     {stream.isLoading ? (
                       <Button
                         key="stop"

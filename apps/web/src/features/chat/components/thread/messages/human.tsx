@@ -8,6 +8,8 @@ import { BranchSwitcher, CommandBar } from "./shared";
 import { useQueryState } from "nuqs";
 import { useConfigStore } from "@/features/chat/hooks/use-config-store";
 import { useAuthContext } from "@/providers/Auth";
+import { useTenantContext } from "@/providers/Tenant";
+import { useIsAgentCreator } from "@/hooks/use-is-agent-creator";
 import { MultimodalPreview } from "./MultimodalPreview";
 import { isBase64ContentBlock } from "@/lib/multimodal-utils";
 
@@ -45,7 +47,10 @@ export function HumanMessage({
   isLoading: boolean;
 }) {
   const { session } = useAuthContext();
+  const { selectedTenantId } = useTenantContext();
   const [agentId] = useQueryState("agentId");
+  const [project] = useQueryState("project");
+  const isAgentCreator = useIsAgentCreator();
 
   const thread = useStreamContext();
   const meta = thread.getMessagesMetadata(message);
@@ -77,9 +82,17 @@ export function HumanMessage({
             messages: [...(values.messages.slice(0, -1) ?? []), newMessage],
           };
         },
-        config: {
-          configurable: getAgentConfig(agentId),
-        },
+        ...(!isAgentCreator && {
+          config: {
+            configurable: getAgentConfig(agentId),
+          },
+        }),
+        ...(isAgentCreator && {
+          context: {
+            tenant_id: selectedTenantId,
+            project,
+          },
+        }),
         metadata: {
           supabaseAccessToken: session?.accessToken,
         },

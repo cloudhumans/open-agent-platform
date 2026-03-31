@@ -21,6 +21,8 @@ docker build --no-cache -f apps/web/Dockerfile -t open-agent-platform:${IMAGE_TA
   --build-arg NEXT_PUBLIC_MCP_AUTH_REQUIRED="true" \
   --build-arg NEXT_PUBLIC_TYPEBOT_BASE_URL="http://eddie.us-east-1.prd.cloudhumans.io" \
   --build-arg NEXT_PUBLIC_CLAUDIA_API_URL="https://claudia-api.us-east-1.prd.cloudhumans.io/api" \
+  --build-arg NEXT_PUBLIC_AGENT_CREATOR_ID="3eb96816-00fd-441a-a2bf-a025c035988a" \
+  --build-arg NEXT_PUBLIC_AGENT_CREATOR_DEPLOYMENT_ID="271044b4-73e4-4ef8-ab6d-328a3d06a2ac" \
   --build-arg MOCK_BACKOFFICE="false" \
   .
 

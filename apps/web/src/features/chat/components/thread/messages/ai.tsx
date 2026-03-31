@@ -29,7 +29,8 @@ function CustomComponent({
       {customComponents.map((customComponent) => (
         <LoadExternalComponent
           key={customComponent.id}
-          stream={thread}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          stream={thread as any}
           message={customComponent}
           meta={{ ui: customComponent }}
         />

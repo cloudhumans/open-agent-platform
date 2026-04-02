@@ -309,7 +309,7 @@ function EditAgentDialogContent({
           <Button
             type="submit"
             className="flex w-full items-center justify-center gap-1"
-            disabled={loading || form.formState.isSubmitting}
+            disabled={loading || serversLoading || form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? (
               <LoaderCircle className="animate-spin" />

@@ -211,14 +211,14 @@ function CreateAgentFormContent(props: {
             props.onClose();
           }}
           variant="outline"
-          disabled={loading || submitting}
+          disabled={loading || serversLoading || submitting}
         >
           Cancel
         </Button>
         <Button
           type="submit"
           className="flex w-full items-center justify-center gap-1"
-          disabled={loading || submitting}
+          disabled={loading || serversLoading || submitting}
         >
           {submitting ? <LoaderCircle className="animate-spin" /> : <Bot />}
           <span>{submitting ? "Creating..." : "Create Agent"}</span>

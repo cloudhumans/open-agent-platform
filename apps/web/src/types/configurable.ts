@@ -17,6 +17,12 @@ export type ConfigurableFieldUIType =
 export interface ConfigurableFieldOption {
   label: string;
   value: string;
+  /**
+   * Email glob patterns that control who can see this option.
+   * If omitted, the option is visible to everyone.
+   * Example: ["*@cloudhumans.com"]
+   */
+  visible_to?: string[];
 }
 
 /**
@@ -68,6 +74,12 @@ export type ConfigurableFieldUIMetadata = {
    * This is only applicable for number fields.
    */
   step?: number;
+  /**
+   * Email glob patterns that control who can see this field.
+   * If omitted, the field is visible to everyone.
+   * Example: ["*@cloudhumans.com"]
+   */
+  visible_to?: string[];
 };
 
 export type ConfigurableFieldMCPMetadata = {

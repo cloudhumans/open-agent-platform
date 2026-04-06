@@ -41,6 +41,23 @@ function getUiConfig(
 }
 
 /**
+ * Check whether an email matches a list of glob-style patterns.
+ * Supported wildcards: `*` (matches any sequence of characters).
+ * Example: `"*@cloudhumans.com"` matches `"alice@cloudhumans.com"`.
+ */
+export function emailMatchesPatterns(
+  email: string | undefined | null,
+  patterns: string[],
+): boolean {
+  if (!email) return false;
+  const lower = email.toLowerCase();
+  return patterns.some((p) => {
+    const regex = new RegExp("^" + p.toLowerCase().replace(/\*/g, ".*") + "$");
+    return regex.test(lower);
+  });
+}
+
+/**
  * Converts a LangGraph configuration schema into an array of UI metadata
  * for configurable fields.
  *
@@ -50,12 +67,15 @@ function getUiConfig(
  * object, using the property key as the label.
  *
  * @param schema - The LangGraph configuration schema to process.
+ * @param userEmail - Optional current user email; fields with `visible_to`
+ *                    patterns that don't match this email are filtered out.
  * @returns An array of ConfigurableFieldUIMetadata objects representing
  *          the UI configuration for fields found in the schema, or an empty
  *          array if the schema is invalid or contains no UI configurations.
  */
 function configSchemaToConfigurableFields(
   schema: GraphSchema["config_schema"],
+  userEmail?: string | null,
 ): ConfigurableFieldUIMetadata[] {
   if (!schema || !schema.properties) {
     return [];
@@ -65,6 +85,13 @@ function configSchemaToConfigurableFields(
   for (const [key, value] of Object.entries(schema.properties)) {
     const uiConfig = getUiConfig(value);
     if (uiConfig && ["mcp", "rag", "hidden"].includes(uiConfig.type)) {
+      continue;
+    }
+
+    if (
+      uiConfig?.visible_to &&
+      !emailMatchesPatterns(userEmail, uiConfig.visible_to)
+    ) {
       continue;
     }
 
@@ -179,11 +206,13 @@ type ExtractedConfigs = {
 export function extractConfigurationsFromAgent({
   agent,
   schema,
+  userEmail,
 }: {
   agent: Assistant;
   schema: GraphSchema["config_schema"];
+  userEmail?: string | null;
 }): ExtractedConfigs {
-  const configFields = configSchemaToConfigurableFields(schema);
+  const configFields = configSchemaToConfigurableFields(schema, userEmail);
   const toolConfig = configSchemaToToolsConfig(schema);
   const ragConfig = configSchemaToRagConfig(schema);
   const agentsConfig = configSchemaToAgentsConfig(schema);

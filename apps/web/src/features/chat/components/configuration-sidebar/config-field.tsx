@@ -44,10 +44,12 @@ import { getDeployments } from "@/lib/environment/deployments";
 import { toast } from "sonner";
 import { useClaudiaTags } from "@/hooks/use-claudia-tags";
 import { useTenantContext } from "@/providers/Tenant";
+import { useAuthContext } from "@/providers/Auth";
 
 interface Option {
   label: string;
   value: string;
+  internal?: boolean;
 }
 
 interface ConfigFieldProps {
@@ -98,10 +100,16 @@ export function ConfigField({
   const [open, setOpen] = useState(false);
   const [openTag, setOpenTag] = useState(false);
   const { selectedTenant } = useTenantContext();
+  const { user } = useAuthContext();
+  const isInternalUser = user?.email?.endsWith("@cloudhumans.com") ?? false;
   const claudiaProjects = useMemo(() => {
     return (selectedTenant?.claudiaProjectIds ?? []).filter(Boolean);
   }, [selectedTenant]);
   const availableTags = useClaudiaTags(dependencyValue);
+  const visibleOptions = useMemo(
+    () => options.filter((o) => !o.internal || isInternalUser),
+    [options, isInternalUser],
+  );
 
   // Determine whether to use external state or Zustand store
   const isExternallyManaged = externalSetValue !== undefined;
@@ -268,7 +276,7 @@ export function ConfigField({
             <SelectValue placeholder={placeholder || "Select an option"} />
           </SelectTrigger>
           <SelectContent>
-            {options.map((option) => (
+            {visibleOptions.map((option) => (
               <SelectItem
                 key={option.value}
                 value={option.value}

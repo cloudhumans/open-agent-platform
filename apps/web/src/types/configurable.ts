@@ -17,6 +17,10 @@ export type ConfigurableFieldUIType =
 export interface ConfigurableFieldOption {
   label: string;
   value: string;
+  /**
+   * When true, this option is only visible to internal users (@cloudhumans.com).
+   */
+  internal?: boolean;
 }
 
 /**

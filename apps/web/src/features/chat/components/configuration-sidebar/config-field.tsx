@@ -107,7 +107,10 @@ export function ConfigField({
   }, [selectedTenant]);
   const availableTags = useClaudiaTags(dependencyValue);
   const visibleOptions = useMemo(
-    () => options.filter((o) => !o.visible_to || emailMatchesPatterns(user?.email, o.visible_to)),
+    () =>
+      options.filter(
+        (o) => !o.visible_to || emailMatchesPatterns(user?.email, o.visible_to),
+      ),
     [options, user?.email],
   );
 

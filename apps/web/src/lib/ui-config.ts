@@ -52,9 +52,7 @@ export function emailMatchesPatterns(
   if (!email) return false;
   const lower = email.toLowerCase();
   return patterns.some((p) => {
-    const regex = new RegExp(
-      "^" + p.toLowerCase().replace(/\*/g, ".*") + "$",
-    );
+    const regex = new RegExp("^" + p.toLowerCase().replace(/\*/g, ".*") + "$");
     return regex.test(lower);
   });
 }

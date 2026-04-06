@@ -18,9 +18,11 @@ export interface ConfigurableFieldOption {
   label: string;
   value: string;
   /**
-   * When true, this option is only visible to internal users (@cloudhumans.com).
+   * Email glob patterns that control who can see this option.
+   * If omitted, the option is visible to everyone.
+   * Example: ["*@cloudhumans.com"]
    */
-  internal?: boolean;
+  visible_to?: string[];
 }
 
 /**

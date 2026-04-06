@@ -45,11 +45,12 @@ import { toast } from "sonner";
 import { useClaudiaTags } from "@/hooks/use-claudia-tags";
 import { useTenantContext } from "@/providers/Tenant";
 import { useAuthContext } from "@/providers/Auth";
+import { emailMatchesPatterns } from "@/lib/ui-config";
 
 interface Option {
   label: string;
   value: string;
-  internal?: boolean;
+  visible_to?: string[];
 }
 
 interface ConfigFieldProps {
@@ -101,14 +102,13 @@ export function ConfigField({
   const [openTag, setOpenTag] = useState(false);
   const { selectedTenant } = useTenantContext();
   const { user } = useAuthContext();
-  const isInternalUser = user?.email?.endsWith("@cloudhumans.com") ?? false;
   const claudiaProjects = useMemo(() => {
     return (selectedTenant?.claudiaProjectIds ?? []).filter(Boolean);
   }, [selectedTenant]);
   const availableTags = useClaudiaTags(dependencyValue);
   const visibleOptions = useMemo(
-    () => options.filter((o) => !o.internal || isInternalUser),
-    [options, isInternalUser],
+    () => options.filter((o) => !o.visible_to || emailMatchesPatterns(user?.email, o.visible_to)),
+    [options, user?.email],
   );
 
   // Determine whether to use external state or Zustand store

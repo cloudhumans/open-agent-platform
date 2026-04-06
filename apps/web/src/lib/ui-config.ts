@@ -45,7 +45,7 @@ function getUiConfig(
  * Supported wildcards: `*` (matches any sequence of characters).
  * Example: `"*@cloudhumans.com"` matches `"alice@cloudhumans.com"`.
  */
-function emailMatchesPatterns(
+export function emailMatchesPatterns(
   email: string | undefined | null,
   patterns: string[],
 ): boolean {

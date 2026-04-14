@@ -83,9 +83,12 @@ export async function GET(
     headers["x-tenant"] = auth.tenantName;
   }
 
-  // Inject custom headers configured on the server
+  // Inject custom headers configured on the server (skip reserved ones)
+  const reserved = new Set(["authorization", "x-api-key", "x-tenant"]);
   for (const [key, value] of Object.entries(customHeaders)) {
-    headers[key] = value;
+    if (!reserved.has(key.toLowerCase())) {
+      headers[key] = value;
+    }
   }
 
   const client = new Client({ name: "oap-tool-proxy", version: "1.0.0" });

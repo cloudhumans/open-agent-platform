@@ -136,11 +136,9 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
     } else {
       // Other users: filter by their cognito:groups
       const userGroups: string[] = user.metadata?.["cognito:groups"] ?? [];
-      if (!userGroups.length) return [];
-
-      result = allTenants.filter((tenant) =>
-        userGroups.includes(tenant.tenantName),
-      );
+      result = userGroups.length
+        ? allTenants.filter((tenant) => userGroups.includes(tenant.tenantName))
+        : [];
     }
 
     // Dev-only: ensure claudia_project tenant is always available

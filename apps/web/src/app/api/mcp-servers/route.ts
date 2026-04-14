@@ -14,6 +14,7 @@ const CreateMcpServerSchema = z
     url: z.string().url(),
     authType: z.enum(["none", "bearer", "apiKey"]),
     credentials: z.string().min(1).nullable().optional(),
+    customHeaders: z.record(z.string(), z.string()).optional().default({}),
   })
   .superRefine((data, ctx) => {
     if (data.authType === "bearer" || data.authType === "apiKey") {
@@ -53,6 +54,7 @@ export async function GET(req: NextRequest) {
     url: string;
     authType: "none" | "bearer" | "apiKey";
     credentials: string | null;
+    customHeaders: Record<string, string>;
     isDefault: false;
     createdAt: Date;
     updatedAt: Date;
@@ -82,6 +84,9 @@ export async function GET(req: NextRequest) {
         url: doc.url,
         authType: doc.authType,
         credentials: maskedCreds,
+        customHeaders: doc.customHeaders
+          ? (doc.customHeaders instanceof Map ? Object.fromEntries(doc.customHeaders) : doc.customHeaders as Record<string, string>)
+          : {},
         isDefault: false,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
@@ -146,6 +151,9 @@ export async function POST(req: NextRequest) {
           doc.credentials != null
             ? maskCredential(decrypt(doc.credentials))
             : null,
+        customHeaders: doc.customHeaders
+          ? (doc.customHeaders instanceof Map ? Object.fromEntries(doc.customHeaders) : doc.customHeaders as Record<string, string>)
+          : {},
         isDefault: false,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,

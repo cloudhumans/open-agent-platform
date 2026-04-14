@@ -15,6 +15,7 @@ interface ServerSnapshot {
   url: string;
   auth_type: "none" | "bearer" | "api_key";
   credentials: string | null;
+  customHeaders?: Record<string, string>;
 }
 
 /**
@@ -65,6 +66,10 @@ export async function GET(req: NextRequest) {
           url: server.url,
           auth_type: toSnapshotAuthType(server.authType),
           credentials: server.credentials ? encrypt(server.credentials) : null,
+          ...((server as any).customHeaders &&
+            Object.keys((server as any).customHeaders).length > 0 && {
+              customHeaders: (server as any).customHeaders,
+            }),
         });
       }
     }
@@ -91,6 +96,10 @@ export async function GET(req: NextRequest) {
         }).lean();
 
         for (const doc of docs) {
+          const customHeaders =
+            doc.customHeaders instanceof Map
+              ? Object.fromEntries(doc.customHeaders)
+              : doc.customHeaders;
           results.push({
             id: doc._id.toString(),
             name: doc.name,
@@ -98,6 +107,8 @@ export async function GET(req: NextRequest) {
             url: doc.url,
             auth_type: toSnapshotAuthType(doc.authType),
             credentials: doc.credentials, // already encrypted in MongoDB
+            ...(customHeaders &&
+              Object.keys(customHeaders).length > 0 && { customHeaders }),
           });
         }
       }

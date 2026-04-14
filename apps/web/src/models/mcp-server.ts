@@ -6,6 +6,7 @@ export interface IMcpServer extends Document {
   url: string;
   authType: "none" | "bearer" | "apiKey";
   credentials: string | null;
+  customHeaders: Map<string, string>;
   tenantName: string;
   createdAt: Date;
   updatedAt: Date;
@@ -22,6 +23,7 @@ const McpServerSchema = new Schema<IMcpServer>(
       required: true,
     },
     credentials: { type: String, default: null },
+    customHeaders: { type: Map, of: String, default: new Map() },
     tenantName: { type: String, required: true },
   },
   {

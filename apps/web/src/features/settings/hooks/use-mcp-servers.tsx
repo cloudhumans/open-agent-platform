@@ -12,6 +12,7 @@ export interface McpServer {
   url: string;
   authType: "none" | "bearer" | "apiKey";
   credentials: string | null;
+  customHeaders: Record<string, string>;
   isDefault: boolean;
   createdAt: string | null;
   updatedAt: string | null;

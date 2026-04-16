@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/collapsible";
 import { McpServer } from "@/features/settings/hooks/use-mcp-servers";
 import { Tool, useMcpServerTools } from "./use-mcp-server-tools";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, RefreshCw } from "lucide-react";
 import _ from "lodash";
 
 // ---------------------------------------------------------------------------
@@ -153,6 +154,8 @@ function ServerToolList({
 export interface McpServerToolGroupsProps {
   servers: McpServer[];
   serversLoading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
   selectedToolsByServer: Record<string, string[]>;
   onSelectionChange: (selection: Record<string, string[]>) => void;
   searchTerm?: string;
@@ -161,6 +164,8 @@ export interface McpServerToolGroupsProps {
 export function McpServerToolGroups({
   servers: allServers,
   serversLoading: loading,
+  error,
+  onRetry,
   selectedToolsByServer,
   onSelectionChange,
   searchTerm,
@@ -216,7 +221,24 @@ export function McpServerToolGroups({
   }
 
   if (servers.length === 0) {
-    return null;
+    if (!onRetry) return null;
+    return (
+      <div className="flex flex-col items-center gap-2 py-6">
+        <p className="text-muted-foreground text-sm">
+          {error ?? "No MCP servers available."}
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onRetry}
+          className="gap-1"
+        >
+          <RefreshCw className="size-3.5" />
+          Retry
+        </Button>
+      </div>
+    );
   }
 
   return (

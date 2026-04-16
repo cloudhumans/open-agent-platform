@@ -57,8 +57,12 @@ function EditAgentDialogContent({
   >({});
 
   // For pre-populating selected servers on edit: match existing snapshot names to current server IDs
-  const { servers: availableServers, loading: serversLoading } =
-    useMcpServers();
+  const {
+    servers: availableServers,
+    loading: serversLoading,
+    error: serversError,
+    refetch: refetchServers,
+  } = useMcpServers();
 
   const form = useForm<{
     name: string;
@@ -75,14 +79,19 @@ function EditAgentDialogContent({
 
   // Pre-populate selectedToolsByServer from the existing snapshot once both the server list
   // and schema detection are ready. Match by name — the most stable identifier across
-  // a stored snapshot and the current live server list.
-  const initializedRef = useRef(false);
+  // a stored snapshot and the current live server list. Gated by userTouchedToolsRef so
+  // a post-Retry refetch re-runs init without clobbering the user's in-flight edits.
+  const userTouchedToolsRef = useRef(false);
+
+  const handleToolSelectionChange = (selection: Record<string, string[]>) => {
+    userTouchedToolsRef.current = true;
+    setSelectedToolsByServer(selection);
+  };
+
   useEffect(() => {
-    if (initializedRef.current) return;
+    if (userTouchedToolsRef.current) return;
     if (!hasMcpServers) return;
     if (availableServers.length === 0) return;
-
-    initializedRef.current = true;
 
     const rawSnapshot = agent.config?.configurable?.mcp_servers as unknown;
     const existingSnapshot: {
@@ -154,6 +163,35 @@ function EditAgentDialogContent({
       const serverIdsWithTools = Object.entries(selectedToolsByServer)
         .filter(([, tools]) => tools.length > 0)
         .map(([id]) => id);
+
+      // Guard against silent tool wipe. Check the agent's *stored* snapshot directly
+      // (not init-time refs, which never fire when availableServers is empty — the most
+      // common cause of silent wipes: env/tenant misconfig, deleted/renamed servers, or
+      // a transient fetch failure).
+      const storedSnapshot = agent.config?.configurable?.mcp_servers as
+        | { tools?: unknown[] }[]
+        | undefined;
+      const legacyStored = agent.config?.configurable?.mcp_config as
+        | { tools?: unknown[] }
+        | undefined;
+      const storedHadTools =
+        (Array.isArray(storedSnapshot) &&
+          storedSnapshot.some(
+            (s) => Array.isArray(s?.tools) && s.tools.length > 0,
+          )) ||
+        (Array.isArray(legacyStored?.tools) && legacyStored.tools.length > 0);
+
+      if (
+        storedHadTools &&
+        !userTouchedToolsRef.current &&
+        serverIdsWithTools.length === 0
+      ) {
+        toast.error("Could not restore the agent's MCP tools", {
+          description:
+            "The MCP servers on this agent aren't available in the current list (check tenant, env vars, or server deletions). Saving now would clear tools.",
+        });
+        return;
+      }
 
       if (serverIdsWithTools.length > 0) {
         // Fetch server snapshots (credentials remain encrypted)
@@ -287,8 +325,10 @@ function EditAgentDialogContent({
               hasMcpServers={hasMcpServers}
               mcpServers={availableServers}
               mcpServersLoading={serversLoading}
+              mcpServersError={serversError}
+              onMcpServersRetry={refetchServers}
               selectedToolsByServer={selectedToolsByServer}
-              onMcpToolSelectionChange={setSelectedToolsByServer}
+              onMcpToolSelectionChange={handleToolSelectionChange}
             />
           </FormProvider>
         )}

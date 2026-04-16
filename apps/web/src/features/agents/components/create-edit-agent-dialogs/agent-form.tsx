@@ -51,6 +51,8 @@ interface AgentFieldsFormProps {
   hasMcpServers?: boolean;
   mcpServers?: McpServer[];
   mcpServersLoading?: boolean;
+  mcpServersError?: string | null;
+  onMcpServersRetry?: () => void;
   selectedToolsByServer?: Record<string, string[]>;
   onMcpToolSelectionChange?: (selection: Record<string, string[]>) => void;
 }
@@ -64,6 +66,8 @@ export function AgentFieldsForm({
   hasMcpServers = false,
   mcpServers = [],
   mcpServersLoading = false,
+  mcpServersError = null,
+  onMcpServersRetry,
   selectedToolsByServer = {},
   onMcpToolSelectionChange,
 }: AgentFieldsFormProps) {
@@ -284,6 +288,8 @@ export function AgentFieldsForm({
                     <McpServerToolGroups
                       servers={mcpServers}
                       serversLoading={mcpServersLoading}
+                      error={mcpServersError}
+                      onRetry={onMcpServersRetry}
                       selectedToolsByServer={selectedToolsByServer}
                       onSelectionChange={onMcpToolSelectionChange}
                       searchTerm={toolSearchTerm}

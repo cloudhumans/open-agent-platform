@@ -49,8 +49,12 @@ function CreateAgentFormContent(props: {
   } = useAgentConfig();
   const { selectedTenant, selectedTenantId } = useTenantContext();
   const { session } = useAuthContext();
-  const { servers: availableServers, loading: serversLoading } =
-    useMcpServers();
+  const {
+    servers: availableServers,
+    loading: serversLoading,
+    error: serversError,
+    refetch: refetchServers,
+  } = useMcpServers();
   const [submitting, setSubmitting] = useState(false);
   // New agents start with no MCP tools selected
   const [selectedToolsByServer, setSelectedToolsByServer] = useState<
@@ -199,6 +203,8 @@ function CreateAgentFormContent(props: {
             hasMcpServers={hasMcpServers}
             mcpServers={availableServers}
             mcpServersLoading={serversLoading}
+            mcpServersError={serversError}
+            onMcpServersRetry={refetchServers}
             selectedToolsByServer={selectedToolsByServer}
             onMcpToolSelectionChange={setSelectedToolsByServer}
           />

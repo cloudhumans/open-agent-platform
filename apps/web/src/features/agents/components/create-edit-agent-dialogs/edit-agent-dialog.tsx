@@ -83,9 +83,7 @@ function EditAgentDialogContent({
   // a post-Retry refetch re-runs init without clobbering the user's in-flight edits.
   const userTouchedToolsRef = useRef(false);
 
-  const handleToolSelectionChange = (
-    selection: Record<string, string[]>,
-  ) => {
+  const handleToolSelectionChange = (selection: Record<string, string[]>) => {
     userTouchedToolsRef.current = true;
     setSelectedToolsByServer(selection);
   };

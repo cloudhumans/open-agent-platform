@@ -224,6 +224,7 @@ function EditAgentDialogContent({
       {
         ...data,
         config: configPayload,
+        tenantName: selectedTenant?.tenantName,
       },
     );
 

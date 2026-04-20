@@ -80,6 +80,7 @@ export function useAgents() {
         name: string;
         description: string;
         config: Record<string, any>;
+        tenantName?: string;
       },
     ): Promise<Assistant | undefined> => {
       if (!session?.accessToken) {
@@ -96,6 +97,9 @@ export function useAgents() {
           metadata: {
             description: args.description,
             public: false,
+            // LangGraph /assistants/search only indexes metadata — tenant must
+            // live here for server-side filtering to work.
+            ...(args.tenantName && { tenant: args.tenantName }),
           },
           name: args.name,
           config: {
@@ -122,6 +126,7 @@ export function useAgents() {
         name?: string;
         description?: string;
         config?: Record<string, any>;
+        tenantName?: string;
       },
     ): Promise<Assistant | undefined> => {
       if (!session?.accessToken) {
@@ -136,6 +141,7 @@ export function useAgents() {
           metadata: {
             ...(args.description && { description: args.description }),
             public: false,
+            ...(args.tenantName && { tenant: args.tenantName }),
           },
           ...(args.name && { name: args.name }),
           ...(args.config && { config: { configurable: args.config } }),

@@ -31,6 +31,7 @@ import { useSearchTools } from "@/hooks/use-search-tools";
 import { useFetchPreselectedTools } from "@/hooks/use-fetch-preselected-tools";
 import { useAgentConfig } from "@/hooks/use-agent-config";
 import { useAgentsContext } from "@/providers/Agents";
+import { useTenantContext } from "@/providers/Tenant";
 import { useIsAgentCreator } from "@/hooks/use-is-agent-creator";
 import {
   AlertDialog,
@@ -128,6 +129,7 @@ export const ConfigurationSidebar = forwardRef<
   const [deploymentId] = useQueryState("deploymentId");
   const [threadId] = useQueryState("threadId");
   const { agents, refreshAgentsLoading } = useAgentsContext();
+  const { selectedTenant } = useTenantContext();
   const {
     getSchemaAndUpdateConfig,
     configurations,
@@ -213,6 +215,7 @@ export const ConfigurationSidebar = forwardRef<
         name: newName,
         description: newDescription,
         config: configsByAgentId[agentId],
+        tenantName: selectedTenant?.tenantName,
       });
       if (!newAgent) {
         toast.error("Failed to create agent", { richColors: true });
@@ -230,6 +233,7 @@ export const ConfigurationSidebar = forwardRef<
 
     const updatedAgent = await updateAgent(agentId, deploymentId, {
       config: configsByAgentId[agentId],
+      tenantName: selectedTenant?.tenantName,
     });
     if (!updatedAgent) {
       toast.error("Failed to update agent configuration");

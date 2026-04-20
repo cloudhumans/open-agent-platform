@@ -167,6 +167,7 @@ function CreateAgentFormContent(props: {
         name,
         description,
         config: configPayload,
+        tenantName: selectedTenant?.tenantName,
       },
     );
     setSubmitting(false);

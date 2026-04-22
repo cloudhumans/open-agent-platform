@@ -261,9 +261,7 @@ export function McpServerFormDialog({
                 >
                   <Input
                     value={header.key}
-                    onChange={(e) =>
-                      updateHeader(index, "key", e.target.value)
-                    }
+                    onChange={(e) => updateHeader(index, "key", e.target.value)}
                     placeholder="Header name"
                     className="flex-1"
                   />
@@ -285,7 +283,7 @@ export function McpServerFormDialog({
                       }
                       aria-pressed={isVisible}
                       tabIndex={-1}
-                      className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-0.5 transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                      className="text-muted-foreground hover:text-foreground focus-visible:ring-ring absolute top-1/2 right-2 -translate-y-1/2 rounded-sm p-0.5 transition-colors focus-visible:ring-2 focus-visible:outline-none"
                     >
                       {isVisible ? (
                         <EyeOff className="h-4 w-4" />

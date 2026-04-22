@@ -41,8 +41,7 @@ async function getCognitoEmail(accessToken: string): Promise<string | null> {
 export async function requireAuth(req: NextRequest): Promise<AuthResult> {
   // Dev-only bypass: skip Cognito JWT validation when using mock backoffice
   if (process.env.MOCK_BACKOFFICE === "true") {
-    const tenantName =
-      req.headers.get("x-tenant-name") ?? "claudia_project";
+    const tenantName = req.headers.get("x-tenant-name") ?? "claudia_project";
     return { ok: true, tenantName, groups: [tenantName] };
   }
 

@@ -143,7 +143,9 @@ export async function PUT(
             ? maskCredential(decrypt(updated.credentials))
             : null,
         customHeaders: updated.customHeaders
-          ? (updated.customHeaders instanceof Map ? Object.fromEntries(updated.customHeaders) : updated.customHeaders as Record<string, string>)
+          ? updated.customHeaders instanceof Map
+            ? Object.fromEntries(updated.customHeaders)
+            : (updated.customHeaders as Record<string, string>)
           : {},
         isDefault: false,
         createdAt: updated.createdAt,

@@ -85,7 +85,9 @@ export async function GET(req: NextRequest) {
         authType: doc.authType,
         credentials: maskedCreds,
         customHeaders: doc.customHeaders
-          ? (doc.customHeaders instanceof Map ? Object.fromEntries(doc.customHeaders) : doc.customHeaders as Record<string, string>)
+          ? doc.customHeaders instanceof Map
+            ? Object.fromEntries(doc.customHeaders)
+            : (doc.customHeaders as Record<string, string>)
           : {},
         isDefault: false,
         createdAt: doc.createdAt,
@@ -152,7 +154,9 @@ export async function POST(req: NextRequest) {
             ? maskCredential(decrypt(doc.credentials))
             : null,
         customHeaders: doc.customHeaders
-          ? (doc.customHeaders instanceof Map ? Object.fromEntries(doc.customHeaders) : doc.customHeaders as Record<string, string>)
+          ? doc.customHeaders instanceof Map
+            ? Object.fromEntries(doc.customHeaders)
+            : (doc.customHeaders as Record<string, string>)
           : {},
         isDefault: false,
         createdAt: doc.createdAt,

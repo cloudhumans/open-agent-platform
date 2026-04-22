@@ -61,9 +61,9 @@ export async function GET(
     authType = doc.authType;
     credentials = doc.credentials != null ? decrypt(doc.credentials) : null;
     customHeaders = doc.customHeaders
-      ? (doc.customHeaders instanceof Map
-          ? Object.fromEntries(doc.customHeaders)
-          : doc.customHeaders as Record<string, string>)
+      ? doc.customHeaders instanceof Map
+        ? Object.fromEntries(doc.customHeaders)
+        : (doc.customHeaders as Record<string, string>)
       : {};
   }
 

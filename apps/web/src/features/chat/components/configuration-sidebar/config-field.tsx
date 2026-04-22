@@ -735,37 +735,71 @@ export function ConfigFieldAgents({
       return;
     }
 
-    const newDefaults = ids.map((id) => {
-      const [agent_id, deploymentId] = id.split(":");
-      const deployment_url = deployments.find(
-        (d) => d.id === deploymentId,
-      )?.deploymentUrl;
-      if (!deployment_url) {
-        toast.error("Deployment not found");
-      }
+    // Resolve each id to a sub-agent up front. If any selected id no longer
+    // maps to a live agent (deleted/orphan) or the resolved agent is missing
+    // the fields the supervisor schema requires (name, metadata.description),
+    // we skip that entry and surface a toast naming the offending agent_id.
+    // This prevents persisting entries with `undefined` name/description,
+    // which the supervisor's OAPConfigSchema rejects at invocation time and
+    // takes the playground down.
+    const newDefaults = ids
+      .map((id) => {
+        const [agent_id, deploymentId] = id.split(":");
+        const deployment_url = deployments.find(
+          (d) => d.id === deploymentId,
+        )?.deploymentUrl;
+        if (!deployment_url) {
+          toast.error("Deployment not found");
+        }
 
-      // Preserve project_name and tag from existing defaults or resolve from agent metadata
-      const existing = defaults?.find((d) => d.agent_id === agent_id);
-      return {
-        agent_id,
-        deployment_url,
-        name: agents.find((a) => a.assistant_id === agent_id)?.name,
-        description: agents.find((a) => a.assistant_id === agent_id)?.metadata
-          ?.description as string | undefined,
-        project_name:
-          existing?.project_name ??
-          (
-            agents.find((a) => a.assistant_id === agent_id)?.config
-              ?.configurable as Record<string, any>
-          )?.project_name,
-        tag:
-          existing?.tag ??
-          (
-            agents.find((a) => a.assistant_id === agent_id)?.config
-              ?.configurable as Record<string, any>
-          )?.tag,
-      };
-    });
+        const resolved = agents.find((a) => a.assistant_id === agent_id);
+        if (!resolved) {
+          toast.error(
+            `Sub-agent ${agent_id} no longer exists and was skipped. Remove it from the selection.`,
+          );
+          return null;
+        }
+
+        const resolvedName = resolved.name;
+        const resolvedDescription = resolved.metadata?.description as
+          | string
+          | undefined;
+
+        if (!resolvedName) {
+          toast.error(`Sub-agent ${agent_id} has no name and was skipped.`);
+          return null;
+        }
+
+        if (!resolvedDescription) {
+          toast.error(
+            `Sub-agent ${agent_id} has no description and was skipped.`,
+          );
+          return null;
+        }
+
+        const configurable = resolved.config?.configurable as
+          | Record<string, any>
+          | undefined;
+
+        // Preserve project_name and tag from existing defaults or resolve from agent metadata
+        const existing = defaults?.find((d) => d.agent_id === agent_id);
+        return {
+          agent_id,
+          deployment_url,
+          name: resolvedName,
+          description: resolvedDescription,
+          project_name: existing?.project_name ?? configurable?.project_name,
+          tag: existing?.tag ?? configurable?.tag,
+        };
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+    // If every selected id was orphan/incomplete, don't clobber the existing
+    // saved state with an empty array — preserve the prior value and let the
+    // toasts explain what happened.
+    if (!newDefaults.length) {
+      return;
+    }
 
     if (isExternallyManaged) {
       externalSetValue(newDefaults);

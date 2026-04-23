@@ -39,6 +39,12 @@ async function getCognitoEmail(accessToken: string): Promise<string | null> {
  * Returns the tenantName on success, or a pre-built error Response on failure.
  */
 export async function requireAuth(req: NextRequest): Promise<AuthResult> {
+  // Dev-only bypass: skip Cognito JWT validation when using mock backoffice
+  if (process.env.MOCK_BACKOFFICE === "true") {
+    const tenantName = req.headers.get("x-tenant-name") ?? "claudia_project";
+    return { ok: true, tenantName, groups: [tenantName] };
+  }
+
   const authHeader = req.headers.get("authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return {

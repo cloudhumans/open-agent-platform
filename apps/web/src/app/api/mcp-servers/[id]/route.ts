@@ -18,6 +18,7 @@ const UpdateMcpServerSchema = z
     url: z.string().url().optional(),
     authType: z.enum(["none", "bearer", "apiKey"]).optional(),
     credentials: z.string().min(1).nullable().optional(),
+    customHeaders: z.record(z.string(), z.string()).optional(),
   })
   .superRefine((data, ctx) => {
     if (
@@ -116,6 +117,10 @@ export async function PUT(
           : null;
     }
 
+    if (parsed.data.customHeaders !== undefined) {
+      updateData.customHeaders = parsed.data.customHeaders;
+    }
+
     const updated = await McpServer.findOneAndUpdate(
       { _id: id, tenantName: auth.tenantName },
       updateData,
@@ -137,6 +142,11 @@ export async function PUT(
           updated.credentials != null
             ? maskCredential(decrypt(updated.credentials))
             : null,
+        customHeaders: updated.customHeaders
+          ? updated.customHeaders instanceof Map
+            ? Object.fromEntries(updated.customHeaders)
+            : (updated.customHeaders as Record<string, string>)
+          : {},
         isDefault: false,
         createdAt: updated.createdAt,
         updatedAt: updated.updatedAt,

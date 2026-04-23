@@ -128,18 +128,38 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   const tenants = useMemo(() => {
     if (!user) return [];
 
+    let result: Tenant[];
+
     // @cloudhumans.com emails get full access to all tenants
     if (user.email?.endsWith("@cloudhumans.com")) {
-      return allTenants;
+      result = allTenants;
+    } else {
+      // Other users: filter by their cognito:groups
+      const userGroups: string[] = user.metadata?.["cognito:groups"] ?? [];
+      result = userGroups.length
+        ? allTenants.filter((tenant) => userGroups.includes(tenant.tenantName))
+        : [];
     }
 
-    // Other users: filter by their cognito:groups
-    const userGroups: string[] = user.metadata?.["cognito:groups"] ?? [];
-    if (!userGroups.length) return [];
+    // Dev-only: ensure claudia_project tenant is always available
+    if (
+      process.env.NEXT_PUBLIC_MOCK_AUTH === "true" &&
+      !result.some((t) => t.tenantName === "claudia_project")
+    ) {
+      result = [
+        ...result,
+        {
+          key: "claudia_project",
+          tenantName: "claudia_project",
+          cloudchatInstances: [],
+          connectorProjectIds: ["claudia_project"],
+          claudiaProjectIds: ["claudia_project"],
+          eddieWorkspaces: [],
+        },
+      ];
+    }
 
-    return allTenants.filter((tenant) =>
-      userGroups.includes(tenant.tenantName),
-    );
+    return result;
   }, [user, allTenants]);
 
   const [selectedTenantKey, setSelectedTenantKeyState] = useState<string>(

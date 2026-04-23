@@ -23,6 +23,7 @@ export async function GET(
   let serverUrl: string;
   let authType: "none" | "bearer" | "apiKey";
   let credentials: string | null;
+  let customHeaders: Record<string, string> = {};
 
   // Check if this is a default server
   const defaults = getDefaultServers();
@@ -59,6 +60,11 @@ export async function GET(
     serverUrl = doc.url;
     authType = doc.authType;
     credentials = doc.credentials != null ? decrypt(doc.credentials) : null;
+    customHeaders = doc.customHeaders
+      ? doc.customHeaders instanceof Map
+        ? Object.fromEntries(doc.customHeaders)
+        : (doc.customHeaders as Record<string, string>)
+      : {};
   }
 
   // Build MCP URL — ensure it ends with /mcp
@@ -75,6 +81,14 @@ export async function GET(
   // Forward tenant header from authenticated user
   if (auth.tenantName) {
     headers["x-tenant"] = auth.tenantName;
+  }
+
+  // Inject custom headers configured on the server (skip reserved ones)
+  const reserved = new Set(["authorization", "x-api-key", "x-tenant"]);
+  for (const [key, value] of Object.entries(customHeaders)) {
+    if (!reserved.has(key.toLowerCase())) {
+      headers[key] = value;
+    }
   }
 
   const client = new Client({ name: "oap-tool-proxy", version: "1.0.0" });

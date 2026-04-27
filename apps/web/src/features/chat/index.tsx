@@ -10,6 +10,8 @@ import { SidebarButtons } from "./components/sidebar-buttons";
 /**
  * The parent component containing the chat interface.
  */
+const historyEnabled = process.env.NEXT_PUBLIC_ENABLE_HISTORY === "true";
+
 export default function ChatInterface(): React.ReactNode {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
@@ -91,12 +93,15 @@ export default function ChatInterface(): React.ReactNode {
           setHistoryOpen={setHistoryOpen}
           configOpen={configOpen}
           setConfigOpen={setConfigOpen}
+          historyEnabled={historyEnabled}
         />
-        <ThreadHistorySidebar
-          ref={historyRef}
-          open={historyOpen}
-          setOpen={setHistoryOpen}
-        />
+        {historyEnabled && (
+          <ThreadHistorySidebar
+            ref={historyRef}
+            open={historyOpen}
+            setOpen={setHistoryOpen}
+          />
+        )}
         <ConfigurationSidebar
           ref={configRef}
           open={configOpen}

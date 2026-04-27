@@ -16,11 +16,19 @@ interface SidebarButtonsProps {
   configOpen: boolean;
   setConfigOpen: (open: boolean) => void;
   className?: string;
+  historyEnabled?: boolean;
 }
 
 export const SidebarButtons = forwardRef<HTMLDivElement, SidebarButtonsProps>(
   (
-    { historyOpen, setHistoryOpen, configOpen, setConfigOpen, className },
+    {
+      historyOpen,
+      setHistoryOpen,
+      configOpen,
+      setConfigOpen,
+      className,
+      historyEnabled = false,
+    },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
     const handleConfigClick = () => {
@@ -91,19 +99,21 @@ export const SidebarButtons = forwardRef<HTMLDivElement, SidebarButtonsProps>(
             >
               <Settings className="size-5" />
             </TooltipIconButton>
-            <TooltipIconButton
-              tooltip="History"
-              variant="outline"
-              size="icon"
-              className={cn(
-                "bg-background hover:bg-muted size-9 rounded-full shadow-xs hover:cursor-pointer",
-                isSidebarOpen && "shadow-lg",
-              )}
-              onClick={handleHistoryClick}
-              aria-label="History"
-            >
-              <History className="size-5" />
-            </TooltipIconButton>
+            {historyEnabled && (
+              <TooltipIconButton
+                tooltip="History"
+                variant="outline"
+                size="icon"
+                className={cn(
+                  "bg-background hover:bg-muted size-9 rounded-full shadow-xs hover:cursor-pointer",
+                  isSidebarOpen && "shadow-lg",
+                )}
+                onClick={handleHistoryClick}
+                aria-label="History"
+              >
+                <History className="size-5" />
+              </TooltipIconButton>
+            )}
           </div>
         </div>
       </motion.div>

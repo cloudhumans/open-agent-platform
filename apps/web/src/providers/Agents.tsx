@@ -12,6 +12,7 @@ import { Agent } from "@/types/agent";
 import { Deployment } from "@/types/deployment";
 import {
   groupAgentsByGraphs,
+  isDraftAssistant,
   isSystemCreatedDefaultAssistant,
   isUserCreatedDefaultAssistant,
 } from "@/lib/agent-utils";
@@ -103,6 +104,9 @@ async function getAgents(
 
       // Filter and add user assistants
       allAssistantsResponse.forEach((assistant) => {
+        if (isDraftAssistant(assistant)) {
+          return;
+        }
         const isPublic = assistant.metadata?.public;
         const agentTenantId = assistant.metadata?.tenant;
         const agentConfigTenant = assistant.config?.configurable?.tenant;

@@ -55,6 +55,23 @@ export function isPrimaryAssistant(agent: Agent | Assistant): boolean {
   return agent.metadata?._x_oap_is_primary === true;
 }
 
+/**
+ * Determines if an agent is a draft created by claudia-app for offline editing.
+ *
+ * Drafts are real LangGraph assistants flagged via `metadata.isDraft = true`
+ * (and optionally `metadata.parentAssistantId` for forks of a published agent).
+ * They share the deployment with production assistants but must never appear
+ * in OAP's management UI — they belong exclusively to claudia-app's edit flow.
+ *
+ * The contract is owned by claudia-app (see `claudia-app/src/modules/agents/lib/draft.ts`).
+ * The metadata key `isDraft` lacks the `_x_oap_` prefix used elsewhere in OAP
+ * because it is not server-authoritative — claudia-app sets it client-side
+ * when forking or creating a new agent. OAP only consumes.
+ */
+export function isDraftAssistant(agent: Agent | Assistant): boolean {
+  return agent.metadata?.isDraft === true;
+}
+
 export function isUserSpecifiedDefaultAgent(agent: Agent): boolean {
   const deployments = getDeployments();
   const defaultDeployment = deployments.find((d) => d.isDefault);
